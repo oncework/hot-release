@@ -1,0 +1,34 @@
+{
+  "name": "oncework-gui",
+  "version": "1.1.2",
+  "description": "a smart snippet tool for person.",
+  "productName": "OnceWork",
+  "main": "./main.js",
+  "scripts": {},
+  "keywords": [],
+  "author": {
+    "name": "xudaolong",
+    "email": "xudaolong@gmail.com"
+  },
+  "iohook": {
+    "targets": [
+      "node-57",
+      "electron-54"
+    ],
+    "platforms": [
+      "win32",
+      "darwin"
+    ],
+    "arches": [
+      "x64",
+      "ia32"
+    ]
+  },
+  "node": "v8.2.1",
+  "innerUpdate": false,
+  "license": "ISC",
+  "dependencies": {
+    "es6-promisify": "^6.0.0",
+    "zekrom": "^2.3.11"
+  }
+}
