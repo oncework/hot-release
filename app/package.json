@@ -1,6 +1,6 @@
 {
   "name": "oncework-gui",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "a smart snippet tool for person.",
   "productName": "OnceWork",
   "main": "./main.js",
@@ -27,8 +27,5 @@
   "node": "v8.2.1",
   "innerUpdate": false,
   "license": "ISC",
-  "dependencies": {
-    "es6-promisify": "^6.0.0",
-    "zekrom": "^2.3.11"
-  }
+  "dependencies": {}
 }
