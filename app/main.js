@@ -40627,7 +40627,7 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/electron-v54-darwin-x64/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try {global.process.dlopen(module, "/Users/dillon/once/once/node_modules/iohook/builds/electron-v54-darwin-x64/build/Release/iohook.node"); } catch(e) {throw new Error('Cannot open ' + "/Users/dillon/once/once/node_modules/iohook/builds/electron-v54-darwin-x64/build/Release/iohook.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { global.process.dlopen(module, __dirname + '/' + "4eed9b0ef5a6aa389b90055c1111b43c.node"); } catch(e) {throw new Error('Cannot open ' + "4eed9b0ef5a6aa389b90055c1111b43c.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -40635,7 +40635,7 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/electron-v54-win32-ia32/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try {global.process.dlopen(module, "/Users/dillon/once/once/node_modules/iohook/builds/electron-v54-win32-ia32/build/Release/iohook.node"); } catch(e) {throw new Error('Cannot open ' + "/Users/dillon/once/once/node_modules/iohook/builds/electron-v54-win32-ia32/build/Release/iohook.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { global.process.dlopen(module, __dirname + '/' + "3bbf87da4265f77db4f132c88bb8977c.node"); } catch(e) {throw new Error('Cannot open ' + "3bbf87da4265f77db4f132c88bb8977c.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -40643,7 +40643,7 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/electron-v54-win32-x64/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try {global.process.dlopen(module, "/Users/dillon/once/once/node_modules/iohook/builds/electron-v54-win32-x64/build/Release/iohook.node"); } catch(e) {throw new Error('Cannot open ' + "/Users/dillon/once/once/node_modules/iohook/builds/electron-v54-win32-x64/build/Release/iohook.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { global.process.dlopen(module, __dirname + '/' + "a29ba847906fd6943335ea4ae07b0317.node"); } catch(e) {throw new Error('Cannot open ' + "a29ba847906fd6943335ea4ae07b0317.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -40651,7 +40651,7 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/node-v57-darwin-x64/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try {global.process.dlopen(module, "/Users/dillon/once/once/node_modules/iohook/builds/node-v57-darwin-x64/build/Release/iohook.node"); } catch(e) {throw new Error('Cannot open ' + "/Users/dillon/once/once/node_modules/iohook/builds/node-v57-darwin-x64/build/Release/iohook.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { global.process.dlopen(module, __dirname + '/' + "1c8b406e54922069fc353388550e3454.node"); } catch(e) {throw new Error('Cannot open ' + "1c8b406e54922069fc353388550e3454.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -40659,7 +40659,7 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/node-v57-win32-ia32/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try {global.process.dlopen(module, "/Users/dillon/once/once/node_modules/iohook/builds/node-v57-win32-ia32/build/Release/iohook.node"); } catch(e) {throw new Error('Cannot open ' + "/Users/dillon/once/once/node_modules/iohook/builds/node-v57-win32-ia32/build/Release/iohook.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { global.process.dlopen(module, __dirname + '/' + "ea485aa53a7eff87ead6c78b1545e049.node"); } catch(e) {throw new Error('Cannot open ' + "ea485aa53a7eff87ead6c78b1545e049.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -40667,7 +40667,7 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/node-v57-win32-x64/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try {global.process.dlopen(module, "/Users/dillon/once/once/node_modules/iohook/builds/node-v57-win32-x64/build/Release/iohook.node"); } catch(e) {throw new Error('Cannot open ' + "/Users/dillon/once/once/node_modules/iohook/builds/node-v57-win32-x64/build/Release/iohook.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { global.process.dlopen(module, __dirname + '/' + "36893d50e9414347700f3017eea572f4.node"); } catch(e) {throw new Error('Cannot open ' + "36893d50e9414347700f3017eea572f4.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -98643,7 +98643,7 @@ function rmkidsSync (p, options) {
 /***/ "./node_modules/robotjs/build/Release/robotjs.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try {global.process.dlopen(module, "/Users/dillon/once/once/node_modules/robotjs/build/Release/robotjs.node"); } catch(e) {throw new Error('Cannot open ' + "/Users/dillon/once/once/node_modules/robotjs/build/Release/robotjs.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { global.process.dlopen(module, __dirname + '/' + "6e76b9d8d821d215bf9747d574e64899.node"); } catch(e) {throw new Error('Cannot open ' + "6e76b9d8d821d215bf9747d574e64899.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -110570,7 +110570,7 @@ const applescriptCopy=(()=>{var a=__WEBPACK_IMPORTED_MODULE_0_babel_runtime_help
 /* harmony export (immutable) */ __webpack_exports__["applescriptCopy"] = applescriptCopy;
 const applescriptPaste=(()=>{var a=__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_asyncToGenerator___default()(function*(){const b=yield __WEBPACK_IMPORTED_MODULE_1__runScript__["default"].applescript(PASTE);return b});return function(){return a.apply(this,arguments)}})();
 /* harmony export (immutable) */ __webpack_exports__["applescriptPaste"] = applescriptPaste;
-const switchTab=(()=>{var a=__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_asyncToGenerator___default()(function*(b){const c=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__clipboard__["b" /* getFromClipboard */])();yield applescriptCopy(b),__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__platform__["a" /* isMac */])()?setTimeout(function(){applescriptPaste()},100):(yield _this.robot.tap("tab","COMMAND"),yield _this.robot.tap("V","CONTROL")),setTimeout(function(){applescriptCopy(c)},500)});return function(){return a.apply(this,arguments)}})();
+const switchTab=(()=>{var a=__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_asyncToGenerator___default()(function*(b){const c=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__clipboard__["b" /* getFromClipboard */])();yield applescriptCopy(b),__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__platform__["a" /* isMac */])()?applescriptPaste():(yield _this.robot.tap("tab","COMMAND"),yield _this.robot.tap("V","CONTROL")),setTimeout(function(){applescriptCopy(c)},500)});return function(){return a.apply(this,arguments)}})();
 /* harmony export (immutable) */ __webpack_exports__["switchTab"] = switchTab;
 
 

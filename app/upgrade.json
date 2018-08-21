@@ -1,7 +1,14 @@
 {
   "name": "oncework",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "manifest": [
+    {
+      "version": "1.1.6",
+      "file": [
+        "app/renderer/renderer.js"
+      ],
+      "detail": ["Internationalization problem."]
+    },
     {
       "version": "1.1.5",
       "file": [
