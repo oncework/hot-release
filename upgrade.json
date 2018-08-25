@@ -1,34 +1,13 @@
 {
-  "name": "oncework",
-  "version": "1.1.6",
+  "name": "oncework-win",
+  "version": "1.1.8",
   "manifest": [
     {
-      "version": "1.1.6",
+      "version": "1.1.8",
       "file": [
         "app/renderer/renderer.js"
       ],
-      "detail": ["Internationalization problem."]
-    },
-    {
-      "version": "1.1.5",
-      "file": [
-        "app/assets/iconfont.woff",
-        "app/main.js",
-        "app/package.json",
-        "app/assets/iconfont.css",
-        "app/assets/iconfont.eot",
-        "app/assets/iconfont.js",
-        "app/assets/iconfont.svg",
-        "app/assets/iconfont.ttf",
-        "app/renderer/renderer.js",
-        "app/renderer/style.css"
-      ],
-      "detail": ["Add category management."]
-    },
-    {
-      "version": "1.1.2",
-      "file": ["app/main.js"],
-      "detail": ["Test online hot upgrade"]
+      "detail": ["Test auto hot release."]
     }
   ]
 }
