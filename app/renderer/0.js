@@ -1,6 +1,6 @@
 webpackJsonp([0],{
 
-/***/ "./node_modules/css-loader/index.js?{\"modules\":false,\"importLoaders\":2,\"minimize\":true,\"sourceMap\":true}!./node_modules/less-loader/dist/cjs.js!./src/renderer/assets/styles/is-mac.less":
+/***/ "./node_modules/css-loader/index.js?{\"modules\":false,\"importLoaders\":2,\"minimize\":true,\"sourceMap\":true}!./node_modules/less-loader/dist/cjs.js!./src/renderer/assets/styles/search.less":
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(true);
@@ -8,20 +8,20 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, ".top-bar-option{-webkit-app-region:no-drag;position:absolute;left:0;top:7px;z-index:9999}.top-bar-icn{float:left;height:12px;width:12px;margin-left:7px;line-height:1;color:#333;font-weight:700;border-radius:50%;cursor:pointer}.top-bar-icn.icn-x{background-color:#ff5f58;line-height:11px;padding-top:1px}.top-bar-icn.icn-min{background-color:#ffbe2f;line-height:10px;padding-top:1px}.top-bar-icn.icn-max{background-color:#35cb4b}.top-bar-icn .iconfont{font-size:10px;padding-top:1px;padding-left:1px;opacity:0}.top-bar:hover .iconfont{opacity:1;transition:opacity .5s}.top-bar-logo{right:10px}", "", {"version":3,"sources":["D:/once/once/src/renderer/assets/styles/is-mac.less"],"names":[],"mappings":"AAAA,gBACE,2BAA4B,AAC5B,kBAAmB,AACnB,OAAU,AACV,QAAS,AACT,YAAc,CACf,AACD,aACE,WAAY,AACZ,YAAa,AACb,WAAY,AACZ,gBAAiB,AACjB,cAAe,AACf,WAAY,AACZ,gBAAkB,AAClB,kBAAmB,AACnB,cAAgB,CACjB,AACD,mBACE,yBAA0B,AAC1B,iBAAkB,AAClB,eAAiB,CAClB,AACD,qBACE,yBAA0B,AAC1B,iBAAkB,AAClB,eAAiB,CAClB,AACD,qBACE,wBAA0B,CAC3B,AACD,uBACE,eAAgB,AAChB,gBAAiB,AACjB,iBAAkB,AAClB,SAAW,CACZ,AACD,yBACE,UAAW,AACX,sBAAwB,CACzB,AACD,cACE,UAAY,CACb","file":"is-mac.less","sourcesContent":[".top-bar-option {\n  -webkit-app-region: no-drag;\n  position: absolute;\n  left: 0px;\n  top: 7px;\n  z-index: 9999;\n}\n.top-bar-icn {\n  float: left;\n  height: 12px;\n  width: 12px;\n  margin-left: 7px;\n  line-height: 1;\n  color: #333;\n  font-weight: bold;\n  border-radius: 50%;\n  cursor: pointer;\n}\n.top-bar-icn.icn-x {\n  background-color: #ff5f58;\n  line-height: 11px;\n  padding-top: 1px;\n}\n.top-bar-icn.icn-min {\n  background-color: #ffbe2f;\n  line-height: 10px;\n  padding-top: 1px;\n}\n.top-bar-icn.icn-max {\n  background-color: #35cb4b;\n}\n.top-bar-icn .iconfont {\n  font-size: 10px;\n  padding-top: 1px;\n  padding-left: 1px;\n  opacity: 0;\n}\n.top-bar:hover .iconfont {\n  opacity: 1;\n  transition: opacity .5s;\n}\n.top-bar-logo {\n  right: 10px;\n}\n"],"sourceRoot":""}]);
+exports.push([module.i, ".ant-card-body{padding:2px 10px!important}.ant-select-dropdown-menu{max-height:543px!important}.snippet-search{background:transparent!important}.snippet-search .ant-card-body{padding:5px 12px!important}.snippet-search .select-item{cursor:pointer}.snippet-search .select-item .select-item-desc{color:\"rgba(0,0,0,.65)\";width:130;font-weight:400;text-overflow:ellipsis;white-space:nowrap;outline:none;overflow:hidden}.snippet-search .select-item .select-item-tag{float:right;background:#8a2be2}", "", {"version":3,"sources":["D:/once/once/src/renderer/assets/styles/search.less"],"names":[],"mappings":"AAAA,eACE,0BAA6B,CAC9B,AACD,0BACE,0BAA6B,CAC9B,AACD,gBACE,gCAAwC,CACzC,AACD,+BACE,0BAA6B,CAC9B,AACD,6BACE,cAAgB,CACjB,AACD,+CACE,wBAAyB,AACzB,UAAW,AACX,gBAAiB,AACjB,uBAAwB,AACxB,mBAAoB,AACpB,aAAc,AACd,eAAiB,CAClB,AACD,8CACE,YAAa,AACb,kBAAuB,CACxB","file":"search.less","sourcesContent":[".ant-card-body {\n  padding: 2px 10px !important;\n}\n.ant-select-dropdown-menu {\n  max-height: 543px !important;\n}\n.snippet-search {\n  background: rgba(0, 0, 0, 0) !important;\n}\n.snippet-search .ant-card-body {\n  padding: 5px 12px !important;\n}\n.snippet-search .select-item {\n  cursor: pointer;\n}\n.snippet-search .select-item .select-item-desc {\n  color: \"rgba(0,0,0,.65)\";\n  width: 130;\n  font-weight: 400;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  outline: none;\n  overflow: hidden;\n}\n.snippet-search .select-item .select-item-tag {\n  float: right;\n  background: blueviolet;\n}\n"],"sourceRoot":""}]);
 
 // exports
 
 
 /***/ }),
 
-/***/ "./src/renderer/assets/styles/is-mac.less":
+/***/ "./src/renderer/assets/styles/search.less":
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__("./node_modules/css-loader/index.js?{\"modules\":false,\"importLoaders\":2,\"minimize\":true,\"sourceMap\":true}!./node_modules/less-loader/dist/cjs.js!./src/renderer/assets/styles/is-mac.less");
+var content = __webpack_require__("./node_modules/css-loader/index.js?{\"modules\":false,\"importLoaders\":2,\"minimize\":true,\"sourceMap\":true}!./node_modules/less-loader/dist/cjs.js!./src/renderer/assets/styles/search.less");
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -35,8 +35,8 @@ if(content.locals) module.exports = content.locals;
 if(false) {
 	// When the styles change, update the <style> tags
 	if(!content.locals) {
-		module.hot.accept("!!../../../../node_modules/css-loader/index.js??ref--7-2!../../../../node_modules/less-loader/dist/cjs.js!./is-mac.less", function() {
-			var newContent = require("!!../../../../node_modules/css-loader/index.js??ref--7-2!../../../../node_modules/less-loader/dist/cjs.js!./is-mac.less");
+		module.hot.accept("!!../../../../node_modules/css-loader/index.js??ref--8-2!../../../../node_modules/less-loader/dist/cjs.js!./search.less", function() {
+			var newContent = require("!!../../../../node_modules/css-loader/index.js??ref--8-2!../../../../node_modules/less-loader/dist/cjs.js!./search.less");
 			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 			update(newContent);
 		});
