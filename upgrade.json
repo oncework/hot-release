@@ -1,12 +1,26 @@
 {
   "name": "oncework",
-  "version": "1.1.6",
+  "version": "1.1.8",
   "manifest": [
     {
-      "version": "1.1.6",
+      "version": "1.1.8",
       "file": [
+        "app/renderer/style.css",
+        "app/main.js",
+        "app/package.json",
+        "app/assets/iconfont.css",
+        "app/assets/iconfont.eot",
+        "app/assets/iconfont.js",
+        "app/assets/iconfont.svg",
+        "app/assets/iconfont.ttf",
+        "app/assets/iconfont.woff",
         "app/renderer/renderer.js"
       ],
+      "detail": ["Update editor font-family."]
+    },
+    {
+      "version": "1.1.6",
+      "file": ["app/renderer/renderer.js"],
       "detail": ["Internationalization problem."]
     },
     {

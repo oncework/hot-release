@@ -281,72 +281,6 @@ function bufferBody(stream) {
 
 /***/ }),
 
-/***/ "./node_modules/arch/index.js":
-/***/ (function(module, exports, __webpack_require__) {
-
-var cp = __webpack_require__(6)
-var fs = __webpack_require__(1)
-var path = __webpack_require__(0)
-
-/**
- * Returns the operating system's CPU architecture. This is different than
- * `process.arch` or `os.arch()` which returns the architecture the Node.js (or
- * Electron) binary was compiled for.
- */
-module.exports = function arch () {
-  /**
-   * The running binary is 64-bit, so the OS is clearly 64-bit.
-   */
-  if (process.arch === 'x64') {
-    return 'x64'
-  }
-
-  /**
-   * All recent versions of Mac OS are 64-bit.
-   */
-  if (process.platform === 'darwin') {
-    return 'x64'
-  }
-
-  /**
-   * On Windows, the most reliable way to detect a 64-bit OS from within a 32-bit
-   * app is based on the presence of a WOW64 file: %SystemRoot%\SysNative.
-   * See: https://twitter.com/feross/status/776949077208510464
-   */
-  if (process.platform === 'win32') {
-    var useEnv = false
-    try {
-      useEnv = !!(process.env.SYSTEMROOT && fs.statSync(process.env.SYSTEMROOT))
-    } catch (err) {}
-
-    var sysRoot = useEnv ? process.env.SYSTEMROOT : 'C:\\Windows'
-
-    // If %SystemRoot%\SysNative exists, we are in a WOW64 FS Redirected application.
-    var isWOW64 = false
-    try {
-      isWOW64 = !!fs.statSync(path.join(sysRoot, 'sysnative'))
-    } catch (err) {}
-
-    return isWOW64 ? 'x64' : 'x86'
-  }
-
-  /**
-   * On Linux, use the `getconf` command to get the architecture.
-   */
-  if (process.platform === 'linux') {
-    var output = cp.execSync('getconf LONG_BIT', {encoding: 'utf8'})
-    return output === '64\n' ? 'x64' : 'x86'
-  }
-
-  /**
-   * If none of the above, assume the architecture is 32-bit.
-   */
-  return 'x86'
-}
-
-
-/***/ }),
-
 /***/ "./node_modules/async-limiter/index.js":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13448,191 +13382,6 @@ module.exports = (proxy, opts) => {
 			proxyAuth: proxy.auth
 		}
 	}, opts));
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/clipboardy/index.js":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-const termux = __webpack_require__("./node_modules/clipboardy/lib/termux.js");
-const linux = __webpack_require__("./node_modules/clipboardy/lib/linux.js");
-const macos = __webpack_require__("./node_modules/clipboardy/lib/macos.js");
-const windows = __webpack_require__("./node_modules/clipboardy/lib/windows.js");
-
-function platform() {
-	switch (process.platform) {
-		case 'darwin':
-			return macos;
-		case 'win32':
-			return windows;
-		case 'android':
-			if (process.env.PREFIX !== '/data/data/com.termux/files/usr') {
-				throw new Error('You need to install Termux for this module to work on Android: https://termux.com');
-			}
-			return termux;
-		default:
-			return linux;
-	}
-}
-
-exports.write = input => {
-	if (typeof input !== 'string') {
-		return Promise.reject(new TypeError(`Expected a string, got ${typeof input}`));
-	}
-
-	return platform().copy({input}).then(() => {});
-};
-
-exports.read = () => platform().paste({stripEof: false});
-
-exports.writeSync = input => {
-	if (typeof input !== 'string') {
-		throw new TypeError(`Expected a string, got ${typeof input}`);
-	}
-
-	platform().copySync({input});
-};
-
-exports.readSync = () => platform().pasteSync({stripEof: false}).stdout;
-
-
-/***/ }),
-
-/***/ "./node_modules/clipboardy/lib/linux.js":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-const path = __webpack_require__(0);
-const execa = __webpack_require__("./node_modules/execa/index.js");
-
-const handler = err => {
-	if (err.code === 'ENOENT') {
-		throw new Error('Couldn\'t find the required `xsel` binary. On Debian/Ubuntu you can install it with: sudo apt install xsel');
-	}
-
-	throw err;
-};
-
-const xsel = path.join(__dirname, '../fallbacks/linux/xsel');
-
-module.exports = {
-	copy: opts => {
-		return execa(xsel, ['--clipboard', '--input'], opts)
-			.catch(() => execa('xsel', ['--clipboard', '--input'], opts))
-			.catch(handler);
-	},
-	paste: opts => {
-		return execa.stdout(xsel, ['--clipboard', '--output'], opts)
-			.catch(() => execa.stdout('xsel', ['--clipboard', '--output'], opts))
-			.catch(handler);
-	},
-	copySync: opts => {
-		try {
-			return execa.sync(xsel, ['--clipboard', '--input'], opts);
-		} catch (err) {
-			try {
-				return execa.sync('xsel', ['--clipboard', '--input'], opts);
-			} catch (err) {
-				handler(err);
-			}
-		}
-	},
-	pasteSync: opts => {
-		try {
-			return execa.sync(xsel, ['--clipboard', '--output'], opts);
-		} catch (err) {
-			try {
-				return execa.sync('xsel', ['--clipboard', '--output'], opts);
-			} catch (err) {
-				handler(err);
-			}
-		}
-	}
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/clipboardy/lib/macos.js":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-const execa = __webpack_require__("./node_modules/execa/index.js");
-
-const env = Object.assign({}, process.env, {LC_CTYPE: 'UTF-8'});
-
-module.exports = {
-	copy: opts => execa('pbcopy', Object.assign({}, opts, {env})),
-	paste: opts => execa.stdout('pbpaste', Object.assign({}, opts, {env})),
-	copySync: opts => execa.sync('pbcopy', Object.assign({}, opts, {env})),
-	pasteSync: opts => execa.sync('pbpaste', Object.assign({}, opts, {env}))
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/clipboardy/lib/termux.js":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-const execa = __webpack_require__("./node_modules/execa/index.js");
-
-const handler = err => {
-	if (err.code === 'ENOENT') {
-		throw new Error('Couldn\'t find the termux-api scripts. You can install them with: apt install termux-api');
-	}
-
-	throw err;
-};
-
-module.exports = {
-	copy: opts => execa('termux-clipboard-set', opts).catch(handler),
-	paste: opts => execa.stdout('termux-clipboard-get', opts).catch(handler),
-	copySync: opts => {
-		try {
-			return execa.sync('termux-clipboard-set', opts);
-		} catch (err) {
-			handler(err);
-		}
-	},
-	pasteSync: opts => {
-		try {
-			return execa.sync('termux-clipboard-get', opts);
-		} catch (err) {
-			handler(err);
-		}
-	}
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/clipboardy/lib/windows.js":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-const path = __webpack_require__(0);
-const execa = __webpack_require__("./node_modules/execa/index.js");
-const arch = __webpack_require__("./node_modules/arch/index.js");
-
-// Binaries from: https://github.com/sindresorhus/win-clipboard
-const winBinPath = arch() === 'x64' ?
-	path.join(__dirname, '../fallbacks/windows/clipboard_x86_64.exe') :
-	path.join(__dirname, '../fallbacks/windows/clipboard_i686.exe');
-
-module.exports = {
-	copy: opts => execa(winBinPath, ['--copy'], opts),
-	paste: opts => execa.stdout(winBinPath, ['--paste'], opts),
-	copySync: opts => execa.sync(winBinPath, ['--copy'], opts),
-	pasteSync: opts => execa.sync(winBinPath, ['--paste'], opts)
 };
 
 
@@ -40627,7 +40376,7 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/electron-v54-darwin-x64/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try { global.process.dlopen(module, __dirname + '/' + "4eed9b0ef5a6aa389b90055c1111b43c.node"); } catch(e) {throw new Error('Cannot open ' + "4eed9b0ef5a6aa389b90055c1111b43c.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "4eed9b0ef5a6aa389b90055c1111b43c.node")); } catch(e) {throw new Error('Cannot open ' + "4eed9b0ef5a6aa389b90055c1111b43c.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -40635,7 +40384,7 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/electron-v54-win32-ia32/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try { global.process.dlopen(module, __dirname + '/' + "3bbf87da4265f77db4f132c88bb8977c.node"); } catch(e) {throw new Error('Cannot open ' + "3bbf87da4265f77db4f132c88bb8977c.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "3bbf87da4265f77db4f132c88bb8977c.node")); } catch(e) {throw new Error('Cannot open ' + "3bbf87da4265f77db4f132c88bb8977c.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -40643,7 +40392,7 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/electron-v54-win32-x64/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try { global.process.dlopen(module, __dirname + '/' + "a29ba847906fd6943335ea4ae07b0317.node"); } catch(e) {throw new Error('Cannot open ' + "a29ba847906fd6943335ea4ae07b0317.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "a29ba847906fd6943335ea4ae07b0317.node")); } catch(e) {throw new Error('Cannot open ' + "a29ba847906fd6943335ea4ae07b0317.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -40651,7 +40400,7 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/node-v57-darwin-x64/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try { global.process.dlopen(module, __dirname + '/' + "1c8b406e54922069fc353388550e3454.node"); } catch(e) {throw new Error('Cannot open ' + "1c8b406e54922069fc353388550e3454.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "1c8b406e54922069fc353388550e3454.node")); } catch(e) {throw new Error('Cannot open ' + "1c8b406e54922069fc353388550e3454.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -40659,7 +40408,7 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/node-v57-win32-ia32/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try { global.process.dlopen(module, __dirname + '/' + "ea485aa53a7eff87ead6c78b1545e049.node"); } catch(e) {throw new Error('Cannot open ' + "ea485aa53a7eff87ead6c78b1545e049.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "ea485aa53a7eff87ead6c78b1545e049.node")); } catch(e) {throw new Error('Cannot open ' + "ea485aa53a7eff87ead6c78b1545e049.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -40667,7 +40416,7 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/node-v57-win32-x64/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try { global.process.dlopen(module, __dirname + '/' + "36893d50e9414347700f3017eea572f4.node"); } catch(e) {throw new Error('Cannot open ' + "36893d50e9414347700f3017eea572f4.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "36893d50e9414347700f3017eea572f4.node")); } catch(e) {throw new Error('Cannot open ' + "36893d50e9414347700f3017eea572f4.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -98643,7 +98392,7 @@ function rmkidsSync (p, options) {
 /***/ "./node_modules/robotjs/build/Release/robotjs.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try { global.process.dlopen(module, __dirname + '/' + "6e76b9d8d821d215bf9747d574e64899.node"); } catch(e) {throw new Error('Cannot open ' + "6e76b9d8d821d215bf9747d574e64899.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "6e76b9d8d821d215bf9747d574e64899.node")); } catch(e) {throw new Error('Cannot open ' + "6e76b9d8d821d215bf9747d574e64899.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -110179,7 +109928,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__services__ = __webpack_require__("./src/main/services/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__userConfig__ = __webpack_require__("./src/main/userConfig.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_debug_once__ = __webpack_require__("./src/shared/debug.js");
-const{menu,mainWin,creatGistWin,searchGistWin,log,tray,initialize,zekrom,db,paths,launcher,upgrade}=__WEBPACK_IMPORTED_MODULE_5__services__["a" /* default */],defaultUserConfig=(()=>{var a=__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){const b=yield db.getAsync(paths.configPath);__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7_debug_once__["a" /* LMain */])("defaultUserConfig",__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_json_stringify___default()(b)),__WEBPACK_IMPORTED_MODULE_4_lodash___default.a.isEmpty(b)&&(yield db.set(paths.configPath,__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_assign___default()(zekrom.setting,{lang:null,openGistWin:"Option+]",openFloatingWin:"Alt+Space",autoLogin:"true"}))),zekrom.setSetting(b),b.openGistWin&&"Option+]"!==b.openGistWin&&creatGistWin.setShortcut(b.openGistWin),b.openFloatingWin&&"Alt+Space"!==b.openFloatingWin&&searchGistWin.setShortcut(b.openFloatingWin)});return function(){return a.apply(this,arguments)}})();process.on("unhandledRejection",(a,b)=>{log.error(`Unhandled Rejection at:, ${b}, 'reason:', ${a}`)}).on("uncaughtException",(a)=>{log.error(`uncaughtException$-${a}`)}),process.setMaxListeners(0),__WEBPACK_IMPORTED_MODULE_3_electron__["app"].on("ready",__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){launcher.setEnable(),yield db.setDataPath(paths.onceWorkPath),yield defaultUserConfig(),menu.init(),tray.init(),creatGistWin.run(),searchGistWin.run(),mainWin.create(),initialize.setEncode(),initialize.setGlobalPath(),yield zekrom.initZekrom(),yield zekrom.setSnippet(db)})).on("activate",()=>{null===mainWin.getWin()&&mainWin.create()}).on("window-all-closed",()=>{__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7_debug_once__["a" /* LMain */])("window-all-closed")}).on("before-quit",__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){zekrom.iohook.unload(),yield zekrom.unloadZekrom(!0),yield tray.destroy()})),global.services=__WEBPACK_IMPORTED_MODULE_5__services__["a" /* default */],global.config=__WEBPACK_IMPORTED_MODULE_6__userConfig__["a" /* default */],global.db=db,global.zekrom=zekrom,global.upgrade=upgrade;
+const{menu,mainWin,creatGistWin,searchGistWin,log,tray,initialize,zekrom,db,paths,launcher,upgrade}=__WEBPACK_IMPORTED_MODULE_5__services__["a" /* default */],defaultUserConfig=(()=>{var a=__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){const b=yield db.getAsync(paths.configPath);__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7_debug_once__["a" /* LMain */])("defaultUserConfig",__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_json_stringify___default()(b)),__WEBPACK_IMPORTED_MODULE_4_lodash___default.a.isEmpty(b)&&(yield db.set(paths.configPath,__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_assign___default()(zekrom.setting,{lang:null,openGistWin:"Option+]",openFloatingWin:"Alt+Space",autoLogin:"true"}))),zekrom.setSetting(b),b.openGistWin&&"Option+]"!==b.openGistWin&&creatGistWin.setShortcut(b.openGistWin),b.openFloatingWin&&"Alt+Space"!==b.openFloatingWin&&searchGistWin.setShortcut(b.openFloatingWin)});return function(){return a.apply(this,arguments)}})();process.on("unhandledRejection",(a,b)=>{log.error(`Unhandled Rejection at:, ${__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_json_stringify___default()(b)}, 'reason:', ${a}`)}).on("uncaughtException",(a)=>{log.error(`uncaughtException$-${a}`)}),process.setMaxListeners(0),__WEBPACK_IMPORTED_MODULE_3_electron__["app"].on("ready",__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){launcher.setEnable(),yield db.setDataPath(paths.onceWorkPath),yield defaultUserConfig(),menu.init(),tray.init(),creatGistWin.run(),searchGistWin.run(),mainWin.create(),initialize.setEncode(),initialize.setGlobalPath(),yield zekrom.initZekrom(),yield zekrom.setSnippet(db)})).on("activate",()=>{null===mainWin.getWin()&&mainWin.create()}).on("window-all-closed",()=>{__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7_debug_once__["a" /* LMain */])("window-all-closed")}).on("before-quit",__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){zekrom.iohook.unload(),yield zekrom.unloadZekrom(!0),yield tray.destroy()})),global.services=__WEBPACK_IMPORTED_MODULE_5__services__["a" /* default */],global.config=__WEBPACK_IMPORTED_MODULE_6__userConfig__["a" /* default */],global.db=db,global.zekrom=zekrom,global.upgrade=upgrade;
 
 /***/ }),
 
@@ -110454,7 +110203,8 @@ let tray,projMenu=[];const macIconPath=__webpack_require__.i(__WEBPACK_IMPORTED_
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_os___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9_os__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_fs_extra__ = __webpack_require__("./node_modules/fs-extra/lib/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_fs_extra___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10_fs_extra__);
-class Upgrade{constructor(){this.createDownload=(()=>{var a=__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*({config:b,path:c,filename:d,timeout:e=3e3}){return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a(function(f,g){__WEBPACK_IMPORTED_MODULE_3_download___default()(b,c,{timeout:e,filename:d}).then(function(){f("done!")}).catch(function(h){g(h.message)})})});return function(){return a.apply(this,arguments)}})(),this.rawDownload="https://raw.githubusercontent.com/oncework/hot-release/master/",this.updateList=[],this.nextVersion="",this.isAuto=!0,this.downloadFiles=[],this.mvFiles=[]}isUpdate(a){return 0<__WEBPACK_IMPORTED_MODULE_8_compare_versions___default()(a,__WEBPACK_IMPORTED_MODULE_4__paths__["appVersion"])}fetchUpdateList(){var a=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){a.downloadFiles=[],a.mvFiles=[];const b=`${a.rawDownload}/upgrade.json`;yield a.createDownload({config:b,path:`${__WEBPACK_IMPORTED_MODULE_4__paths__["appPath"]}`,filename:"upgrade.json"});const c=__WEBPACK_IMPORTED_MODULE_7_jsonfile___default.a.readFileSync(__WEBPACK_IMPORTED_MODULE_5_path___default.a.join(__WEBPACK_IMPORTED_MODULE_4__paths__["appPath"],"upgrade.json"));if(c&&c.manifest&&a.isUpdate(c.version)){const d=c.manifest.filter(function(f){return 0<__WEBPACK_IMPORTED_MODULE_8_compare_versions___default()(f.version,__WEBPACK_IMPORTED_MODULE_4__paths__["appVersion"])});console.log("targetList",__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify___default()(d));const e=[];return d.forEach(function(f){f.file.forEach(function(g){e.push(`${a.rawDownload}${g}`)})}),console.log("tempFileName",__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify___default()(e)),a.updateList=__WEBPACK_IMPORTED_MODULE_6_lodash___default.a.uniq(e),a.nextVersion=c.version,a.downloadList(),{diffVersion:__WEBPACK_IMPORTED_MODULE_8_compare_versions___default()(c.version,__WEBPACK_IMPORTED_MODULE_4__paths__["appVersion"]),readme:d[0].detail,downloadFiles:a.downloadFiles}}return{diffVersion:0}})()}downloadList(){__WEBPACK_IMPORTED_MODULE_6_lodash___default.a.isEmpty(this.updateList)||this.updateList.forEach((a)=>{const b=a.split(this.rawDownload)[1].split("/"),c=b.pop(),d=__WEBPACK_IMPORTED_MODULE_5_path___default.a.join(__WEBPACK_IMPORTED_MODULE_4__paths__["appPath"],`../${b.join("/")}`),e=__WEBPACK_IMPORTED_MODULE_5_path___default.a.join(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_9_os__["tmpdir"])(),`work.once/${b.join("/")}`);this.downloadFiles.push({item:a,tempPath:e,realFilename:c}),this.mvFiles.push({tempPath:`${e}/${c}`,realPath:`${d}/${c}`})})}moveFiles(){__WEBPACK_IMPORTED_MODULE_6_lodash___default.a.isEmpty(this.mvFiles)||(this.mvFiles.forEach((()=>{var a=__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(b){yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_10_fs_extra__["move"])(b.tempPath,b.realPath,{overwrite:!0})});return function(){return a.apply(this,arguments)}})()),this.updateVersion(this.nextVersion)),this.downloadFiles=[],this.mvFiles=[]}updateVersion(a){const b=__WEBPACK_IMPORTED_MODULE_5_path___default.a.join(__WEBPACK_IMPORTED_MODULE_4__paths__["appPath"],"package.json"),c=__WEBPACK_IMPORTED_MODULE_7_jsonfile___default.a.readFileSync(b);c.version=a,__WEBPACK_IMPORTED_MODULE_7_jsonfile___default.a.writeFileSync(b,c,{spaces:2})}}/* harmony default export */ __webpack_exports__["a"] = (new Upgrade);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_shared_once__ = __webpack_require__("./src/shared/index.js");
+class Upgrade{constructor(){this.createDownload=(()=>{var a=__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*({config:b,path:c,filename:d,timeout:e=3e3}){return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a(function(f,g){__WEBPACK_IMPORTED_MODULE_3_download___default()(b,c,{timeout:e,filename:d}).then(function(){f("done!")}).catch(function(h){g(h.message)})})});return function(){return a.apply(this,arguments)}})(),this.rawDownload=`https://raw.githubusercontent.com/oncework/hot-release/${__WEBPACK_IMPORTED_MODULE_11_shared_once__["b" /* isMac */]?"master":"win-7"}/`,this.updateList=[],this.nextVersion="",this.isAuto=!0,this.downloadFiles=[],this.mvFiles=[]}isUpdate(a){return 0<__WEBPACK_IMPORTED_MODULE_8_compare_versions___default()(a,__WEBPACK_IMPORTED_MODULE_4__paths__["appVersion"])}fetchUpdateList(){var a=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){a.downloadFiles=[],a.mvFiles=[];const b=`${a.rawDownload}/upgrade.json`;yield a.createDownload({config:b,path:`${__WEBPACK_IMPORTED_MODULE_4__paths__["appPath"]}`,filename:"upgrade.json"});const c=__WEBPACK_IMPORTED_MODULE_7_jsonfile___default.a.readFileSync(__WEBPACK_IMPORTED_MODULE_5_path___default.a.join(__WEBPACK_IMPORTED_MODULE_4__paths__["appPath"],"upgrade.json"));if(c&&c.manifest&&a.isUpdate(c.version)){const d=c.manifest.filter(function(f){return 0<__WEBPACK_IMPORTED_MODULE_8_compare_versions___default()(f.version,__WEBPACK_IMPORTED_MODULE_4__paths__["appVersion"])});console.log("targetList",__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify___default()(d));const e=[];return d.forEach(function(f){f.file.forEach(function(g){e.push(`${a.rawDownload}${g}`)})}),console.log("tempFileName",__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify___default()(e)),a.updateList=__WEBPACK_IMPORTED_MODULE_6_lodash___default.a.uniq(e),a.nextVersion=c.version,a.downloadList(),{diffVersion:__WEBPACK_IMPORTED_MODULE_8_compare_versions___default()(c.version,__WEBPACK_IMPORTED_MODULE_4__paths__["appVersion"]),readme:d[0].detail,downloadFiles:a.downloadFiles}}return{diffVersion:0}})()}downloadList(){__WEBPACK_IMPORTED_MODULE_6_lodash___default.a.isEmpty(this.updateList)||this.updateList.forEach((a)=>{const b=a.split(this.rawDownload)[1].split("/"),c=b.pop(),d=__WEBPACK_IMPORTED_MODULE_5_path___default.a.join(__WEBPACK_IMPORTED_MODULE_4__paths__["appPath"],`../${b.join("/")}`),e=__WEBPACK_IMPORTED_MODULE_5_path___default.a.join(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_9_os__["tmpdir"])(),`work.once/${b.join("/")}`);this.downloadFiles.push({item:a,tempPath:e,realFilename:c}),this.mvFiles.push({tempPath:`${e}/${c}`,realPath:`${d}/${c}`})})}moveFiles(){__WEBPACK_IMPORTED_MODULE_6_lodash___default.a.isEmpty(this.mvFiles)||(this.mvFiles.forEach((()=>{var a=__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(b){yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_10_fs_extra__["move"])(b.tempPath,b.realPath,{overwrite:!0})});return function(){return a.apply(this,arguments)}})()),this.updateVersion(this.nextVersion)),this.downloadFiles=[],this.mvFiles=[]}updateVersion(a){const b=__WEBPACK_IMPORTED_MODULE_5_path___default.a.join(__WEBPACK_IMPORTED_MODULE_4__paths__["appPath"],"package.json"),c=__WEBPACK_IMPORTED_MODULE_7_jsonfile___default.a.readFileSync(b);c.version=a,__WEBPACK_IMPORTED_MODULE_7_jsonfile___default.a.writeFileSync(b,c,{spaces:2})}}/* harmony default export */ __webpack_exports__["a"] = (new Upgrade);
 
 /***/ }),
 
@@ -110543,7 +110293,7 @@ const mainWin=new __WEBPACK_IMPORTED_MODULE_0__WinManager__["a" /* default */];/
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_debug_once__ = __webpack_require__("./src/shared/debug.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__defaultWinOptions__ = __webpack_require__("./src/main/services/windowManager/defaultWinOptions.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__zekrom__ = __webpack_require__("./src/main/services/zekrom/index.js");
-var _Mathceil=Math.ceil;class searchGistWin{constructor(){this.endpoint=`#/search`,this.win=null,this.init=!0,this.defaultShortcut="Alt+Space"}create(){const a=500,b=601;let c=__WEBPACK_IMPORTED_MODULE_1_electron__["screen"].getPrimaryDisplay().bounds,d=_Mathceil(c.x+(c.width-a)/2),e=_Mathceil(c.y+(c.height-b)/2);this.win=new __WEBPACK_IMPORTED_MODULE_1_electron__["BrowserWindow"]({width:a,height:b,minWidth:500,minHeight:600,x:d,y:e,backgroundColor:"alpha(opacity=0)",disableAutoHideCursor:!0,resizable:!1,title:"searchGistWin",type:"splash",frame:!1,skipTaskbar:!0,autoHideMenuBar:!0,transparent:!0,alwaysOnTop:!0,toolbar:!1}),this.win.setVisibleOnAllWorkspaces(!0),this.win.setFullScreenable(!1),__WEBPACK_IMPORTED_MODULE_3_shared_once__["a" /* isDev */]?this.win.loadURL(`${__WEBPACK_IMPORTED_MODULE_5__defaultWinOptions__["a" /* devWebUrl */]}${this.endpoint}`):this.win.loadURL(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_url__["format"])({pathname:`${__WEBPACK_IMPORTED_MODULE_5__defaultWinOptions__["b" /* prodStaticUrl */]}`,protocol:"file:",hash:`${this.endpoint}`})),__WEBPACK_IMPORTED_MODULE_1_electron__["globalShortcut"].register("CmdOrCtrl+Shift+6",()=>{this.win.webContents.toggleDevTools()}),this.win.once("ready-to-show",()=>{this.win.setPosition(-900,-900),this.win.show()}),this.registryWin(),this.win.on("show",()=>{this.init&&this.win.hide(),this.init=!1}),this.win.on("closed",()=>{this.win=null}),this.win.webContents.on("crashed",()=>this.win.reload())}run(){this.create(),__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_debug_once__["c" /* LSearchGistWin */])("\u8BF7\u6C42snippetCreateWindow\u5730\u5740",this.endpoint)}setShortcut(a){this.defaultShortcut=a}registryWin(a){if(a)try{__WEBPACK_IMPORTED_MODULE_1_electron__["globalShortcut"].unregister(this.defaultShortcut)}catch(b){__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_debug_once__["c" /* LSearchGistWin */])(`registryWin: ${__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify___default()(b.message)}`)}this.defaultShortcut=a||this.defaultShortcut,console.log("registryWin",__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify___default()(a));try{__WEBPACK_IMPORTED_MODULE_1_electron__["globalShortcut"].register(a||this.defaultShortcut,()=>{this.win?(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_debug_once__["c" /* LSearchGistWin */])(this.win.isVisible()),this.win.isVisible()?this.win.hide():(this.win.center(),this.show())):this.create()})}catch(b){console.log("registryWin",b)}}clear(){this.win.webContents.session.clearStorageData([],()=>{}),this.win.destroy()}close(){this.win.hide()}onFocus(a){this.win.on("focus",()=>{a()})}show(){this.win.show()}minimize(){this.win.minimize()}toggleMaximize(){const a=this.win.isMaximized();return a?this.win.unmaximize():this.win.maximize(),!a}}/* harmony default export */ __webpack_exports__["a"] = (new searchGistWin);
+var _Mathceil=Math.ceil;class searchGistWin{constructor(){this.endpoint=`#/search`,this.win=null,this.init=!0,this.defaultShortcut="Alt+Space"}create(){const a=500,b=601;let c=__WEBPACK_IMPORTED_MODULE_1_electron__["screen"].getPrimaryDisplay().bounds,d=_Mathceil(c.x+(c.width-a)/2),e=_Mathceil(c.y+(c.height-b)/2);this.win=new __WEBPACK_IMPORTED_MODULE_1_electron__["BrowserWindow"]({width:a,height:b,minWidth:500,minHeight:600,x:d,y:e,disableAutoHideCursor:!0,resizable:!1,title:"searchGistWin",type:"splash",frame:!1,skipTaskbar:!0,autoHideMenuBar:!0,transparent:!0,alwaysOnTop:!0,toolbar:!1,show:!1}),this.win.setVisibleOnAllWorkspaces(!0),this.win.setFullScreenable(!1),__WEBPACK_IMPORTED_MODULE_3_shared_once__["a" /* isDev */]?this.win.loadURL(`${__WEBPACK_IMPORTED_MODULE_5__defaultWinOptions__["a" /* devWebUrl */]}${this.endpoint}`):this.win.loadURL(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_url__["format"])({pathname:`${__WEBPACK_IMPORTED_MODULE_5__defaultWinOptions__["b" /* prodStaticUrl */]}`,protocol:"file:",hash:`${this.endpoint}`})),__WEBPACK_IMPORTED_MODULE_1_electron__["globalShortcut"].register("CmdOrCtrl+Shift+6",()=>{this.win.webContents.toggleDevTools()}),this.win.once("ready-to-show",()=>{this.win.setPosition(-900,-900),this.win.show()}),this.registryWin(),this.win.on("show",()=>{this.init&&this.win.hide(),this.init=!1}),this.win.on("closed",()=>{this.win=null}),this.win.webContents.on("crashed",()=>this.win.reload())}run(){this.create(),__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_debug_once__["c" /* LSearchGistWin */])("\u8BF7\u6C42snippetCreateWindow\u5730\u5740",this.endpoint)}setShortcut(a){this.defaultShortcut=a}registryWin(a){if(a)try{__WEBPACK_IMPORTED_MODULE_1_electron__["globalShortcut"].unregister(this.defaultShortcut)}catch(b){__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_debug_once__["c" /* LSearchGistWin */])(`registryWin: ${__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify___default()(b.message)}`)}this.defaultShortcut=a||this.defaultShortcut,console.log("registryWin",__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify___default()(a));try{__WEBPACK_IMPORTED_MODULE_1_electron__["globalShortcut"].register(a||this.defaultShortcut,()=>{this.win?(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_debug_once__["c" /* LSearchGistWin */])(this.win.isVisible()),this.win.isVisible()?this.win.hide():(this.win.center(),this.show())):this.create()})}catch(b){console.log("registryWin",b)}}clear(){this.win.webContents.session.clearStorageData([],()=>{}),this.win.destroy()}close(){this.win.hide()}onFocus(a){this.win.on("focus",()=>{a()})}show(){this.win.show()}minimize(){this.win.minimize()}toggleMaximize(){const a=this.win.isMaximized();return a?this.win.unmaximize():this.win.maximize(),!a}}/* harmony default export */ __webpack_exports__["a"] = (new searchGistWin);
 
 /***/ }),
 
@@ -110564,13 +110314,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__runScript__ = __webpack_require__("./src/main/services/zekrom/runScript.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__clipboard__ = __webpack_require__("./src/main/services/zekrom/clipboard.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__platform__ = __webpack_require__("./src/main/services/zekrom/platform.js");
-var _this=this;const PASTE=`tell application "System Events" to keystroke "v" using command down`;
+const PASTE=`tell application "System Events" to keystroke "v" using command down`;
 /* harmony export (immutable) */ __webpack_exports__["PASTE"] = PASTE;
-const applescriptCopy=(()=>{var a=__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_asyncToGenerator___default()(function*(b){yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__clipboard__["a" /* setToClipboard */])(b)});return function(){return a.apply(this,arguments)}})();
+const applescriptCopy=(a)=>{__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__clipboard__["a" /* setToClipboard */])(a)};
 /* harmony export (immutable) */ __webpack_exports__["applescriptCopy"] = applescriptCopy;
 const applescriptPaste=(()=>{var a=__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_asyncToGenerator___default()(function*(){const b=yield __WEBPACK_IMPORTED_MODULE_1__runScript__["default"].applescript(PASTE);return b});return function(){return a.apply(this,arguments)}})();
 /* harmony export (immutable) */ __webpack_exports__["applescriptPaste"] = applescriptPaste;
-const switchTab=(()=>{var a=__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_asyncToGenerator___default()(function*(b){const c=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__clipboard__["b" /* getFromClipboard */])();yield applescriptCopy(b),__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__platform__["a" /* isMac */])()?applescriptPaste():(yield _this.robot.tap("tab","COMMAND"),yield _this.robot.tap("V","CONTROL")),setTimeout(function(){applescriptCopy(c)},500)});return function(){return a.apply(this,arguments)}})();
+const switchTab=(()=>{var a=__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_asyncToGenerator___default()(function*(b,c){const d=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__clipboard__["b" /* getFromClipboard */])();yield applescriptCopy(b),__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__platform__["a" /* isMac */])()?applescriptPaste():(c.robot.tap("TAB","ALT"),c.robot.tap("TAB","ALT"),setTimeout(function(){c.robot.tap("V","CONTROL")},50)),setTimeout(function(){applescriptCopy(d)},500)});return function(){return a.apply(this,arguments)}})();
 /* harmony export (immutable) */ __webpack_exports__["switchTab"] = switchTab;
 
 
@@ -110580,11 +110330,11 @@ const switchTab=(()=>{var a=__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_as
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_clipboardy__ = __webpack_require__("./node_modules/clipboardy/index.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_clipboardy___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_clipboardy__);
-const getFromClipboard=()=>{return __WEBPACK_IMPORTED_MODULE_0_clipboardy___default.a.readSync()};
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_electron__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_electron___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_electron__);
+const getFromClipboard=()=>{return __WEBPACK_IMPORTED_MODULE_0_electron__["clipboard"].readText('selection')};
 /* harmony export (immutable) */ __webpack_exports__["b"] = getFromClipboard;
-const setToClipboard=(a)=>{__WEBPACK_IMPORTED_MODULE_0_clipboardy___default.a.writeSync(a)};
+const setToClipboard=(a)=>{__WEBPACK_IMPORTED_MODULE_0_electron__["clipboard"].clear(),__WEBPACK_IMPORTED_MODULE_0_electron__["clipboard"].writeText(a,'selection')};
 /* harmony export (immutable) */ __webpack_exports__["a"] = setToClipboard;
 
 
@@ -110674,12 +110424,12 @@ const log=__WEBPACK_IMPORTED_MODULE_22_debug___default()("zekrom:Iohook");class 
           "name": "babel-preset-es2015",
           "version": "^6.24.1"
         }
-      ]`)),b=__WEBPACK_IMPORTED_MODULE_9_jsonfile___default.a.readFileSync(`${a.workspace}/npm.libs.json`),b})()}setWorkspace(){this.workspace=null}setTriggerList(a){this.triggerList=JSON.parse(__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_json_stringify___default()(a))}recordAbbr(a,b){if(a===this.setting.tapRemove)return void this.abbreviation.pop();let c=b?__WEBPACK_IMPORTED_MODULE_21__keycode__["a" /* default */].validRecordShift[a]:__WEBPACK_IMPORTED_MODULE_21__keycode__["a" /* default */].validRecord[a];const d=this.abbreviation.join("");if(log("curr abbr: ",d),!__WEBPACK_IMPORTED_MODULE_7_lodash__["isEmpty"](d)){const e=__WEBPACK_IMPORTED_MODULE_7_lodash__["find"](this.triggerList,["abbr",d]);if(log("curr matchAbbr: ",e),this.isTrigger(a)&&!__WEBPACK_IMPORTED_MODULE_7_lodash__["isNil"](e))return this.resetCursorNext(),this.trigger(e,a)}return __WEBPACK_IMPORTED_MODULE_7_lodash__["isEmpty"](c)?void this.resetAbbr():void this.abbreviation.push(c)}resetAbbr(){this.abbreviation=[]}resetCursorNext(){this.cursorNext=[]}isTrigger(a){return this.setting.triggerKey.includes(a+"")}parseContent(a){return a=this.replaceClipboard(a),a=this.replaceCursor(a),a}replaceClipboard(a){const b=a.split("\n"),c=[],d=b.length,e=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_17__clipboard__["b" /* getFromClipboard */])();for(let g,f=0;f<d;f++)g=b[f],g=g.replace(this.cursorClipboardRegex,e),c.push(g);return c.join("\n")}replaceCursor(a){const b=a.split("\n"),c=[],d=b.length;for(let f,e=0;e<d;e++)f=b[e],f=this.recordCursorPosition(f,e,d),c.push(f);return this.cursorNext=IoHook.relativeCursorPosition(this.cursorNext),c.join("\n")}recordCursorPosition(a,b,c){const d=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_19__utils__["a" /* indexes */])(a,this.fillIn.cursorPosition);a=a.replace(this.cursorRegex,"");const e=a.length;for(let f=0;f<d.length;f++){const g=d[f];log("recordCursorPosition position",g),log("recordCursorPosition contentLineMax",e),this.cursorNext.push({padUp:c-b-1,padLeft:e-g+f*this.fillIn.cursorPosition.length})}return log("recordCursorPosition",this.cursorNext),a}static relativeCursorPosition(a){const b=[a[0]];for(let c=1;c<a.length;c++)b.push({padUp:a[c].padUp-a[c-1].padUp,padLeft:a[c].padLeft});return b}triggerCursorByEditor(){if(!__WEBPACK_IMPORTED_MODULE_7_lodash__["isEmpty"](this.cursorNext)){const a=this.cursorNext[0];if(log("Begin cursorNextItem",a),a){if(0<a.padUp)for(let b=0;b<a.padUp;b++)log("Begin keyTap Up",b),this.robot.robot.keyTap("up");else{const b=Math.abs(a.padUp);log("Begin keyTap Down Max",b);for(let c=0;c<b;c++)log("Begin keyTap Down",c),this.robot.robot.keyTap("down")}__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_15__platform__["b" /* isWindows */])()?this.robot.tap("RIGHT","CONTROL"):this.robot.tap("RIGHT","COMMAND");for(let b=0;b<a.padLeft;b++)log("Begin keyTap Left",b),this.robot.robot.keyTap("left")}this.cursorNext.shift(),log("Rest cursorNext",this.cursorNext)}log("this.cursorNext empty")}abbrFileSync(a,b,c){const d=`${this.workspace}/abbr.${b}`;switch(a){case"plain":break;case"js":__WEBPACK_IMPORTED_MODULE_10_write___default.a.sync(d,`var oncework = {}; oncework.clipboard = decodeURIComponent(process.argv[2]);\n ${c}`);break;case"shell":__WEBPACK_IMPORTED_MODULE_10_write___default.a.sync(d,`
+      ]`)),b=__WEBPACK_IMPORTED_MODULE_9_jsonfile___default.a.readFileSync(`${a.workspace}/npm.libs.json`),b})()}setWorkspace(){this.workspace=null}setTriggerList(a){this.triggerList=JSON.parse(__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_json_stringify___default()(a))}recordAbbr(a,b){if(a===this.setting.tapRemove)return void this.abbreviation.pop();let c=b?__WEBPACK_IMPORTED_MODULE_21__keycode__["a" /* default */].validRecordShift[a]:__WEBPACK_IMPORTED_MODULE_21__keycode__["a" /* default */].validRecord[a];const d=this.abbreviation.join("");if(log("curr abbr: ",d),!__WEBPACK_IMPORTED_MODULE_7_lodash__["isEmpty"](d)){const e=__WEBPACK_IMPORTED_MODULE_7_lodash__["find"](this.triggerList,["abbr",d]);if(log("curr matchAbbr: ",e),this.isTrigger(a)&&!__WEBPACK_IMPORTED_MODULE_7_lodash__["isNil"](e))return this.resetCursorNext(),this.trigger(e,a)}return __WEBPACK_IMPORTED_MODULE_7_lodash__["isEmpty"](c)?void this.resetAbbr():void this.abbreviation.push(c)}resetAbbr(){this.abbreviation=[]}resetCursorNext(){this.cursorNext=[]}isTrigger(a){return this.setting.triggerKey.includes(a+"")}parseContent(a){return a=this.replaceClipboard(a),a=this.replaceCursor(a),a}replaceClipboard(a){const b=a.split("\n"),c=[],d=b.length,e=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_17__clipboard__["b" /* getFromClipboard */])();for(let g,f=0;f<d;f++)g=b[f],g=g.replace(this.cursorClipboardRegex,e),c.push(g);return c.join("\n")}replaceCursor(a){const b=a.split("\n"),c=[],d=b.length;for(let f,e=0;e<d;e++)f=b[e],f=this.recordCursorPosition(f,e,d),c.push(f);return this.cursorNext=IoHook.relativeCursorPosition(this.cursorNext),c.join("\n")}recordCursorPosition(a,b,c){const d=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_19__utils__["a" /* indexes */])(a,this.fillIn.cursorPosition);a=a.replace(this.cursorRegex,"");const e=a.length;for(let f=0;f<d.length;f++){const g=d[f];log("recordCursorPosition position",g),log("recordCursorPosition contentLineMax",e),this.cursorNext.push({padUp:c-b-1,padLeft:e-g+f*this.fillIn.cursorPosition.length})}return log("recordCursorPosition",this.cursorNext),a}static relativeCursorPosition(a){const b=[a[0]];for(let c=1;c<a.length;c++)b.push({padUp:a[c].padUp-a[c-1].padUp,padLeft:a[c].padLeft});return b}triggerCursorByEditor(){if(!__WEBPACK_IMPORTED_MODULE_7_lodash__["isEmpty"](this.cursorNext)){const a=this.cursorNext[0];if(log("Begin cursorNextItem",a),a){if(0<a.padUp)for(let b=0;b<a.padUp;b++)log("Begin keyTap Up",b),this.robot.robot.keyTap("up");else{const b=Math.abs(a.padUp);log("Begin keyTap Down Max",b);for(let c=0;c<b;c++)log("Begin keyTap Down",c),this.robot.robot.keyTap("down")}__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_15__platform__["b" /* isWindows */])()?this.robot.tap("END"):this.robot.tap("RIGHT","COMMAND");for(let b=0;b<a.padLeft;b++)log("Begin keyTap Left",b),this.robot.robot.keyTap("left")}this.cursorNext.shift(),log("Rest cursorNext",this.cursorNext)}log("this.cursorNext empty")}abbrFileSync(a,b,c){const d=__WEBPACK_IMPORTED_MODULE_4_path___default.a.join(this.workspace,"/",`abbr.${b}`);switch(a){case"plain":break;case"js":__WEBPACK_IMPORTED_MODULE_10_write___default.a.sync(d,`var oncework = {}; oncework.clipboard = decodeURIComponent(process.argv[2]);\n ${c}`);break;case"shell":__WEBPACK_IMPORTED_MODULE_10_write___default.a.sync(d,`
           #!/bin/sh
           alias decode='node -e "console.log(decodeURIComponent(process.argv[1]))"'
           onceworkClipboard=\`decode $1\`
           ${c}
-          `);break;case"python":__WEBPACK_IMPORTED_MODULE_10_write___default.a.sync(d,"\nimport sys\nfrom urlparse import unquote\nclass oncework:\n  clipboard = unquote(sys.argv[1])\n"+c+"\n");break;case"applescript":break;default:console.log("not match");}}compileResult(a,b,c,d,e){var f=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){let g=null;if(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_15__platform__["b" /* isWindows */])()&&("shell"===a||"applescript"===a))return"cannot support this feature in windows";switch(a){case"plain":g=f.parseContent(c||f.getContent(b,a,d,e));break;case"js":const h=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_17__clipboard__["b" /* getFromClipboard */])();g=yield __WEBPACK_IMPORTED_MODULE_18__runScript__["default"].js(`${f.workspace}/abbr.${b}`,"node",[__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_json_stringify___default()(encodeURIComponent(h))]);break;case"shell":const j=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_17__clipboard__["b" /* getFromClipboard */])();g=yield __WEBPACK_IMPORTED_MODULE_18__runScript__["default"].shell(`${f.workspace}/abbr.${b}`,"sh",[__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_json_stringify___default()(encodeURIComponent(j))]);break;case"python":if(!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_15__platform__["a" /* isMac */])()&&!__WEBPACK_IMPORTED_MODULE_12_path_exists___default.a.sync(f.setting.pythonPath)){g="Please set python path to oncework software config.";break}const l=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_17__clipboard__["b" /* getFromClipboard */])();g=yield __WEBPACK_IMPORTED_MODULE_18__runScript__["default"].python(`${f.workspace}/abbr.${b}`,{mode:"text",pythonOptions:["-u"],pythonPath:__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_15__platform__["a" /* isMac */])()?"python":__WEBPACK_IMPORTED_MODULE_4_path___default.a.join(f.setting.pythonPath,"python"),scriptPath:__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_15__platform__["a" /* isMac */])()?"/":null,args:[`${__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_json_stringify___default()(encodeURIComponent(l))}`]});break;case"applescript":g=yield __WEBPACK_IMPORTED_MODULE_18__runScript__["default"].applescript(c||f.getContent(b,a,d,e));break;default:g=f.parseContent(c||f.getContent(b,a,d,e));}return g})()}trigger(a,b){var c=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){if(log("trigger matchAbbrItem",a),!c.prohibitTrigger())return;const{abbr:d,name:e,env:f,label:g}=a;c.remove(d,b),c.resetCursorNext();const h=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_17__clipboard__["b" /* getFromClipboard */])();let j=yield c.compileResult(f,e,null,g,d);yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_14__applescript__["applescriptCopy"])(j),__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_15__platform__["a" /* isMac */])()?yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_14__applescript__["applescriptPaste"])():c.robot.tap("V","CONTROL"),__WEBPACK_IMPORTED_MODULE_7_lodash__["isEmpty"](c.setting.enableSound)||c.player.play(c.setting.soundList[c.setting.enableSound],{timeout:300},function(l){console.log(l)}),setTimeout(function(){__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_14__applescript__["applescriptCopy"])(h)},500),c.triggerCursorByEditor(),c.resetAbbr()})()}setMember(a){this.isMember=a}setUsageCounter(a){this.usageCounter=a}setToast(a){this.toast=a}prohibitTrigger(){return!!this.setting.enableAbbr&&(!!this.isMember||(0<this.usageCounter?(--this.usageCounter,__WEBPACK_IMPORTED_MODULE_7_lodash__["isFunction"](this.toast)&&this.toast(this.usageCounter),!0):(__WEBPACK_IMPORTED_MODULE_7_lodash__["isFunction"](this.toast)&&this.toast(this.usageCounter),!1)))}getContent(a,b,c,d){if(__WEBPACK_IMPORTED_MODULE_7_lodash__["isString"](a)){const e=a.split("_"),f=__WEBPACK_IMPORTED_MODULE_9_jsonfile___default.a.readFileSync(`${this.workspace}/snippet.${e[0]}.json`);if(f)for(let[g,h]of __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_entries___default()(f.files)){const j=__WEBPACK_IMPORTED_MODULE_20_query_string___default.a.parse(g);if(j.env===(b||void 0)&&j.abbr===(d||void 0)&&j.label===(c||void 0))return h.content}}}remove(a,b){let c=a.split("");for(let d=0;d<c.length;d++)this.robot.robot.keyTap("backspace");this.setting.triggerKey.includes(b+"")&&this.robot.robot.keyTap("backspace")}}/* harmony default export */ __webpack_exports__["default"] = (IoHook);
+          `);break;case"python":__WEBPACK_IMPORTED_MODULE_10_write___default.a.sync(d,"\nimport sys\nfrom urlparse import unquote\nclass oncework:\n  clipboard = unquote(sys.argv[1])\n"+c+"\n");break;case"applescript":break;default:console.log("not match");}}compileResult(a,b,c,d,e){var f=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){let g=null;if(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_15__platform__["b" /* isWindows */])()&&("shell"===a||"applescript"===a))return"Cannot support this feature in windows.";switch(a){case"plain":g=f.parseContent(c||f.getContent(b,a,d,e));break;case"js":const h=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_17__clipboard__["b" /* getFromClipboard */])();g=yield __WEBPACK_IMPORTED_MODULE_18__runScript__["default"].js(__WEBPACK_IMPORTED_MODULE_4_path___default.a.join(f.workspace,`/abbr.${b}`),"node",[__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_json_stringify___default()(encodeURIComponent(h))]);break;case"shell":const j=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_17__clipboard__["b" /* getFromClipboard */])();g=yield __WEBPACK_IMPORTED_MODULE_18__runScript__["default"].shell(__WEBPACK_IMPORTED_MODULE_4_path___default.a.join(f.workspace,`/abbr.${b}`),"sh",[__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_json_stringify___default()(encodeURIComponent(j))]);break;case"python":if(!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_15__platform__["a" /* isMac */])()&&!__WEBPACK_IMPORTED_MODULE_12_path_exists___default.a.sync(f.setting.pythonPath)){g="Please set python path to oncework software config.";break}const l=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_17__clipboard__["b" /* getFromClipboard */])();g=yield __WEBPACK_IMPORTED_MODULE_18__runScript__["default"].python(__WEBPACK_IMPORTED_MODULE_4_path___default.a.join(f.workspace,`/abbr.${b}`),{mode:"text",pythonOptions:["-u"],pythonPath:__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_15__platform__["a" /* isMac */])()?"python":__WEBPACK_IMPORTED_MODULE_4_path___default.a.join(f.setting.pythonPath,"python"),scriptPath:__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_15__platform__["a" /* isMac */])()?"/":null,args:[`${__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_json_stringify___default()(encodeURIComponent(l))}`]});break;case"applescript":g=yield __WEBPACK_IMPORTED_MODULE_18__runScript__["default"].applescript(c||f.getContent(b,a,d,e));break;default:g=f.parseContent(c||f.getContent(b,a,d,e));}return g})()}trigger(a,b){var c=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){if(log("trigger matchAbbrItem",a),!c.prohibitTrigger())return;const{abbr:d,name:e,env:f,label:g}=a;c.remove(d,b),c.resetCursorNext();const h=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_17__clipboard__["b" /* getFromClipboard */])();let j=yield c.compileResult(f,e,null,g,d);yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_14__applescript__["applescriptCopy"])(j),__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_15__platform__["a" /* isMac */])()?yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_14__applescript__["applescriptPaste"])():c.robot.tap("V","CONTROL"),setTimeout(function(){__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_14__applescript__["applescriptCopy"])(h)},200),__WEBPACK_IMPORTED_MODULE_7_lodash__["isEmpty"](c.setting.enableSound)||c.player.play(c.setting.soundList[c.setting.enableSound],{timeout:300},function(l){console.log(l)}),c.triggerCursorByEditor(),c.resetAbbr()})()}setMember(a){this.isMember=a}setUsageCounter(a){this.usageCounter=a}setToast(a){this.toast=a}prohibitTrigger(){return!!this.setting.enableAbbr&&(!!this.isMember||(0<this.usageCounter?(--this.usageCounter,__WEBPACK_IMPORTED_MODULE_7_lodash__["isFunction"](this.toast)&&this.toast(this.usageCounter),!0):(__WEBPACK_IMPORTED_MODULE_7_lodash__["isFunction"](this.toast)&&this.toast(this.usageCounter),!1)))}getContent(a,b,c,d){if(__WEBPACK_IMPORTED_MODULE_7_lodash__["isString"](a)){const e=a.split("_"),f=__WEBPACK_IMPORTED_MODULE_9_jsonfile___default.a.readFileSync(__WEBPACK_IMPORTED_MODULE_4_path___default.a.join(this.workspace,`/snippet.${e[0]}.json`));if(f)for(let[g,h]of __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_entries___default()(f.files)){const j=__WEBPACK_IMPORTED_MODULE_20_query_string___default.a.parse(g);if(j.env===(b||void 0)&&j.abbr===(d||void 0)&&j.label===(c||void 0))return h.content}}}remove(a,b){let c=a.split("");for(let d=0;d<c.length;d++)this.robot.robot.keyTap("backspace");this.setting.triggerKey.includes(b+"")&&this.robot.robot.keyTap("backspace")}}/* harmony default export */ __webpack_exports__["default"] = (IoHook);
 
 /***/ }),
 
