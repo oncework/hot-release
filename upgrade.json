@@ -1,7 +1,31 @@
 {
   "name": "oncework",
-  "version": "1.1.13",
+  "version": "1.2.0",
   "manifest": [
+    {
+      "version": "1.2.0",
+      "file": [
+        "app/assets/iconfont.css",
+        "app/assets/iconfont.eot",
+        "app/assets/iconfont.js",
+        "app/assets/iconfont.svg",
+        "app/assets/iconfont.ttf",
+        "app/assets/iconfont.woff",
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json",
+        "app/renderer/2a1000606c8d47000acf310d1251e840.png",
+        "app/renderer/9ace5f9e58b615ec72037de738c33316.png",
+        "app/renderer/9df5f53a671c9ba23f8a8687dee1c5ce.png",
+        "app/renderer/a76b87ad40e8206d94115538bbcd853e.png"
+      ],
+      "detail": [
+        "Add the welcome screen and instructions, and fix some operations."
+      ]
+    },
     {
       "version": "1.1.13",
       "file": [

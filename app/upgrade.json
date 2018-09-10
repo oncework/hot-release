@@ -1,7 +1,19 @@
 {
   "name": "oncework",
-  "version": "1.1.8",
+  "version": "1.1.13",
   "manifest": [
+    {
+      "version": "1.1.13",
+      "file": [
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Update more accurate functional description."
+      ]
+    },
     {
       "version": "1.1.8",
       "file": [
@@ -16,12 +28,18 @@
         "app/assets/iconfont.woff",
         "app/renderer/renderer.js"
       ],
-      "detail": ["Update editor font-family."]
+      "detail": [
+        "Update editor font-family."
+      ]
     },
     {
       "version": "1.1.6",
-      "file": ["app/renderer/renderer.js"],
-      "detail": ["Internationalization problem."]
+      "file": [
+        "app/renderer/renderer.js"
+      ],
+      "detail": [
+        "Internationalization problem."
+      ]
     },
     {
       "version": "1.1.5",
@@ -37,12 +55,18 @@
         "app/renderer/renderer.js",
         "app/renderer/style.css"
       ],
-      "detail": ["Add category management."]
+      "detail": [
+        "Add category management."
+      ]
     },
     {
       "version": "1.1.2",
-      "file": ["app/main.js"],
-      "detail": ["Test online hot upgrade"]
+      "file": [
+        "app/main.js"
+      ],
+      "detail": [
+        "Test online hot upgrade"
+      ]
     }
   ]
 }
