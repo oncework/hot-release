@@ -1,7 +1,20 @@
 {
   "name": "oncework",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "manifest": [
+    {
+      "version": "1.2.1",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Abbreviations that support special characters as fragments, such as: '!' , '@', '#', '$',' % ', '^', '&', '*', '(',') ', '_', '+' and '{','} ', ':', ''', '-', '|', '<' and '>', '?' ."
+      ]
+    },
     {
       "version": "1.2.0",
       "file": [
