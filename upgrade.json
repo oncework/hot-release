@@ -1,7 +1,19 @@
 {
   "name": "oncework",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "manifest": [
+    {
+      "version": "1.2.3",
+      "file": [
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Update the quick search experience and fix some bugs."
+      ]
+    },
     {
       "version": "1.2.2",
       "file": [

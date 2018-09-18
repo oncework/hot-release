@@ -1,7 +1,20 @@
 {
   "name": "oncework",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "manifest": [
+    {
+      "version": "1.2.2",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Optimize some functions and add Shared links."
+      ]
+    },
     {
       "version": "1.2.1",
       "file": [
