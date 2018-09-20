@@ -1,7 +1,26 @@
 {
   "name": "oncework",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "manifest": [
+    {
+      "version": "1.3.0",
+      "file": [
+        "app/assets/iconfont.css",
+        "app/assets/iconfont.eot",
+        "app/assets/iconfont.js",
+        "app/assets/iconfont.svg",
+        "app/assets/iconfont.ttf",
+        "app/assets/iconfont.woff",
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Adjust the main window's closing and maximum functionality and fix some bugs. Update at 2018-09-20 00:26:08, home."
+      ]
+    },
     {
       "version": "1.2.3",
       "file": [
