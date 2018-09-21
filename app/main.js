@@ -110711,13 +110711,17 @@ module.exports={"once.tray.quit":"Exit","once.tray.show":"Open Oncework","once.t
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_path___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_path__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_os__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_os___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_os__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_i18n_helper__ = __webpack_require__("./node_modules/i18n-helper/index.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_i18n_helper___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_i18n_helper__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__zh__ = __webpack_require__("./src/renderer/language/zh.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__zh___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__zh__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__en__ = __webpack_require__("./src/renderer/language/en.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__en___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__en__);
-const getLocalLanguage=()=>{const a=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_fs_extra__["readJsonSync"])(`${__WEBPACK_IMPORTED_MODULE_3_path___default.a.join(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_os__["homedir"])(),"Documents",__WEBPACK_IMPORTED_MODULE_2_shared_once__["a" /* isDev */]?"OnceWork-Dev":"OnceWork","gist.user.config.json")}`);return __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.isEmpty(a)?null:a.lang},lang=getLocalLanguage(),i18n=__WEBPACK_IMPORTED_MODULE_5_i18n_helper___default()("en"===lang?__WEBPACK_IMPORTED_MODULE_7__en___default.a:__WEBPACK_IMPORTED_MODULE_6__zh___default.a);/* harmony default export */ __webpack_exports__["a"] = (i18n);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_fs__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_fs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_fs__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_i18n_helper__ = __webpack_require__("./node_modules/i18n-helper/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_i18n_helper___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_i18n_helper__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__zh__ = __webpack_require__("./src/renderer/language/zh.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__zh___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__zh__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__en__ = __webpack_require__("./src/renderer/language/en.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__en___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__en__);
+const getLocalLanguage=()=>{const a=__WEBPACK_IMPORTED_MODULE_3_path___default.a.join(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_os__["homedir"])(),"Documents",__WEBPACK_IMPORTED_MODULE_2_shared_once__["a" /* isDev */]?"OnceWork-Dev":"OnceWork","gist.user.config.json");let b=null;return __WEBPACK_IMPORTED_MODULE_5_fs___default.a.existsSync(a)&&(b=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_fs_extra__["readJsonSync"])(a)),__WEBPACK_IMPORTED_MODULE_0_lodash___default.a.isEmpty(b)?null:b.lang};
+/* unused harmony export getLocalLanguage */
+const lang=getLocalLanguage(),i18n=__WEBPACK_IMPORTED_MODULE_6_i18n_helper___default()("en"===lang?__WEBPACK_IMPORTED_MODULE_8__en___default.a:__WEBPACK_IMPORTED_MODULE_7__zh___default.a);/* harmony default export */ __webpack_exports__["a"] = (i18n);
 
 /***/ }),
 
