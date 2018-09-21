@@ -1,7 +1,21 @@
 {
   "name": "oncework",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "manifest": [
+    {
+      "version": "1.4.0",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Optimize the style of the fragment menu. Increase the browsing function of the Gist site. Modify the interface description."
+      ]
+    },
     {
       "version": "1.3.0",
       "file": [
