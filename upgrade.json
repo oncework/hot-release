@@ -1,7 +1,26 @@
 {
   "name": "oncework",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "manifest": [
+    {
+      "version": "1.5.0",
+      "file": [
+        "app/assets/iconfont.css",
+        "app/assets/iconfont.eot",
+        "app/assets/iconfont.js",
+        "app/assets/iconfont.svg",
+        "app/assets/iconfont.ttf",
+        "app/assets/iconfont.woff",
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Support npm library for javascript. 😊😁😁"
+      ]
+    },
     {
       "version": "1.4.2",
       "file": [

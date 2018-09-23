@@ -208,7 +208,7 @@ exports.UndefinedParser = function() {
 /***/ "./node_modules/applescript/lib/applescript.js":
 /***/ (function(module, exports, __webpack_require__) {
 
-var spawn = __webpack_require__(6).spawn;
+var spawn = __webpack_require__(4).spawn;
 exports.Parsers = __webpack_require__("./node_modules/applescript/lib/applescript-parser.js");
 var parse = exports.Parsers.parse;
 
@@ -13347,7 +13347,7 @@ module.exports = fill
 
 "use strict";
 
-const url = __webpack_require__(5);
+const url = __webpack_require__(6);
 const getProxy = __webpack_require__("./node_modules/get-proxy/index.js");
 const isurl = __webpack_require__("./node_modules/isurl/index.js");
 const tunnelAgent = __webpack_require__("./node_modules/tunnel-agent/index.js");
@@ -13631,6 +13631,157 @@ function isObject(val) {
 
 /***/ }),
 
+/***/ "./node_modules/command-exists/index.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__("./node_modules/command-exists/lib/command-exists.js");
+
+
+/***/ }),
+
+/***/ "./node_modules/command-exists/lib/command-exists.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var exec = __webpack_require__(4).exec;
+var execSync = __webpack_require__(4).execSync;
+var fs = __webpack_require__(1);
+var access = fs.access;
+var accessSync = fs.accessSync;
+var constants = fs.constants || fs;
+
+var isUsingWindows = process.platform == 'win32'
+
+var fileNotExists = function(commandName, callback){
+    access(commandName, constants.F_OK,
+    function(err){
+        callback(!err);
+    });
+};
+
+var fileNotExistsSync = function(commandName){
+    try{
+        accessSync(commandName, constants.F_OK);
+        return false;
+    }catch(e){
+        return true;
+    }
+};
+
+var localExecutable = function(commandName, callback){
+    access(commandName, constants.F_OK | constants.X_OK,
+        function(err){
+        callback(null, !err);
+    });
+};
+
+var localExecutableSync = function(commandName){
+    try{
+        accessSync(commandName, constants.F_OK | constants.X_OK);
+        return true;
+    }catch(e){
+        return false;
+    }
+}
+
+var commandExistsUnix = function(commandName, cleanedCommandName, callback) {
+
+    fileNotExists(commandName, function(isFile){
+
+        if(!isFile){
+            var child = exec('command -v ' + cleanedCommandName +
+                  ' 2>/dev/null' +
+                  ' && { echo >&1 ' + cleanedCommandName + '; exit 0; }',
+                  function (error, stdout, stderr) {
+                      callback(null, !!stdout);
+                  });
+            return;
+        }
+
+        localExecutable(commandName, callback);
+    });
+
+}
+
+var commandExistsWindows = function(commandName, cleanedCommandName, callback) {
+  var child = exec('where ' + cleanedCommandName,
+    function (error) {
+      if (error !== null){
+        callback(null, false);
+      } else {
+        callback(null, true);
+      }
+    }
+  )
+}
+
+var commandExistsUnixSync = function(commandName, cleanedCommandName) {
+  if(fileNotExistsSync(commandName)){
+      try {
+        var stdout = execSync('command -v ' + cleanedCommandName +
+              ' 2>/dev/null' +
+              ' && { echo >&1 ' + cleanedCommandName + '; exit 0; }'
+              );
+        return !!stdout;
+      } catch (error) {
+        return false;
+      }
+  }
+  return localExecutableSync(commandName);
+}
+
+var commandExistsWindowsSync = function(commandName, cleanedCommandName, callback) {
+  try {
+      var stdout = execSync('where ' + cleanedCommandName, {stdio: []});
+      return !!stdout;
+  } catch (error) {
+      return false;
+  }
+}
+
+var cleanInput = function(s) {
+  if (/[^A-Za-z0-9_\/:=-]/.test(s)) {
+    s = "'"+s.replace(/'/g,"'\\''")+"'";
+    s = s.replace(/^(?:'')+/g, '') // unduplicate single-quote at the beginning
+      .replace(/\\'''/g, "\\'" ); // remove non-escaped single-quote if there are enclosed between 2 escaped
+  }
+  return s;
+}
+
+module.exports = function commandExists(commandName, callback) {
+  var cleanedCommandName = cleanInput(commandName);
+  if (!callback && typeof Promise !== 'undefined') {
+    return new Promise(function(resolve, reject){
+      commandExists(commandName, function(error, output) {
+        if (output) {
+          resolve(commandName);
+        } else {
+          reject(error);
+        }
+      });
+    });
+  }
+  if (isUsingWindows) {
+    commandExistsWindows(commandName, cleanedCommandName, callback);
+  } else {
+    commandExistsUnix(commandName, cleanedCommandName, callback);
+  }
+};
+
+module.exports.sync = function(commandName) {
+  var cleanedCommandName = cleanInput(commandName);
+  if (isUsingWindows) {
+    return commandExistsWindowsSync(commandName, cleanedCommandName);
+  } else {
+    return commandExistsUnixSync(commandName, cleanedCommandName);
+  }
+};
+
+
+/***/ }),
+
 /***/ "./node_modules/compare-versions/index.js":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13744,7 +13895,7 @@ var ProtoList = __webpack_require__("./node_modules/proto-list/proto-list.js")
   , fs = __webpack_require__(1)
   , ini = __webpack_require__("./node_modules/ini/ini.js")
   , EE = __webpack_require__(8).EventEmitter
-  , url = __webpack_require__(5)
+  , url = __webpack_require__(6)
   , http = __webpack_require__(9)
 
 var exports = module.exports = function () {
@@ -25618,7 +25769,7 @@ function objectToString(o) {
 "use strict";
 
 
-const cp = __webpack_require__(6);
+const cp = __webpack_require__(4);
 const parse = __webpack_require__("./node_modules/cross-spawn/lib/parse.js");
 const enoent = __webpack_require__("./node_modules/cross-spawn/lib/enoent.js");
 
@@ -26758,8 +26909,8 @@ module.exports = function (encodedURI) {
 
 "use strict";
 
-const PassThrough = __webpack_require__(4).PassThrough;
-const zlib = __webpack_require__(13);
+const PassThrough = __webpack_require__(5).PassThrough;
+const zlib = __webpack_require__(14);
 const mimicResponse = __webpack_require__("./node_modules/mimic-response/index.js");
 
 module.exports = response => {
@@ -26892,7 +27043,7 @@ module.exports = () => input => {
 
 "use strict";
 
-const zlib = __webpack_require__(13);
+const zlib = __webpack_require__(14);
 const decompressTar = __webpack_require__("./node_modules/decompress-tar/index.js");
 const fileType = __webpack_require__("./node_modules/file-type/index.js");
 const isStream = __webpack_require__("./node_modules/is-stream/index.js");
@@ -27187,7 +27338,7 @@ module.exports = function defineProperty(obj, prop, val) {
 
 const fs = __webpack_require__(1);
 const path = __webpack_require__(0);
-const url = __webpack_require__(5);
+const url = __webpack_require__(6);
 const caw = __webpack_require__("./node_modules/caw/index.js");
 const contentDisposition = __webpack_require__("./node_modules/content-disposition/index.js");
 const decompress = __webpack_require__("./node_modules/decompress/index.js");
@@ -27302,7 +27453,7 @@ module.exports = (uri, output, opts) => {
 "use strict";
 
 
-var stream = __webpack_require__(4);
+var stream = __webpack_require__(5);
 
 function DuplexWrapper(options, writable, readable) {
   if (typeof readable === "undefined") {
@@ -28728,7 +28879,7 @@ function logConsole(message, error) {
 
 var http  = __webpack_require__(9);
 var https = __webpack_require__(12);
-var url   = __webpack_require__(5);
+var url   = __webpack_require__(6);
 
 transport.client = { name: 'electron-application' };
 transport.depth  = 6;
@@ -29325,7 +29476,7 @@ module.exports = function (str) {
 
 "use strict";
 
-const childProcess = __webpack_require__(6);
+const childProcess = __webpack_require__(4);
 const util = __webpack_require__(3);
 const crossSpawn = __webpack_require__("./node_modules/cross-spawn/index.js");
 const stripEof = __webpack_require__("./node_modules/strip-eof/index.js");
@@ -29842,7 +29993,7 @@ function hasOwn(obj, key) {
 
 var fs = __webpack_require__(1);
 var util = __webpack_require__(3);
-var stream = __webpack_require__(4);
+var stream = __webpack_require__(5);
 var Readable = stream.Readable;
 var Writable = stream.Writable;
 var PassThrough = stream.PassThrough;
@@ -33373,7 +33524,7 @@ module.exports = () => {
 
 "use strict";
 
-const PassThrough = __webpack_require__(4).PassThrough;
+const PassThrough = __webpack_require__(5).PassThrough;
 
 module.exports = opts => {
 	opts = Object.assign({}, opts);
@@ -35937,8 +36088,8 @@ GlobSync.prototype._makeAbs = function (f) {
 const EventEmitter = __webpack_require__(8);
 const http = __webpack_require__(9);
 const https = __webpack_require__(12);
-const PassThrough = __webpack_require__(4).PassThrough;
-const urlLib = __webpack_require__(5);
+const PassThrough = __webpack_require__(5).PassThrough;
+const urlLib = __webpack_require__(6);
 const querystring = __webpack_require__(16);
 const duplexer3 = __webpack_require__("./node_modules/duplexer3/index.js");
 const isStream = __webpack_require__("./node_modules/is-stream/index.js");
@@ -36724,7 +36875,7 @@ function retry () {
 /***/ "./node_modules/graceful-fs/legacy-streams.js":
 /***/ (function(module, exports, __webpack_require__) {
 
-var Stream = __webpack_require__(4).Stream
+var Stream = __webpack_require__(5).Stream
 
 module.exports = legacy
 
@@ -39790,7 +39941,7 @@ module.exports = function (iconv) {
 
         // -- Readable -------------------------------------------------------------
         if (iconv.supportsStreams) {
-            var Readable = __webpack_require__(4).Readable;
+            var Readable = __webpack_require__(5).Readable;
 
             original.ReadableSetEncoding = Readable.prototype.setEncoding;
             Readable.prototype.setEncoding = function setEncoding(enc, options) {
@@ -39824,7 +39975,7 @@ module.exports = function (iconv) {
         Buffer.prototype.write = original.BufferWrite;
 
         if (iconv.supportsStreams) {
-            var Readable = __webpack_require__(4).Readable;
+            var Readable = __webpack_require__(5).Readable;
 
             Readable.prototype.setEncoding = original.ReadableSetEncoding;
             delete Readable.prototype.collect;
@@ -40005,7 +40156,7 @@ if (false) {
 
 
 var Buffer = __webpack_require__(11).Buffer,
-    Transform = __webpack_require__(4).Transform;
+    Transform = __webpack_require__(5).Transform;
 
 
 // == Exports ==================================================================
@@ -77447,12 +77598,12 @@ module.exports = function(fn) {
  * a request API compatible with window.fetch
  */
 
-var parse_url = __webpack_require__(5).parse;
-var resolve_url = __webpack_require__(5).resolve;
+var parse_url = __webpack_require__(6).parse;
+var resolve_url = __webpack_require__(6).resolve;
 var http = __webpack_require__(9);
 var https = __webpack_require__(12);
-var zlib = __webpack_require__(13);
-var stream = __webpack_require__(4);
+var zlib = __webpack_require__(14);
+var stream = __webpack_require__(5);
 
 var Body = __webpack_require__("./node_modules/node-fetch/lib/body.js");
 var Response = __webpack_require__("./node_modules/node-fetch/lib/response.js");
@@ -77727,7 +77878,7 @@ Fetch.Request = Request;
 
 var convert = __webpack_require__("./node_modules/encoding/lib/encoding.js").convert;
 var bodyStream = __webpack_require__("./node_modules/is-stream/index.js");
-var PassThrough = __webpack_require__(4).PassThrough;
+var PassThrough = __webpack_require__(5).PassThrough;
 var FetchError = __webpack_require__("./node_modules/node-fetch/lib/fetch-error.js");
 
 module.exports = Body;
@@ -78181,7 +78332,7 @@ Headers.prototype.raw = function() {
  * Request class contains server only options
  */
 
-var parse_url = __webpack_require__(5).parse;
+var parse_url = __webpack_require__(6).parse;
 var Headers = __webpack_require__("./node_modules/node-fetch/lib/headers.js");
 var Body = __webpack_require__("./node_modules/node-fetch/lib/body.js");
 
@@ -78728,8 +78879,8 @@ module.exports = Conf;
 	// Generated with `lib/make.js`
 	
 	const path = __webpack_require__(0);
-	const Stream = __webpack_require__(4).Stream;
-	const url = __webpack_require__(5);
+	const Stream = __webpack_require__(5).Stream;
+	const url = __webpack_require__(6);
 
 	const Umask = () => {};
 	const getLocalAddresses = () => [];
@@ -79616,7 +79767,7 @@ module.exports.TimeoutError = TimeoutError;
 
 
 var qs = __webpack_require__(16)
-  , url = __webpack_require__(5)
+  , url = __webpack_require__(6)
   , xtend = __webpack_require__("./node_modules/xtend/immutable.js");
 
 function hasRel(x) {
@@ -79740,6 +79891,56 @@ module.exports = opts => {
 
 	return Object.keys(env).find(x => x.toUpperCase() === 'PATH') || 'Path';
 };
+
+
+/***/ }),
+
+/***/ "./node_modules/path-type/index.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+const fs = __webpack_require__(1);
+const pify = __webpack_require__("./node_modules/pify/index.js");
+
+function type(fn, fn2, fp) {
+	if (typeof fp !== 'string') {
+		return Promise.reject(new TypeError(`Expected a string, got ${typeof fp}`));
+	}
+
+	return pify(fs[fn])(fp)
+		.then(stats => stats[fn2]())
+		.catch(err => {
+			if (err.code === 'ENOENT') {
+				return false;
+			}
+
+			throw err;
+		});
+}
+
+function typeSync(fn, fn2, fp) {
+	if (typeof fp !== 'string') {
+		throw new TypeError(`Expected a string, got ${typeof fp}`);
+	}
+
+	try {
+		return fs[fn](fp)[fn2]();
+	} catch (err) {
+		if (err.code === 'ENOENT') {
+			return false;
+		}
+
+		throw err;
+	}
+}
+
+exports.file = type.bind(null, 'stat', 'isFile');
+exports.dir = type.bind(null, 'stat', 'isDirectory');
+exports.symlink = type.bind(null, 'lstat', 'isSymbolicLink');
+exports.fileSync = typeSync.bind(null, 'statSync', 'isFile');
+exports.dirSync = typeSync.bind(null, 'statSync', 'isDirectory');
+exports.symlinkSync = typeSync.bind(null, 'lstatSync', 'isSymbolicLink');
 
 
 /***/ }),
@@ -79891,7 +80092,7 @@ webpackContext.id = "./node_modules/pidtree/lib recursive ^\\.\\/.*$";
 "use strict";
 
 
-var spawn = __webpack_require__(6).spawn;
+var spawn = __webpack_require__(4).spawn;
 
 /**
  * Spawn a binary and read its stdout.
@@ -80301,7 +80502,7 @@ module.exports = (obj, opts) => {
 
 var fs               = __webpack_require__(1)
   , findExec         = __webpack_require__("./node_modules/find-exec/index.js")
-  , spawn            = __webpack_require__(6).spawn
+  , spawn            = __webpack_require__(4).spawn
   , players          = [
                         'mplayer',
                         'afplay',
@@ -80814,7 +81015,7 @@ ProtoList.prototype =
 var EventEmitter = __webpack_require__(8).EventEmitter;
 var path = __webpack_require__(0);
 var util = __webpack_require__(3);
-var spawn = __webpack_require__(6).spawn;
+var spawn = __webpack_require__(4).spawn;
 
 function toArray(source) {
     if (typeof source === 'undefined' || source === null) {
@@ -97342,7 +97543,7 @@ module.exports = {
 /***/ "./node_modules/readable-stream/lib/internal/streams/stream.js":
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(4);
+module.exports = __webpack_require__(5);
 
 
 /***/ }),
@@ -97350,7 +97551,7 @@ module.exports = __webpack_require__(4);
 /***/ "./node_modules/readable-stream/readable.js":
 /***/ (function(module, exports, __webpack_require__) {
 
-var Stream = __webpack_require__(4);
+var Stream = __webpack_require__(5);
 if (process.env.READABLE_STREAM === 'disable' && Stream) {
   module.exports = Stream;
   exports = module.exports = Stream.Readable;
@@ -101340,7 +101541,7 @@ var https = __webpack_require__(12)
 var once = __webpack_require__("./node_modules/once/once.js")
 var querystring = __webpack_require__(16)
 var decompressResponse = __webpack_require__("./node_modules/decompress-response/index.js") // excluded from browser build
-var url = __webpack_require__(5)
+var url = __webpack_require__(6)
 
 function simpleGet (opts, cb) {
   opts = typeof opts === 'string' ? {url: opts} : Object.assign({}, opts)
@@ -102181,7 +102382,7 @@ module.exports = (function () {
 (function() {
   var child_process;
 
-  child_process = __webpack_require__(6);
+  child_process = __webpack_require__(4);
 
   module.exports = function(cmd, max_wait, options) {
     var err, orig_write, status, stderr, stdout, t0;
@@ -102288,7 +102489,7 @@ module.exports = (function () {
 (function() {
   var child_process, create_pipes, proxy, read_pipes, timeout;
 
-  child_process = __webpack_require__(6);
+  child_process = __webpack_require__(4);
 
   create_pipes = __webpack_require__("./node_modules/sync-exec/js/lib/create-pipes.js");
 
@@ -103165,7 +103366,7 @@ module.exports = Pack
 /***/ "./node_modules/through/index.js":
 /***/ (function(module, exports, __webpack_require__) {
 
-var Stream = __webpack_require__(4)
+var Stream = __webpack_require__(5)
 
 // through
 //
@@ -104331,7 +104532,7 @@ module.exports = str => {
 
 "use strict";
 
-var url = __webpack_require__(5);
+var url = __webpack_require__(6);
 var prependHttp = __webpack_require__("./node_modules/prepend-http/index.js");
 
 module.exports = function (x) {
@@ -104597,7 +104798,7 @@ module.exports = bytesToUuid;
 // Unique ID creation requires a high quality random # generator.  In node.js
 // this is pretty straight-forward - we use the crypto API.
 
-var crypto = __webpack_require__(14);
+var crypto = __webpack_require__(13);
 
 module.exports = function nodeRNG() {
   return crypto.randomBytes(16);
@@ -104842,7 +105043,7 @@ module.exports = function (release) {
 	if (!release && process.platform === 'win32' &&
 		semver.satisfies(process.version, '>=0.12.0 <3.1.0')) {
 		try {
-			version = verRe.exec(String(__webpack_require__(6).execSync('ver.exe', {timeout: 2000})));
+			version = verRe.exec(String(__webpack_require__(4).execSync('ver.exe', {timeout: 2000})));
 		} catch (err) {}
 	}
 
@@ -104869,7 +105070,7 @@ module.exports = function (release) {
 /* imports */
 var util          = __webpack_require__(3)
 ,   path          = __webpack_require__(0)
-,   spawn         = __webpack_require__(6).spawn
+,   spawn         = __webpack_require__(4).spawn
 
 /* set to console.log for debugging */
 ,   log           = function () {}
@@ -106598,7 +106799,7 @@ module.exports = { format, parse };
 
 const safeBuffer = __webpack_require__("./node_modules/safe-buffer/index.js");
 const Limiter = __webpack_require__("./node_modules/async-limiter/index.js");
-const zlib = __webpack_require__(13);
+const zlib = __webpack_require__(14);
 
 const bufferUtil = __webpack_require__("./node_modules/ws/lib/BufferUtil.js");
 
@@ -107679,7 +107880,7 @@ function toArrayBuffer (buf) {
 
 
 const safeBuffer = __webpack_require__("./node_modules/safe-buffer/index.js");
-const crypto = __webpack_require__(14);
+const crypto = __webpack_require__(13);
 
 const PerMessageDeflate = __webpack_require__("./node_modules/ws/lib/PerMessageDeflate.js");
 const bufferUtil = __webpack_require__("./node_modules/ws/lib/BufferUtil.js");
@@ -108124,11 +108325,11 @@ try {
 
 
 const EventEmitter = __webpack_require__(8);
-const crypto = __webpack_require__(14);
+const crypto = __webpack_require__(13);
 const Ultron = __webpack_require__("./node_modules/ultron/index.js");
 const https = __webpack_require__(12);
 const http = __webpack_require__(9);
-const url = __webpack_require__(5);
+const url = __webpack_require__(6);
 
 const PerMessageDeflate = __webpack_require__("./node_modules/ws/lib/PerMessageDeflate.js");
 const EventTarget = __webpack_require__("./node_modules/ws/lib/EventTarget.js");
@@ -108850,10 +109051,10 @@ function initAsClient (address, protocols, options) {
 
 const safeBuffer = __webpack_require__("./node_modules/safe-buffer/index.js");
 const EventEmitter = __webpack_require__(8);
-const crypto = __webpack_require__(14);
+const crypto = __webpack_require__(13);
 const Ultron = __webpack_require__("./node_modules/ultron/index.js");
 const http = __webpack_require__(9);
-const url = __webpack_require__(5);
+const url = __webpack_require__(6);
 
 const PerMessageDeflate = __webpack_require__("./node_modules/ws/lib/PerMessageDeflate.js");
 const Extensions = __webpack_require__("./node_modules/ws/lib/Extensions.js");
@@ -109200,14 +109401,14 @@ function extend() {
 /***/ (function(module, exports, __webpack_require__) {
 
 var fs = __webpack_require__(1);
-var zlib = __webpack_require__(13);
+var zlib = __webpack_require__(14);
 var fd_slicer = __webpack_require__("./node_modules/fd-slicer/index.js");
 var crc32 = __webpack_require__("./node_modules/buffer-crc32/index.js");
 var util = __webpack_require__(3);
 var EventEmitter = __webpack_require__(8).EventEmitter;
-var Transform = __webpack_require__(4).Transform;
-var PassThrough = __webpack_require__(4).PassThrough;
-var Writable = __webpack_require__(4).Writable;
+var Transform = __webpack_require__(5).Transform;
+var PassThrough = __webpack_require__(5).PassThrough;
+var Writable = __webpack_require__(5).Writable;
 
 exports.open = open;
 exports.fromFd = fromFd;
@@ -110062,7 +110263,7 @@ const launcher=new __WEBPACK_IMPORTED_MODULE_1_auto_launch___default.a({name:"On
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_promise___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_promise__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_path__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_path___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_path__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_child_process__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_child_process__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_child_process___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_child_process__);
 const addRegKey=function(a){const b=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_path__["join"])(process.env.WINDIR,"system32","reg.exe");return new __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_promise___default.a(function(c,d){let e=b;e+=" add "+a.target,e+=" /v "+a.name,e+=" /t "+a.type,e+=" /d "+a.value,e+=" /f",executeQuery(e).then(function(f){c(f)},function(f){d(f)})})};
 /* unused harmony export addRegKey */
@@ -110152,7 +110353,7 @@ const debug=__webpack_require__("./node_modules/debug/src/index.js")("once:main:
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_set__ = __webpack_require__("./node_modules/babel-runtime/core-js/set.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_set___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_set__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_child_process__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_child_process__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_child_process___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_child_process__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_fs_extra__ = __webpack_require__("./node_modules/fs-extra/lib/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_fs_extra___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_fs_extra__);
@@ -110320,7 +110521,7 @@ class Upgrade{constructor(){this.createDownload=(()=>{var a=__WEBPACK_IMPORTED_M
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_assign__ = __webpack_require__("./node_modules/babel-runtime/core-js/object/assign.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_assign___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_assign__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_url__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_url__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_url___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_url__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_electron__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_electron___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_electron__);
@@ -110338,7 +110539,7 @@ class WinManager{constructor(){this.win=null}create(a){this.options=__WEBPACK_IM
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_electron__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_electron___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_electron__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_url__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_url__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_url___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_url__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_shared_once__ = __webpack_require__("./src/shared/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_debug_once__ = __webpack_require__("./src/shared/debug.js");
@@ -110393,7 +110594,7 @@ const mainWin=new __WEBPACK_IMPORTED_MODULE_0__WinManager__["a" /* default */];/
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_electron__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_electron___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_electron__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_url__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_url__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_url___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_url__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_shared_once__ = __webpack_require__("./src/shared/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_debug_once__ = __webpack_require__("./src/shared/debug.js");
@@ -110406,7 +110607,7 @@ var _Mathceil=Math.ceil;class searchGistWin{constructor(){this.endpoint=`#/searc
 /***/ "./src/main/services/zekrom/activeWin.js":
 /***/ (function(module, exports, __webpack_require__) {
 
-var{appPath}=__webpack_require__("./src/main/services/paths.js"),fs=__webpack_require__(1),config=getConfig();exports.getActiveWindow=function(a,b,c){const d=__webpack_require__(6).spawn;c=c||0,b=b||1,"win32"===process.platform&&0>b&&(b="\\-1");let e;e=config.parameters,e.push(b),e.push("win32"===process.platform?0|1e3*c:c);const f=d(config.bin,e);f.stdout.setEncoding("utf8"),f.stdout.on("data",function(g){a(responseTreatment(g.toString()))}),f.stderr.on("data",function(g){throw g.toString()}),f.stdin.end()};function responseTreatment(a){let b={};return"linux"===process.platform?(a=a.replace(/(WM_CLASS|WM_NAME)(\(\w+\)\s=\s)/g,"").split("\n",2),b.app=a[0],b.title=a[1]):"win32"===process.platform?(a=a.replace(/(@{ProcessName=| AppTitle=)/g,"").slice(0,-1).split(";",2),b.app=a[0],b.title=a[1]):"darwin"===process.platform&&(a=a.split(","),b.app=a[0],b.title=a[1].replace(/\n$/,"").replace(/^\s/,"")),b}function getConfig(){var a=__webpack_require__(0),b=JSON.parse(fs.readFileSync(a.join(appPath,"script/activeWin/configs.json"),"utf8"));const c=process.platform;switch(c){case"linux":case"linux2":config=b.linux;break;case"win32":config=b.win32;break;case"darwin":config=b.mac;break;default:throw new Error("Operating System not supported yet. "+c);}let d;return d=a.join(appPath,config.script_url),config.parameters.push(d),"darwin"===process.platform&&config.parameters.push(a.join(appPath,config.subscript_url)),config}
+var{appPath}=__webpack_require__("./src/main/services/paths.js"),fs=__webpack_require__(1),config=getConfig();exports.getActiveWindow=function(a,b,c){const d=__webpack_require__(4).spawn;c=c||0,b=b||1,"win32"===process.platform&&0>b&&(b="\\-1");let e;e=config.parameters,e.push(b),e.push("win32"===process.platform?0|1e3*c:c);const f=d(config.bin,e);f.stdout.setEncoding("utf8"),f.stdout.on("data",function(g){a(responseTreatment(g.toString()))}),f.stderr.on("data",function(g){throw g.toString()}),f.stdin.end()};function responseTreatment(a){let b={};return"linux"===process.platform?(a=a.replace(/(WM_CLASS|WM_NAME)(\(\w+\)\s=\s)/g,"").split("\n",2),b.app=a[0],b.title=a[1]):"win32"===process.platform?(a=a.replace(/(@{ProcessName=| AppTitle=)/g,"").slice(0,-1).split(";",2),b.app=a[0],b.title=a[1]):"darwin"===process.platform&&(a=a.split(","),b.app=a[0],b.title=a[1].replace(/\n$/,"").replace(/^\s/,"")),b}function getConfig(){var a=__webpack_require__(0),b=JSON.parse(fs.readFileSync(a.join(appPath,"script/activeWin/configs.json"),"utf8"));const c=process.platform;switch(c){case"linux":case"linux2":config=b.linux;break;case"win32":config=b.win32;break;case"darwin":config=b.mac;break;default:throw new Error("Operating System not supported yet. "+c);}let d;return d=a.join(appPath,config.script_url),config.parameters.push(d),"darwin"===process.platform&&config.parameters.push(a.join(appPath,config.subscript_url)),config}
 
 /***/ }),
 
@@ -110558,7 +110759,7 @@ const log=__WEBPACK_IMPORTED_MODULE_22_debug___default()("zekrom:Iohook");class 
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_asyncToGenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_asyncToGenerator__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash__ = __webpack_require__("./node_modules/lodash/lodash.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_lodash__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_child_process__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_child_process__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_child_process___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_child_process__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_pidtree__ = __webpack_require__("./node_modules/pidtree/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_pidtree___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_pidtree__);
@@ -110627,7 +110828,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_run_applescript___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_run_applescript__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_sh_exec_src_tStrings__ = __webpack_require__("./node_modules/sh-exec/src/tStrings.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_sh_exec_src_tStrings___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_sh_exec_src_tStrings__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_child_process__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_child_process__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_child_process___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_child_process__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_python_shell__ = __webpack_require__("./node_modules/python-shell/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_python_shell___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_python_shell__);
@@ -110694,7 +110895,7 @@ const NPM_MAP={"http://registry.npmjs.org":"npm","http://registry.npm.taobao.org
 /***/ "./src/renderer/language/en.js":
 /***/ (function(module, exports) {
 
-module.exports={"once.tray.quit":"Exit","once.tray.show":"Open Oncework","once.tray.enable.oncework":"Enable Snippet","once.tray.close.oncework":"Close Snippet","once.intro.create.tag":"Create Tag","once.intro.create.snippet":"Create Snippet","once.intro.snippet.replace":"Snippet Replace","once.intro.warning.desc":"When you first set the security and privacy Settings in the system preferences, restart the software to use the replacement function.","once.intro.info.shortcuts":"Shortcuts","once.intro.tag.desc":"Snippet support multiple tags","once.intro.snippet.desc":"Automatically load the clipboard","once.intro.done.desc":"Support for custom Settings","once.intro.usage.title":"Usage","once.intro.updater.title":"Update History","once.intro.author.title":"About the author","once.menu.tag":"TAG","once.menu.tag.remove":"Snippet still exist under this tag.","once.menu.tag.create":"Create Tag","once.menu.tag.create.success":"Create Tag Success","once.menu.tag.create.empty":"The tag name cannot be empty.","once.menu.snippet.add":"Add Snippet","once.menu.tag.delete":"Remove Tag","once.menu.tag.delete.content":"Please confirm again to delete this tag?","once.menu.all":"ALL","once.gist.list.sum":"Total","search.notFoundContent":"no result.","search.tip":"Please input snippet like name\u3001tag...","welcome.description":"Life is only once, so is work.","update.unidentified":"NoTag","once.script.not.support":"This feature is not currently supported.","once.basic.yes":"Yes","once.basic.no":"No","once.basic.copy":"Replicating success.","once.basic.welcome":"Welcome back","once.basic.config":"Settings","once.basic.logout":"Sign Out","once.basic.notImplemented":"Not Implemented","once.basic.upload.success":"Automatic Upload","once.basic.file.missing":"Snippet being downloaded or damaged.","once.basic.token.error":"Please log in again.","once.basic.token.login":"Please try to login.","once.basic.app.restart":"Restart","once.basic.info.less":"No description.","once.basic.info.noset":"No Setting","once.basic.system.error":"Error Message","once.basic.tip":"Reminder","once.basic.pay.left":"The number of effective use of non members:","once.basic.pay.right":",Reboot software can be reset.","once.basic.save":"Save","once.basic.help":"Usage Help","once.basic.no.more":"No Found","once.basic.copy.link":"Share Snippet","once.basic.install.plugin":"Install Gist Plugin","once.basic.secret":"Secret","once.update.check":"Check for updates...","once.update.checking":"Checking the version...","once.update.latest":"There are currently no updates available.","once.update.unknown":"Unknown version","once.update.inPast":"Your application is too low, please update.","once.update.inFurther":"Experience version","once.update.readme":"Update content","once.update.ok":"update","once.update.no":"Ignore update","config.setting":"Software","config.setting.lang":"Language","config.setting.lang.title":"Switching language types requires a reboot of the software to take effect. Is restart allowed?","config.setting.lang.zh":"\u4E2D\u6587","config.setting.lang.en":"English","config.setting.enableAbbr":"Enable Oncework","config.setting.enableSound":"Play Sound","config.setting.triggerKey":"Delimiters","config.setting.jumpNextCursor":"CursorKey","config.setting.pythonPath":"PythonPath","config.setting.pythonPath.tip":"Please input Python folder","config.profile":"Personal","config.profile.member.valid":"Members:","config.profile.member.today":"Today","config.profile.avatar":"Avatar","config.profile.name":"My Name","config.profile.id":"ID","config.profile.email":"My Email","config.profile.home":"Homepage","config.hotkeys":"Hotkeys","config.hotkeys.create.snippet":"Create Snippet","config.hotkeys.search.snippet":"Search Bar","config.pay":"Member","config.pay.package":"Package","config.pay.package.month":"Month","config.pay.package.season":"Season","config.pay.package.year":"Year","config.pay.package.lifetime":"Perm.","config.pay.type":"Payment","config.pay.type.weixin":"WeChat","config.pay.type.alipay":"Alipay","config.pay.amount":"Amount","config.pay.qrcode.first":"Submit","config.pay.qrcode.next":"Scan","config.pay.confirm":"Submit","config.pay.activation":"I have paid","config.pay.activation.success":"Get Member Information Successful","config.pay.confirm.tip":"Resubmit","config.pay.orderInfo":"Order Information","config.pay.orderCol.sourceUuid":"OrderUuid","config.pay.orderCol.realprice":"Amount","config.pay.orderCol.created_at":"Create Date","snippet.env":"Runtime Environment","snippet.plain":"Plain","snippet.js":"Javascript","snippet.shell":"Shell","snippet.python":"Python","snippet.applescript":"AppleScript","snippet.label":"Label","snippet.abbreviation":"Abbreviation","snippet.run":"Run","snippet.run.result":"Preview","snippet.tool.clock":"Time","creator.add":"Add Snippet","creator.private.tip":"isPublic","creator.tagType":"Tag","creator.description.tip":"(Optional) Snippet Content","creator.description.error":"Please enter valid Snippet content","creator.filename":"(Optional) Snippet name","creator.filename.tip":"Snippet name","creator.filename.error":"Please enter a valid Snippet name","creator.content.error":"Please enter a valid Snippet fragment","creator.save":"Save","creator.close":"Close","snippet.header.addTag":"Tag","snippet.tabs.remove.title":"Warm Tips","snippet.tabs.remove.content":"Do you want to delete currently specified Snippet?","snippet.tabs.add.title":"Add Snippet","snippet.tabs.edit.title":"Rename File","snippet.tabs.edit.title.empty":"Please enter a valid filename","snippet.tabs.delete.snippet":"Delete","snippet.tabs.add.tip":"Do not recommend creating multiple files on the same Snippet","gist.list.search":"Search...","gist.list.search.tip":"Name, label, abbreviation.","gist.header.sync.all":"Reset synchronization","gist.header.sync.all.title":"Tips","gist.header.sync.all.content":"Please confirm if you want to re-sync all Snippet on Gist?","gist.header.sync.download":"Update Current Snippet from Gist","gist.header.sync.download.success":"Update From Gist.","gist.header.sync.download.fail":"Update Failed","gist.header.sync.download.notFound":"Please open the Snippet","gist.header.sync.upload":"Manually upload to Gist","gist.header.sync.welcome":"Welcome","menu.none":"Please add ...","gist.login":"Sign In","gist.registry":"Sign Up","gist.login.success":"Login Successful","gist.clear":"Clear Data","gist.clear.success":"Empty success","gist.reLogin":"Please wait...","gist.sync":"User sync completed"};
+module.exports={"once.tray.quit":"Exit","once.tray.show":"Open Oncework","once.tray.enable.oncework":"Enable Snippet","once.tray.close.oncework":"Close Snippet","once.intro.create.tag":"Create Tag","once.intro.create.snippet":"Create Snippet","once.intro.snippet.replace":"Snippet Replace","once.intro.warning.desc":"When you first set the security and privacy Settings in the system preferences, restart the software to use the replacement function.","once.intro.info.shortcuts":"Shortcuts","once.intro.tag.desc":"Snippet support multiple tags","once.intro.snippet.desc":"Automatically load the clipboard","once.intro.done.desc":"Support for custom Settings","once.intro.usage.title":"Usage","once.intro.updater.title":"Update History","once.intro.author.title":"About the author","once.menu.tag":"TAG","once.menu.tag.remove":"Snippet still exist under this tag.","once.menu.tag.create":"Create Tag","once.menu.tag.create.success":"Create Tag Success","once.menu.tag.create.empty":"The tag name cannot be empty.","once.menu.snippet.add":"Add Snippet","once.menu.tag.delete":"Remove Tag","once.menu.tag.delete.content":"Please confirm again to delete this tag?","once.menu.all":"ALL","once.gist.list.sum":"Total","search.notFoundContent":"no result.","search.tip":"Please input snippet like name\u3001tag...","welcome.description":"Life is only once, so is work.","update.unidentified":"NoTag","once.script.not.support":"This feature is not currently supported.","once.basic.yes":"Yes","once.basic.no":"No","once.basic.copy":"Replicating success.","once.basic.welcome":"Welcome back","once.basic.config":"Settings","once.basic.logout":"Sign Out","once.basic.notImplemented":"Not Implemented","once.basic.upload.success":"Automatic Upload","once.basic.file.missing":"Snippet being downloaded or damaged.","once.basic.token.error":"Please log in again.","once.basic.token.login":"Please try to login.","once.basic.app.restart":"Restart","once.basic.info.less":"No description.","once.basic.info.noset":"No Setting","once.basic.system.error":"Error Message","once.basic.tip":"Reminder","once.basic.pay.left":"The number of effective use of non members:","once.basic.pay.right":",Reboot software can be reset.","once.basic.save":"Save","once.basic.help":"Usage Help","once.basic.no.more":"No Found","once.basic.copy.link":"Share Snippet","once.basic.install.plugin":"Install Gist Plugin","once.basic.secret":"Secret","once.basic.install.env":"Please install and use","once.basic.install.env.tip":"More","once.basic.link":"Linking...","once.basic.link.list":"Loading list...","once.basic.link.success":"Link success","once.basic.unlink":"Unlinking...","once.basic.unlink.success":"Unlink success","once.update.check":"Check for updates...","once.update.checking":"Checking the version...","once.update.latest":"There are currently no updates available.","once.update.unknown":"Unknown version","once.update.inPast":"Your application is too low, please update.","once.update.inFurther":"Experience version","once.update.readme":"Update content","once.update.ok":"update","once.update.no":"Ignore update","config.setting":"Software","config.setting.lang":"Language","config.setting.lang.title":"Switching language types requires a reboot of the software to take effect. Is restart allowed?","config.setting.lang.zh":"\u4E2D\u6587","config.setting.lang.en":"English","config.setting.enableAbbr":"Enable Oncework","config.setting.enableSound":"Play Sound","config.setting.triggerKey":"Delimiters","config.setting.jumpNextCursor":"CursorKey","config.setting.pythonPath":"PythonPath","config.setting.pythonPath.tip":"Please input Python folder","config.profile":"Personal","config.profile.member.valid":"Members:","config.profile.member.today":"Today","config.profile.avatar":"Avatar","config.profile.name":"My Name","config.profile.id":"ID","config.profile.email":"My Email","config.profile.home":"Homepage","config.hotkeys":"Hotkeys","config.hotkeys.create.snippet":"Create Snippet","config.hotkeys.search.snippet":"Search Bar","config.pay":"Member","config.pay.package":"Package","config.pay.package.month":"Month","config.pay.package.season":"Season","config.pay.package.year":"Year","config.pay.package.lifetime":"Perm.","config.pay.type":"Payment","config.pay.type.weixin":"WeChat","config.pay.type.alipay":"Alipay","config.pay.amount":"Amount","config.pay.qrcode.first":"Submit","config.pay.qrcode.next":"Scan","config.pay.confirm":"Submit","config.pay.activation":"I have paid","config.pay.activation.success":"Get Member Information Successful","config.pay.confirm.tip":"Resubmit","config.pay.orderInfo":"Order Information","config.pay.orderCol.sourceUuid":"OrderUuid","config.pay.orderCol.realprice":"Amount","config.pay.orderCol.created_at":"Create Date","snippet.env":"Runtime Environment","snippet.plain":"Plain","snippet.js":"Javascript","snippet.shell":"Shell","snippet.python":"Python","snippet.applescript":"AppleScript","snippet.label":"Label","snippet.abbreviation":"Abbreviation","snippet.run":"Run","snippet.run.result":"Preview","snippet.tool.clock":"Time","creator.add":"Add Snippet","creator.private.tip":"isPublic","creator.tagType":"Tag","creator.description.tip":"(Optional) Snippet Content","creator.description.error":"Please enter valid Snippet content","creator.filename":"(Optional) Snippet name","creator.filename.tip":"Snippet name","creator.filename.error":"Please enter a valid Snippet name","creator.content.error":"Please enter a valid Snippet fragment","creator.save":"Save","creator.close":"Close","snippet.header.addTag":"Tag","snippet.tabs.remove.title":"Warm Tips","snippet.tabs.remove.content":"Do you want to delete currently specified Snippet?","snippet.tabs.add.title":"Add Snippet","snippet.tabs.edit.title":"Rename File","snippet.tabs.edit.title.empty":"Please enter a valid filename","snippet.tabs.delete.snippet":"Delete","snippet.tabs.add.tip":"Do not recommend creating multiple files on the same Snippet","gist.list.search":"Search...","gist.list.search.tip":"Name, label, abbreviation.","gist.header.sync.all":"Reset synchronization","gist.header.sync.all.title":"Tips","gist.header.sync.all.content":"Please confirm if you want to re-sync all Snippet on Gist?","gist.header.sync.download":"Update Current Snippet from Gist","gist.header.sync.download.success":"Update From Gist.","gist.header.sync.download.fail":"Update Failed","gist.header.sync.download.notFound":"Please open the Snippet","gist.header.sync.upload":"Manually upload to Gist","gist.header.sync.welcome":"Welcome","menu.none":"Please add ...","gist.login":"Sign In","gist.registry":"Sign Up","gist.login.success":"Login Successful","gist.clear":"Clear Data","gist.clear.success":"Empty success","gist.reLogin":"Please wait...","gist.sync":"User sync completed"};
 
 /***/ }),
 
@@ -110728,7 +110929,7 @@ const lang=getLocalLanguage(),i18n=__WEBPACK_IMPORTED_MODULE_6_i18n_helper___def
 /***/ "./src/renderer/language/zh.js":
 /***/ (function(module, exports) {
 
-module.exports={"once.tray.quit":"\u9000\u51FA","once.tray.show":"\u663E\u793A Oncework","once.tray.enable.oncework":"\u542F\u7528\u66FF\u6362\u529F\u80FD","once.tray.close.oncework":"\u5173\u95ED\u66FF\u6362\u529F\u80FD","once.intro.create.tag":"\u521B\u5EFA\u5206\u7C7B","once.intro.create.snippet":"\u521B\u5EFA\u7247\u6BB5","once.intro.snippet.replace":"\u4F7F\u7528\u66FF\u6362","once.intro.warning.desc":"\u5F53\u4F60\u7B2C\u4E00\u6B21\u8BBE\u7F6E\u5728\u7CFB\u7EDF\u504F\u597D\u8BBE\u7F6E\u4E2D\u7684\u5B89\u5168\u6027\u4E0E\u9690\u79C1\u64CD\u4F5C\u540E\uFF0C\u9700\u8981\u91CD\u542F\u672C\u8F6F\u4EF6\u624D\u80FD\u6B63\u5E38\u4F7F\u7528\u66FF\u6362\u529F\u80FD\u3002","once.intro.info.shortcuts":"\u5FEB\u6377\u952E","once.intro.tag.desc":"\u7247\u6BB5\u652F\u6301\u591A\u4E2A\u5206\u7C7B","once.intro.snippet.desc":"\u81EA\u52A8\u52A0\u8F7D\u526A\u8D34\u677F","once.intro.done.desc":"\u652F\u6301\u81EA\u5B9A\u4E49\u8BBE\u7F6E","once.intro.usage.title":"\u4F7F\u7528\u6B65\u9AA4","once.intro.updater.title":"\u66F4\u65B0\u65E5\u5FD7","once.intro.author.title":"\u5173\u4E8E\u4F5C\u8005","once.menu.tag":"\u5206\u7C7B\u5217\u8868","once.menu.tag.remove":"\u8BE5\u5206\u7C7B\u4E0B\u4ECD\u5B58\u5728\u7247\u6BB5","once.menu.tag.create":"\u6DFB\u52A0\u5206\u7C7B","once.menu.tag.create.success":"\u6DFB\u52A0\u5206\u7C7B\u6210\u529F","once.menu.tag.create.empty":"\u5206\u7C7B\u540D\u79F0\u4E0D\u80FD\u4E3A\u7A7A","once.menu.snippet.add":"\u6DFB\u52A0\u7247\u6BB5","once.menu.tag.delete":"\u5220\u9664\u7247\u6BB5\u7EC4","once.menu.tag.delete.content":"\u8BF7\u518D\u6B21\u786E\u8BA4\u5220\u9664\u6B64\u5206\u7C7B?","once.menu.all":"\u5168\u90E8\u5217\u8868","once.gist.list.sum":"\u5F53\u524D\u7247\u6BB5\u603B\u6570","search.notFoundContent":"\u65E0\u76F8\u5173\u7ED3\u679C","search.tip":"\u8F93\u5165Snippet\u540D\u79F0\u3001\u6807\u7B7E...","welcome.description":"Life is only once, so is work.","update.unidentified":"\u5176\u4ED6","once.script.not.support":"\u6682\u672A\u652F\u6301\u8BE5\u529F\u80FD","once.basic.yes":"\u786E\u8BA4","once.basic.no":"\u53D6\u6D88","once.basic.copy":"\u590D\u5236\u6210\u529F","once.basic.welcome":"\u6B22\u8FCE\u56DE\u6765","once.basic.config":"\u8D26\u53F7\u8BBE\u7F6E","once.basic.logout":"\u9000\u51FA\u767B\u5F55","once.basic.notImplemented":"\u672A\u5B9E\u73B0","once.basic.upload.success":"\u81EA\u52A8\u4E0A\u4F20","once.basic.file.missing":"\u7247\u6BB5\u6B63\u5728\u4E0B\u8F7D\u6216\u5DF2\u635F\u574F","once.basic.token.error":"\u8BF7\u91CD\u65B0\u767B\u5F55","once.basic.token.login":"\u8BF7\u767B\u5F55\u540E\u5C1D\u8BD5","once.basic.app.restart":"\u91CD\u542F\u5E94\u7528","once.basic.info.less":"\u65E0\u53EF\u63CF\u8FF0\u5185\u5BB9","once.basic.info.noset":"\u672A\u914D\u7F6E","once.basic.system.error":"\u9519\u8BEF\u4FE1\u606F","once.basic.tip":"\u6E29\u99A8\u63D0\u793A","once.basic.pay.left":"\u975E\u4F1A\u5458\u5269\u4E0B\u6709\u6548\u4F7F\u7528\u6B21\u6570:","once.basic.pay.right":",\u91CD\u542F\u8F6F\u4EF6\u53EF\u91CD\u7F6E","once.basic.save":"\u4FDD\u5B58","once.basic.help":"\u4F7F\u7528\u5E2E\u52A9","once.basic.no.more":"\u6682\u65E0\u7247\u6BB5","once.basic.copy.link":"\u5206\u4EAB\u7247\u6BB5","once.basic.install.plugin":"\u5B89\u88C5\u663E\u793A\u63D2\u4EF6","once.basic.secret":"\u79C1\u6709","once.update.check":"\u68C0\u6D4B\u7248\u672C","once.update.checking":"\u6B63\u5728\u83B7\u53D6\u7248\u672C\u7684\u5E94\u7528...","once.update.latest":"\u60A8\u7684\u5E94\u7528\u5DF2\u7ECF\u662F\u6700\u65B0\u7248\u672C\uFF0C\u8BF7\u7EE7\u7EED\u4FDD\u6301\uFF01","once.update.unknown":"\u672A\u77E5\u7248\u672C","once.update.inPast":"\u60A8\u7684\u5E94\u7528\u7248\u672C\u8FC7\u4F4E\uFF0C\u8BF7\u8FDB\u884C\u66F4\u65B0","once.update.inFurther":"\u4F53\u9A8C\u7248\u672C","once.update.readme":"\u66F4\u65B0\u5185\u5BB9","once.update.ok":"\u7ACB\u5373\u66F4\u65B0","once.update.no":"\u4E0B\u6B21\u66F4\u65B0","config.setting":"\u8F6F\u4EF6\u8BBE\u7F6E","config.setting.lang":"\u8BED\u8A00\u7C7B\u578B","config.setting.lang.title":"\u5207\u6362\u8BED\u8A00\u7C7B\u578B\u9700\u8981\u91CD\u65B0\u542F\u52A8\u8F6F\u4EF6\u624D\u751F\u6548\uFF0C\u662F\u5426\u5141\u8BB8\u91CD\u542F\uFF1F","config.setting.lang.zh":"\u4E2D\u6587","config.setting.lang.en":"English","config.setting.enableAbbr":"\u542F\u52A8 Oncework","config.setting.enableSound":"\u97F3\u6548\u7C7B\u578B","config.setting.triggerKey":"\u66FF\u6362\u5FEB\u6377\u952E","config.setting.jumpNextCursor":"\u4E0B\u4E00\u4E2ACursor","config.setting.pythonPath":"Python\u8DEF\u5F84","config.setting.pythonPath.tip":"\u8BF7\u8F93\u5165Python\u5B89\u88C5\u6587\u4EF6\u5939.","config.profile":"\u4E2A\u4EBA\u8D44\u6599","config.profile.member.valid":"\u4F1A\u5458\u6709\u6548\u671F\u81F3","config.profile.member.today":"\u4ECA\u5929","config.profile.avatar":"\u6211\u7684\u5934\u50CF","config.profile.name":"\u6211\u7684\u540D\u79F0","config.profile.id":"ID","config.profile.email":"\u6211\u7684\u90AE\u7BB1","config.profile.home":"\u4E3B\u9875","config.hotkeys":"Hotkeys","config.hotkeys.create.snippet":"\u521B\u5EFA\u7247\u6BB5","config.hotkeys.search.snippet":"\u60AC\u6D6E\u641C\u7D22\u680F","config.pay":"\u4F1A\u5458\u5145\u503C","config.pay.package":"\u5957\u9910","config.pay.package.month":"\u6708\u5361","config.pay.package.season":"\u5B63\u5361","config.pay.package.year":"\u5E74\u5361","config.pay.package.lifetime":"\u6C38\u4E45","config.pay.type":"\u652F\u4ED8\u65B9\u5F0F","config.pay.type.weixin":"\u5FAE\u4FE1","config.pay.type.alipay":"\u652F\u4ED8\u5B9D","config.pay.amount":"\u4F30\u8BA1\u91D1\u989D","config.pay.qrcode.first":"\u63D0\u4EA4\u8BA2\u5355","config.pay.qrcode.next":"\u626B\u7801\u652F\u4ED8","config.pay.confirm":"\u63D0\u4EA4\u8BA2\u5355","config.pay.activation":"\u6211\u5DF2\u652F\u4ED8","config.pay.activation.success":"\u83B7\u53D6\u4F1A\u5458\u4FE1\u606F\u6210\u529F","config.pay.confirm.tip":"\u91CD\u65B0\u63D0\u4EA4","config.pay.orderInfo":"\u8BA2\u5355\u4FE1\u606F","config.pay.orderCol.sourceUuid":"\u5E73\u53F0\u8BA2\u5355","config.pay.orderCol.realprice":"\u5B9E\u4ED8\u91D1\u989D","config.pay.orderCol.created_at":"\u521B\u5EFA\u65E5\u671F","snippet.env":"\u8FD0\u884C\u73AF\u5883","snippet.plain":"\u7EAF\u6587\u672C","snippet.js":"Javascript","snippet.shell":"Shell","snippet.python":"Python","snippet.applescript":"AppleScript","snippet.label":"\u6807\u5FD7","snippet.abbreviation":"\u7F29\u5199","snippet.run":"\u8FD0\u884C","snippet.run.result":"\u8FD0\u884C\u9884\u89C8","snippet.tool.clock":"\u65F6\u95F4","snippet.header.addTag":"\u6807\u7B7E","snippet.tabs.remove.title":"\u6E29\u99A8\u63D0\u793A","snippet.tabs.remove.content":"\u786E\u8BA4\u5220\u9664\u5F53\u524D\u6307\u5B9A\u7247\u6BB5?","snippet.tabs.add.title":"\u6DFB\u52A0\u7247\u6BB5","snippet.tabs.edit.title":"\u91CD\u547D\u540D","snippet.tabs.edit.title.empty":"\u8BF7\u8F93\u5165\u6709\u6548\u6587\u4EF6\u540D","snippet.tabs.delete.snippet":"\u5220\u9664","snippet.tabs.add.tip":"\u4E0D\u63A8\u8350\u5728\u540C\u4E00\u4E2A\u7247\u6BB5\u521B\u5EFA\u591A\u4E2A\u6587\u4EF6","creator.add":"\u65B0\u589E\u7247\u6BB5","creator.private.tip":"\u662F\u5426\u516C\u5E03","creator.tagType":"\u65B0\u589E\u5206\u7C7B","creator.description.tip":"(\u53EF\u9009) \u7247\u6BB5\u5185\u5BB9","creator.description.error":"\u8BF7\u8F93\u5165\u6709\u6548\u7247\u6BB5\u5185\u5BB9","creator.filename":"(\u53EF\u9009) \u7247\u6BB5\u540D\u79F0","creator.filename.tip":"\u7247\u6BB5\u540D\u79F0","creator.filename.error":"\u8BF7\u8F93\u5165\u6709\u6548\u7247\u6BB5\u540D\u79F0","creator.content.error":"\u8BF7\u8F93\u5165\u6709\u6548\u7247\u6BB5\u7247\u6BB5","creator.save":"\u4FDD\u5B58","creator.close":"\u5173\u95ED","gist.list.search":"\u641C\u7D22...","gist.list.search.tip":"\u540D\u79F0\u3001\u6807\u7B7E\u3001\u7F29\u7565.","gist.header.sync.all":"\u91CD\u7F6E\u540C\u6B65","gist.header.sync.all.title":"\u6E29\u99A8\u63D0\u793A","gist.header.sync.all.content":"\u8BF7\u786E\u8BA4\u662F\u5426\u91CD\u65B0\u540C\u6B65\u4E91\u7AEF\u4E0A\u6240\u6709\u7684\u7247\u6BB5?","gist.header.sync.download":"\u4ECE\u4E91\u7AEF\u66F4\u65B0\u5F53\u524D\u7247\u6BB5","gist.header.sync.download.success":"\u66F4\u65B0\u6210\u529F","gist.header.sync.download.fail":"\u66F4\u65B0\u5931\u8D25","gist.header.sync.download.notFound":"\u8BF7\u6253\u5F00\u7247\u6BB5","gist.header.sync.upload":"\u4E0A\u4F20\u4E91\u7AEF,\u9ED8\u8BA4\u81EA\u52A8\u4E0A\u4F20","gist.header.sync.welcome":"\u6B22\u8FCE\u754C\u9762","menu.none":"\u6DFB\u52A0\u5206\u7C7B...","gist.login":"\u767B\u5F55","gist.registry":"\u6CE8\u518C","gist.login.success":"\u767B\u5F55\u6210\u529F","gist.clear":"\u6E05\u7A7A\u6570\u636E","gist.clear.success":"\u6E05\u7A7A\u6210\u529F","gist.reLogin":"\u8BF7\u7A0D\u540E...","gist.sync":"\u7528\u6237\u540C\u6B65\u5B8C\u6210"};
+module.exports={"once.tray.quit":"\u9000\u51FA","once.tray.show":"\u663E\u793A Oncework","once.tray.enable.oncework":"\u542F\u7528\u66FF\u6362\u529F\u80FD","once.tray.close.oncework":"\u5173\u95ED\u66FF\u6362\u529F\u80FD","once.intro.create.tag":"\u521B\u5EFA\u5206\u7C7B","once.intro.create.snippet":"\u521B\u5EFA\u7247\u6BB5","once.intro.snippet.replace":"\u4F7F\u7528\u66FF\u6362","once.intro.warning.desc":"\u5F53\u4F60\u7B2C\u4E00\u6B21\u8BBE\u7F6E\u5728\u7CFB\u7EDF\u504F\u597D\u8BBE\u7F6E\u4E2D\u7684\u5B89\u5168\u6027\u4E0E\u9690\u79C1\u64CD\u4F5C\u540E\uFF0C\u9700\u8981\u91CD\u542F\u672C\u8F6F\u4EF6\u624D\u80FD\u6B63\u5E38\u4F7F\u7528\u66FF\u6362\u529F\u80FD\u3002","once.intro.info.shortcuts":"\u5FEB\u6377\u952E","once.intro.tag.desc":"\u7247\u6BB5\u652F\u6301\u591A\u4E2A\u5206\u7C7B","once.intro.snippet.desc":"\u81EA\u52A8\u52A0\u8F7D\u526A\u8D34\u677F","once.intro.done.desc":"\u652F\u6301\u81EA\u5B9A\u4E49\u8BBE\u7F6E","once.intro.usage.title":"\u4F7F\u7528\u6B65\u9AA4","once.intro.updater.title":"\u66F4\u65B0\u65E5\u5FD7","once.intro.author.title":"\u5173\u4E8E\u4F5C\u8005","once.menu.tag":"\u5206\u7C7B\u5217\u8868","once.menu.tag.remove":"\u8BE5\u5206\u7C7B\u4E0B\u4ECD\u5B58\u5728\u7247\u6BB5","once.menu.tag.create":"\u6DFB\u52A0\u5206\u7C7B","once.menu.tag.create.success":"\u6DFB\u52A0\u5206\u7C7B\u6210\u529F","once.menu.tag.create.empty":"\u5206\u7C7B\u540D\u79F0\u4E0D\u80FD\u4E3A\u7A7A","once.menu.snippet.add":"\u6DFB\u52A0\u7247\u6BB5","once.menu.tag.delete":"\u5220\u9664\u7247\u6BB5\u7EC4","once.menu.tag.delete.content":"\u8BF7\u518D\u6B21\u786E\u8BA4\u5220\u9664\u6B64\u5206\u7C7B?","once.menu.all":"\u5168\u90E8\u5217\u8868","once.gist.list.sum":"\u5F53\u524D\u7247\u6BB5\u603B\u6570","search.notFoundContent":"\u65E0\u76F8\u5173\u7ED3\u679C","search.tip":"\u8F93\u5165Snippet\u540D\u79F0\u3001\u6807\u7B7E...","welcome.description":"Life is only once, so is work.","update.unidentified":"\u5176\u4ED6","once.script.not.support":"\u6682\u672A\u652F\u6301\u8BE5\u529F\u80FD","once.basic.yes":"\u786E\u8BA4","once.basic.no":"\u53D6\u6D88","once.basic.copy":"\u590D\u5236\u6210\u529F","once.basic.welcome":"\u6B22\u8FCE\u56DE\u6765","once.basic.config":"\u8D26\u53F7\u8BBE\u7F6E","once.basic.logout":"\u9000\u51FA\u767B\u5F55","once.basic.notImplemented":"\u672A\u5B9E\u73B0","once.basic.upload.success":"\u81EA\u52A8\u4E0A\u4F20","once.basic.file.missing":"\u7247\u6BB5\u6B63\u5728\u4E0B\u8F7D\u6216\u5DF2\u635F\u574F","once.basic.token.error":"\u8BF7\u91CD\u65B0\u767B\u5F55","once.basic.token.login":"\u8BF7\u767B\u5F55\u540E\u5C1D\u8BD5","once.basic.app.restart":"\u91CD\u542F\u5E94\u7528","once.basic.info.less":"\u65E0\u53EF\u63CF\u8FF0\u5185\u5BB9","once.basic.info.noset":"\u672A\u914D\u7F6E","once.basic.system.error":"\u9519\u8BEF\u4FE1\u606F","once.basic.tip":"\u6E29\u99A8\u63D0\u793A","once.basic.pay.left":"\u975E\u4F1A\u5458\u5269\u4E0B\u6709\u6548\u4F7F\u7528\u6B21\u6570:","once.basic.pay.right":",\u91CD\u542F\u8F6F\u4EF6\u53EF\u91CD\u7F6E","once.basic.save":"\u4FDD\u5B58","once.basic.help":"\u4F7F\u7528\u5E2E\u52A9","once.basic.no.more":"\u6682\u65E0\u7247\u6BB5","once.basic.copy.link":"\u5206\u4EAB\u7247\u6BB5","once.basic.install.plugin":"\u5B89\u88C5\u663E\u793A\u63D2\u4EF6","once.basic.secret":"\u79C1\u6709","once.basic.install.env":"\u7F3A\u5C11\u8F6F\u4EF6\u6B63\u5E38\u4F7F\u7528\u5FC5\u5907\u73AF\u5883\uFF0C\u8BF7\u81EA\u884C\u5B89\u88C5","once.basic.install.env.tip":"\u4E86\u89E3\u66F4\u591A","once.basic.link":"\u6B63\u5728\u5173\u8054...","once.basic.link.list":"\u6B63\u5728\u52A0\u8F7D\u5217\u8868...","once.basic.link.success":"\u5173\u8054\u6210\u529F","once.basic.unlink":"\u6B63\u5728\u6E05\u9664\u5173\u8054...","once.basic.unlink.success":"\u6E05\u9664\u5173\u8054\u6210\u529F","once.update.check":"\u68C0\u6D4B\u7248\u672C","once.update.checking":"\u6B63\u5728\u83B7\u53D6\u7248\u672C\u7684\u5E94\u7528...","once.update.latest":"\u60A8\u7684\u5E94\u7528\u5DF2\u7ECF\u662F\u6700\u65B0\u7248\u672C\uFF0C\u8BF7\u7EE7\u7EED\u4FDD\u6301\uFF01","once.update.unknown":"\u672A\u77E5\u7248\u672C","once.update.inPast":"\u60A8\u7684\u5E94\u7528\u7248\u672C\u8FC7\u4F4E\uFF0C\u8BF7\u8FDB\u884C\u66F4\u65B0","once.update.inFurther":"\u4F53\u9A8C\u7248\u672C","once.update.readme":"\u66F4\u65B0\u5185\u5BB9","once.update.ok":"\u7ACB\u5373\u66F4\u65B0","once.update.no":"\u4E0B\u6B21\u66F4\u65B0","config.setting":"\u8F6F\u4EF6\u8BBE\u7F6E","config.setting.lang":"\u8BED\u8A00\u7C7B\u578B","config.setting.lang.title":"\u5207\u6362\u8BED\u8A00\u7C7B\u578B\u9700\u8981\u91CD\u65B0\u542F\u52A8\u8F6F\u4EF6\u624D\u751F\u6548\uFF0C\u662F\u5426\u5141\u8BB8\u91CD\u542F\uFF1F","config.setting.lang.zh":"\u4E2D\u6587","config.setting.lang.en":"English","config.setting.enableAbbr":"\u542F\u52A8 Oncework","config.setting.enableSound":"\u97F3\u6548\u7C7B\u578B","config.setting.triggerKey":"\u66FF\u6362\u5FEB\u6377\u952E","config.setting.jumpNextCursor":"\u4E0B\u4E00\u4E2ACursor","config.setting.pythonPath":"Python\u8DEF\u5F84","config.setting.pythonPath.tip":"\u8BF7\u8F93\u5165Python\u5B89\u88C5\u6587\u4EF6\u5939.","config.profile":"\u4E2A\u4EBA\u8D44\u6599","config.profile.member.valid":"\u4F1A\u5458\u6709\u6548\u671F\u81F3","config.profile.member.today":"\u4ECA\u5929","config.profile.avatar":"\u6211\u7684\u5934\u50CF","config.profile.name":"\u6211\u7684\u540D\u79F0","config.profile.id":"ID","config.profile.email":"\u6211\u7684\u90AE\u7BB1","config.profile.home":"\u4E3B\u9875","config.hotkeys":"Hotkeys","config.hotkeys.create.snippet":"\u521B\u5EFA\u7247\u6BB5","config.hotkeys.search.snippet":"\u60AC\u6D6E\u641C\u7D22\u680F","config.pay":"\u4F1A\u5458\u5145\u503C","config.pay.package":"\u5957\u9910","config.pay.package.month":"\u6708\u5361","config.pay.package.season":"\u5B63\u5361","config.pay.package.year":"\u5E74\u5361","config.pay.package.lifetime":"\u6C38\u4E45","config.pay.type":"\u652F\u4ED8\u65B9\u5F0F","config.pay.type.weixin":"\u5FAE\u4FE1","config.pay.type.alipay":"\u652F\u4ED8\u5B9D","config.pay.amount":"\u4F30\u8BA1\u91D1\u989D","config.pay.qrcode.first":"\u63D0\u4EA4\u8BA2\u5355","config.pay.qrcode.next":"\u626B\u7801\u652F\u4ED8","config.pay.confirm":"\u63D0\u4EA4\u8BA2\u5355","config.pay.activation":"\u6211\u5DF2\u652F\u4ED8","config.pay.activation.success":"\u83B7\u53D6\u4F1A\u5458\u4FE1\u606F\u6210\u529F","config.pay.confirm.tip":"\u91CD\u65B0\u63D0\u4EA4","config.pay.orderInfo":"\u8BA2\u5355\u4FE1\u606F","config.pay.orderCol.sourceUuid":"\u5E73\u53F0\u8BA2\u5355","config.pay.orderCol.realprice":"\u5B9E\u4ED8\u91D1\u989D","config.pay.orderCol.created_at":"\u521B\u5EFA\u65E5\u671F","snippet.env":"\u8FD0\u884C\u73AF\u5883","snippet.plain":"\u7EAF\u6587\u672C","snippet.js":"Javascript","snippet.shell":"Shell","snippet.python":"Python","snippet.applescript":"AppleScript","snippet.label":"\u6807\u5FD7","snippet.abbreviation":"\u7F29\u5199","snippet.run":"\u8FD0\u884C","snippet.run.result":"\u8FD0\u884C\u9884\u89C8","snippet.tool.clock":"\u65F6\u95F4","snippet.header.addTag":"\u6807\u7B7E","snippet.tabs.remove.title":"\u6E29\u99A8\u63D0\u793A","snippet.tabs.remove.content":"\u786E\u8BA4\u5220\u9664\u5F53\u524D\u6307\u5B9A\u7247\u6BB5?","snippet.tabs.add.title":"\u6DFB\u52A0\u7247\u6BB5","snippet.tabs.edit.title":"\u91CD\u547D\u540D","snippet.tabs.edit.title.empty":"\u8BF7\u8F93\u5165\u6709\u6548\u6587\u4EF6\u540D","snippet.tabs.delete.snippet":"\u5220\u9664","snippet.tabs.add.tip":"\u4E0D\u63A8\u8350\u5728\u540C\u4E00\u4E2A\u7247\u6BB5\u521B\u5EFA\u591A\u4E2A\u6587\u4EF6","creator.add":"\u65B0\u589E\u7247\u6BB5","creator.private.tip":"\u662F\u5426\u516C\u5E03","creator.tagType":"\u65B0\u589E\u5206\u7C7B","creator.description.tip":"(\u53EF\u9009) \u7247\u6BB5\u5185\u5BB9","creator.description.error":"\u8BF7\u8F93\u5165\u6709\u6548\u7247\u6BB5\u5185\u5BB9","creator.filename":"(\u53EF\u9009) \u7247\u6BB5\u540D\u79F0","creator.filename.tip":"\u7247\u6BB5\u540D\u79F0","creator.filename.error":"\u8BF7\u8F93\u5165\u6709\u6548\u7247\u6BB5\u540D\u79F0","creator.content.error":"\u8BF7\u8F93\u5165\u6709\u6548\u7247\u6BB5\u7247\u6BB5","creator.save":"\u4FDD\u5B58","creator.close":"\u5173\u95ED","gist.list.search":"\u641C\u7D22...","gist.list.search.tip":"\u540D\u79F0\u3001\u6807\u7B7E\u3001\u7F29\u7565.","gist.header.sync.all":"\u91CD\u7F6E\u540C\u6B65","gist.header.sync.all.title":"\u6E29\u99A8\u63D0\u793A","gist.header.sync.all.content":"\u8BF7\u786E\u8BA4\u662F\u5426\u91CD\u65B0\u540C\u6B65\u4E91\u7AEF\u4E0A\u6240\u6709\u7684\u7247\u6BB5?","gist.header.sync.download":"\u4ECE\u4E91\u7AEF\u66F4\u65B0\u5F53\u524D\u7247\u6BB5","gist.header.sync.download.success":"\u66F4\u65B0\u6210\u529F","gist.header.sync.download.fail":"\u66F4\u65B0\u5931\u8D25","gist.header.sync.download.notFound":"\u8BF7\u6253\u5F00\u7247\u6BB5","gist.header.sync.upload":"\u4E0A\u4F20\u4E91\u7AEF,\u9ED8\u8BA4\u81EA\u52A8\u4E0A\u4F20","gist.header.sync.welcome":"\u6B22\u8FCE\u754C\u9762","menu.none":"\u6DFB\u52A0\u5206\u7C7B...","gist.login":"\u767B\u5F55","gist.registry":"\u6CE8\u518C","gist.login.success":"\u767B\u5F55\u6210\u529F","gist.clear":"\u6E05\u7A7A\u6570\u636E","gist.clear.success":"\u6E05\u7A7A\u6210\u529F","gist.reLogin":"\u8BF7\u7A0D\u540E...","gist.sync":"\u7528\u6237\u540C\u6B65\u5B8C\u6210"};
 
 /***/ }),
 
@@ -110754,6 +110955,17 @@ const checkDiff=(a,b)=>{return!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2
 
 /***/ }),
 
+/***/ "./src/shared/command.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export commandExistsList */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_command_exists__ = __webpack_require__("./node_modules/command-exists/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_command_exists___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_command_exists__);
+const commandExistsList=(a)=>{const b=[];return a.forEach((c)=>{c&&b.push({command:c,isExist:__WEBPACK_IMPORTED_MODULE_0_command_exists___default.a.sync(c)})}),b};
+
+/***/ }),
+
 /***/ "./src/shared/debug.js":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -110775,6 +110987,66 @@ const LZekrom=showDebug("Zekrom");
 const LUpgrade=showDebug("Upgrade");
 /* unused harmony export LUpgrade */
 
+
+/***/ }),
+
+/***/ "./src/shared/electron-sudo/index.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__sudoer__ = __webpack_require__("./src/shared/electron-sudo/sudoer.js");
+/* unused harmony default export */ var _unused_webpack_default_export = ((()=>{let{platform:a}=process;switch(a){case"darwin":return __WEBPACK_IMPORTED_MODULE_0__sudoer__["a" /* SudoerDarwin */];case"win32":return __WEBPACK_IMPORTED_MODULE_0__sudoer__["b" /* SudoerWin32 */];case"linux":return __WEBPACK_IMPORTED_MODULE_0__sudoer__["c" /* SudoerLinux */];default:throw new Error(`Unsupported platform: ${a}`);}})());
+
+/***/ }),
+
+/***/ "./src/shared/electron-sudo/sudoer.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SudoerDarwin; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return SudoerLinux; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return SudoerWin32; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_assign__ = __webpack_require__("./node_modules/babel-runtime/core-js/object/assign.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_assign___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_assign__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise__ = __webpack_require__("./node_modules/babel-runtime/core-js/promise.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator__ = __webpack_require__("./node_modules/babel-runtime/helpers/asyncToGenerator.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_os__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_os___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_os__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_fs__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_fs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_fs__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_path__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_path___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_path__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_crypto__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_crypto___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_crypto__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__utils__ = __webpack_require__("./src/shared/electron-sudo/utils.js");
+let{platform}=process;class Sudoer{constructor(a,b){this.platform=platform,this.options=a,this.cp=null,this.tmpdir=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3_os__["tmpdir"])(),this.prefixPath=b}hash(a){let b=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6_crypto__["createHash"])("sha256");return b.update("electron-sudo"),b.update(this.options.name||""),b.update(a||new Buffer(0)),b.digest("hex").slice(-32)}joinEnv(a){let{env:b}=a,c=[];if(b&&"object"==typeof b)for(let d in b)c.push(d.concat("=",b[d]));return c}escapeDoubleQuotes(a){return a.replace(/"/g,"\\\"")}encloseDoubleQuotes(a){return a.replace(/(.+)/g,"\"$1\"")}kill(){}}class SudoerUnix extends Sudoer{constructor(a={},b){super(a),this.options.name||(this.options.name="Electron"),this.prefixPath=b}copy(a,b){var c=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a((()=>{var d=__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(e,f){a=c.escapeDoubleQuotes(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5_path__["normalize"])(a)),b=c.escapeDoubleQuotes(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5_path__["normalize"])(b));try{let g=yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils__["a" /* exec */])(`/bin/cp -R -p "${a}" "${b}"`);e(g)}catch(g){f(g)}});return function(){return d.apply(this,arguments)}})())})()}remove(a){var b=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a((()=>{var d=__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(e,f){if(!a.startsWith(b.tmpdir))throw new Error(`Try to remove suspicious target: ${a}.`);a=b.escapeDoubleQuotes(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5_path__["normalize"])(a));try{let g=yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils__["a" /* exec */])(`rm -rf "${a}"`);e(g)}catch(g){f(g)}});return function(){return d.apply(this,arguments)}})())})()}reset(){return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils__["a" /* exec */])("/usr/bin/sudo -k")})()}}class SudoerDarwin extends SudoerUnix{constructor(a={},b){if(super(a),a.icns&&"string"!=typeof a.icns)throw new Error("options.icns must be a string if provided.");else if(a.icns&&0===a.icns.trim().length)throw new Error("options.icns must be a non-empty string if provided.");this.up=!1,this.prefixPath=b}isValidName(a){return /^[a-z0-9 ]+$/i.test(a)&&0<a.trim().length&&70>a.length}joinEnv(a){let{env:b}=a,c=[];if(b&&"object"==typeof b)for(let d in b)c.push(d.concat("=",b[d]));return c}exec(a,b={}){var c=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a((()=>{var d=__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(e,f){const i=a.replace(/"/g,"\\\\\\\"");try{const k=yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils__["a" /* exec */])("osascript"+" -e \"do shell script \\\""+i+"\\\" with prompt \\\"The Great And Powerful Oncework summons you.\\\" with administrator privileges\"",b);e(k)}catch(k){f(k)}});return function(){return d.apply(this,arguments)}})())})()}spawn(a,b,c={}){var d=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a((()=>{var e=__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(f,g){let j;const k=[a,...b].join(" "),l=k.replace(/"/g,"\\\\\\\"");j=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils__["b" /* spawn */])("osascript"+" -e \"do shell script \\\""+l+"\\\" with administrator privileges\"",[],c),j.on("error",(()=>{var n=__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(o){g(o)});return function(){return n.apply(this,arguments)}})()),d.cp=j,f(j)});return function(){return e.apply(this,arguments)}})())})()}}class SudoerLinux extends SudoerUnix{constructor(a={},b){super(a),this.binary=null,this.paths=["/usr/bin/gksudo","/usr/bin/pkexec","./bin/gksudo"],this.prefixPath=b}getBinary(){var a=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){return(yield __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a.all(a.paths.map((()=>{var b=__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(c){try{return c=yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils__["c" /* stat */])(c),c}catch(d){return null}});return function(){return b.apply(this,arguments)}})()))).filter(function(b){return b})[0]})()}exec(a,b={}){var c=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a((()=>{var d=__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(e,f){let h,g=c;g.binary||(g.binary=yield g.getBinary()),b.env instanceof Object&&!b.env.DISPLAY&&(b.env=__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_assign___default()(b.env,{DISPLAY:":0"}));let i;/gksudo/i.test(g.binary)?i="--preserve-env --sudo-mode "+`--description="${g.escapeDoubleQuotes(g.options.name)}"`:/pkexec/i.test(g.binary)&&(i="--disable-internal-agent"),a=`${c.binary} ${i} ${a}`;try{return h=yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils__["a" /* exec */])(a,b),e(h)}catch(j){return f(j)}});return function(){return d.apply(this,arguments)}})())})()}spawn(a,b,c={}){var d=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){let e=d;return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a((()=>{var f=__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(g,h){e.binary||(e.binary=yield e.getBinary()),c.env instanceof Object&&!c.env.DISPLAY&&(c.env=__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_assign___default()(c.env,{DISPLAY:":0"}));let i=[];/gksudo/i.test(e.binary)?(i.push("--preserve-env"),i.push("--sudo-mode"),i.push(`--description="${e.escapeDoubleQuotes(e.options.name)}"`),i.push("--sudo-mode")):/pkexec/i.test(e.binary)&&i.push("--disable-internal-agent"),i.push(a),i.push(b);try{let j=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils__["b" /* spawn */])(e.binary,i,c);return g(j)}catch(j){return h(j)}});return function(){return f.apply(this,arguments)}})())})()}}class SudoerWin32 extends Sudoer{constructor(a={},b){super(a),this.bundled="src\\bin\\elevate.exe",this.binary=null,this.prefixPath=b}writeBatch(a,b,c){var d=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){let e=(yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils__["a" /* exec */])("echo %temp%")).stdout.toString().replace(/\r\n$/,""),f=`${e}\\batch-${Math.random()}.bat`,g=`${e}\\output-${Math.random()}`,h=d.joinEnv(c),i=`setlocal enabledelayedexpansion\r\n`;return h.length&&(i+=`set ${h.join("\r\nset ")}\r\n`),i+=b&&b.length?`${a} ${b.join(" ")}`:a,yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils__["d" /* writeFile */])(f,`${i} > ${g} 2>&1`),yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils__["d" /* writeFile */])(g,""),{batch:f,output:g}})()}watchOutput(a){var b=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){let d=yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils__["e" /* readFile */])(a.files.output);a.stdout.emit("data",d);let e=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_fs__["watchFile"])(a.files.output,{persistent:!0,interval:1},function(){let f=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_fs__["createReadStream"])(a.files.output,{start:e.last}),g=0;f.on("data",function(h){g+=h.length,a&&a.stdout.emit("data",h)}),f.on("close",function(){a.last+=g})});return a.last=d.length,a.on("exit",function(){b.clean(a)}),a})()}prepare(){var a=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){let b=a;return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a((()=>{var c=__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(d,e){if(b.binary)return d(b.binary);let f=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5_path__["join"])(a.tmpdir,"elevate.exe");if(!(yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils__["c" /* stat */])(f))){let g=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_fs__["createWriteStream"])(f);__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_fs__["createReadStream"])(b.bundled).pipe(g),g.on("close",function(){return b.binary=f,d(b.binary)}),g.on("error",function(h){return e(h)})}else b.binary=f,d(b.binary)});return function(){return c.apply(this,arguments)}})())})()}exec(a,b={}){var c=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){let e,f,d=c;return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a((()=>{var g=__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(h,i){try{return yield c.prepare(),e=yield d.writeBatch(a,[],b),a=`${d.encloseDoubleQuotes(d.binary)} -wait ${e.batch}`,yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils__["a" /* exec */])(a,b),f=yield __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils__["e" /* readFile */])(e.output),h(f)}catch(j){return i(j)}});return function(){return g.apply(this,arguments)}})())})()}spawn(a,b,c={}){var d=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){let g,e=yield d.writeBatch(a,b,c),f=[];return f.push("-wait"),f.push(e.batch),yield d.prepare(),g=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils__["b" /* spawn */])(d.binary,f,c,{wait:!1}),g.files=e,yield d.watchOutput(g),g})()}clean(a){__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_fs__["unwatchFile"])(a.files.output),__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_fs__["unlink"])(a.files.batch),__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_fs__["unlink"])(a.files.output)}}
+
+/***/ }),
+
+/***/ "./src/shared/electron-sudo/utils.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return readFile; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return writeFile; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return spawn; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return exec; });
+/* unused harmony export mkdir */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return stat; });
+/* unused harmony export open */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_extends__ = __webpack_require__("./node_modules/babel-runtime/helpers/extends.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_extends___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_extends__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_asyncToGenerator__ = __webpack_require__("./node_modules/babel-runtime/helpers/asyncToGenerator.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_asyncToGenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_asyncToGenerator__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_babel_runtime_core_js_promise__ = __webpack_require__("./node_modules/babel-runtime/core-js/promise.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_babel_runtime_core_js_promise___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_babel_runtime_core_js_promise__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_fs__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_fs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_fs__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_child_process__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_child_process___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_child_process__);
+let exec=(()=>{var a=__WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_asyncToGenerator___default()(function*(b,c={}){return new __WEBPACK_IMPORTED_MODULE_2_babel_runtime_core_js_promise___default.a(function(d,e){__WEBPACK_IMPORTED_MODULE_4_child_process___default.a.exec(b,c,function(f,g,h){return f?e(f):d({stdout:g,stderr:h})})})});return function(){return a.apply(this,arguments)}})(),stat=(()=>{var a=__WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_asyncToGenerator___default()(function*(b){let c=promisify(__WEBPACK_IMPORTED_MODULE_3_fs___default.a.stat);try{let d=yield c(b);return d}catch(d){return null}});return function(){return a.apply(this,arguments)}})();function promisify(a){return function(){return new __WEBPACK_IMPORTED_MODULE_2_babel_runtime_core_js_promise___default.a((b,c)=>{a(...arguments,function(){arguments[0]instanceof Error?c(arguments[0]):b(...Array.prototype.slice.call(arguments,1))})})}}function spawn(a,b,c={}){let d=__WEBPACK_IMPORTED_MODULE_4_child_process___default.a.spawn(a,b,__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_extends___default()({},c,{shell:!0}));return d.output={stdout:new Buffer(0),stderr:new Buffer(0)},d.stdout.on("data",(e)=>{d.output.stdout=concat(e,d.output.stdout)}),d.stderr.on("data",(e)=>{d.output.stderr=concat(e,d.output.stderr)}),d}function concat(a,b){return a instanceof Buffer||(a=new Buffer(a,"utf8")),b instanceof Buffer||(b=new Buffer(0)),Buffer.concat([b,a])}let open=promisify(__WEBPACK_IMPORTED_MODULE_3_fs___default.a.open),mkdir=promisify(__WEBPACK_IMPORTED_MODULE_3_fs___default.a.mkdir),readFile=promisify(__WEBPACK_IMPORTED_MODULE_3_fs___default.a.readFile),writeFile=promisify(__WEBPACK_IMPORTED_MODULE_3_fs___default.a.writeFile);
 
 /***/ }),
 
@@ -110814,6 +111086,14 @@ class GistAPI{constructor(){this.OAUTH=__WEBPACK_IMPORTED_MODULE_5_const_rendere
 /* unused harmony reexport gistApi */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__checkver__ = __webpack_require__("./src/shared/checkver.js");
 /* unused harmony reexport checkver */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__command__ = __webpack_require__("./src/shared/command.js");
+/* unused harmony reexport commandExistsList */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__npmList__ = __webpack_require__("./src/shared/npmList.js");
+/* unused harmony reexport npmList */
+/* unused harmony reexport linkPkg */
+/* unused harmony reexport unLinkPkg */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__electron_sudo__ = __webpack_require__("./src/shared/electron-sudo/index.js");
+/* unused harmony reexport Sudoer */
 const isDev=__WEBPACK_IMPORTED_MODULE_1_electron_is___default.a.dev();
 /* harmony export (immutable) */ __webpack_exports__["a"] = isDev;
 const isMac=__WEBPACK_IMPORTED_MODULE_1_electron_is___default.a.macOS();
@@ -110829,6 +111109,29 @@ const throttle=(a,b)=>{let c;return function(){const d=this,e=arguments;clearTim
 const PROD_DINGDING_TOKEN="be77cc501c1d5a466f91690266495a28b1a0e0cb654cc578cfd5a00dbd1b7850",DEV_DINGDING_TOKEN="399b920a41af24d5c4d0e12f302a496a37e816bf7eaad10aa59fb93f8330cc78";const FEEDBACK_URL=`https://oapi.dingtalk.com/robot/send?access_token=${isDev?DEV_DINGDING_TOKEN:PROD_DINGDING_TOKEN}`;
 /* unused harmony export FEEDBACK_URL */
 
+
+/***/ }),
+
+/***/ "./src/shared/npmList.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export npmList */
+/* unused harmony export linkPkg */
+/* unused harmony export unLinkPkg */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_asyncToGenerator__ = __webpack_require__("./node_modules/babel-runtime/helpers/asyncToGenerator.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_asyncToGenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_asyncToGenerator__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_path__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_path___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_path__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_child_process__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_child_process___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_child_process__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_path_type__ = __webpack_require__("./node_modules/path-type/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_path_type___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_path_type__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_fs_extra__ = __webpack_require__("./node_modules/fs-extra/lib/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_fs_extra___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_fs_extra__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_electron_is__ = __webpack_require__("./node_modules/electron-is/is.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_electron_is___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_electron_is__);
+const getNpmPrefix=(a)=>{try{const b=__WEBPACK_IMPORTED_MODULE_2_child_process___default.a.execSync(`${a} config get prefix`);return b&&b.toString().trim()}catch(b){console.error(b.message)}return null},getNpmPath=(a)=>{return __WEBPACK_IMPORTED_MODULE_5_electron_is___default.a.windows()?__WEBPACK_IMPORTED_MODULE_1_path___default.a.resolve(a,"node_modules"):__WEBPACK_IMPORTED_MODULE_1_path___default.a.resolve(a,"lib/node_modules")},npmList=(a)=>{let b;try{b=__WEBPACK_IMPORTED_MODULE_4_fs_extra___default.a.readdirSync(getNpmPath(getNpmPrefix("npm")))}catch(c){if("ENOENT"===c.code)return[];throw c}for(const c of b){const d=b.indexOf(c),e=__WEBPACK_IMPORTED_MODULE_1_path___default.a.join(a,"node_modules",c);b[d]={name:c,linked:!!__WEBPACK_IMPORTED_MODULE_4_fs_extra___default.a.existsSync(e)&&__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3_path_type__["symlinkSync"])(e)}}return b},linkPkg=(a,b,c)=>{try{const d=__WEBPACK_IMPORTED_MODULE_2_child_process___default.a.execSync(`cd ${b} && ${c||"npm"} link ${a}`);return d&&d.toString().trim()}catch(d){console.error(d.message)}return null},unLinkPkg=(()=>{var a=__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_asyncToGenerator___default()(function*(b,c,d,e){try{const f=yield d.exec(`cd ${c} && ${e||"npm"} unlink ${b}`);return f&&f.toString().trim()}catch(f){console.error(f.message)}return null});return function(){return a.apply(this,arguments)}})();
 
 /***/ }),
 
@@ -110877,14 +111180,14 @@ module.exports = require("https");
 /***/ 13:
 /***/ (function(module, exports) {
 
-module.exports = require("zlib");
+module.exports = require("crypto");
 
 /***/ }),
 
 /***/ 14:
 /***/ (function(module, exports) {
 
-module.exports = require("crypto");
+module.exports = require("zlib");
 
 /***/ }),
 
@@ -110956,21 +111259,21 @@ module.exports = require("util");
 /***/ 4:
 /***/ (function(module, exports) {
 
-module.exports = require("stream");
+module.exports = require("child_process");
 
 /***/ }),
 
 /***/ 5:
 /***/ (function(module, exports) {
 
-module.exports = require("url");
+module.exports = require("stream");
 
 /***/ }),
 
 /***/ 6:
 /***/ (function(module, exports) {
 
-module.exports = require("child_process");
+module.exports = require("url");
 
 /***/ }),
 
