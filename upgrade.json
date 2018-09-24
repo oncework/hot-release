@@ -1,7 +1,21 @@
 {
   "name": "oncework",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "manifest": [
+    {
+      "version": "1.5.1",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Fix filename valid and check env required. 🌕🌕🌕"
+      ]
+    },
     {
       "version": "1.5.0",
       "file": [
