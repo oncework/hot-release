@@ -1,7 +1,19 @@
 {
   "name": "oncework",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "manifest": [
+    {
+      "version": "1.5.2",
+      "file": [
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "- Quick creation of loaded bugs in the fix. 🌕"
+      ]
+    },
     {
       "version": "1.5.1",
       "file": [

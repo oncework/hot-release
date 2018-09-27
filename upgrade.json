@@ -1,7 +1,20 @@
 {
   "name": "oncework",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "manifest": [
+    {
+      "version": "1.5.3",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Root permission is supported to associate the NPM library. 🌕"
+      ]
+    },
     {
       "version": "1.5.2",
       "file": [
