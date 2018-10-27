@@ -1,7 +1,27 @@
 {
   "name": "oncework",
-  "version": "1.6.0",
+  "version": "1.8.0",
   "manifest": [
+    {
+      "version": "1.8.0",
+      "file": [
+        "app/css.worker.js",
+        "app/html.worker.js",
+        "app/json.worker.js",
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json",
+        "app/renderer/css.worker.js",
+        "app/renderer/html.worker.js",
+        "app/renderer/json.worker.js"
+      ],
+      "detail": [
+        "Fill-Ins mode editing is supported."
+      ]
+    },
     {
       "version": "1.6.0",
       "file": [
