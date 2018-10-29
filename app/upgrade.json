@@ -1,7 +1,21 @@
 {
   "name": "oncework",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "manifest": [
+    {
+      "version": "1.8.2",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Update the UI to display an error problem."
+      ]
+    },
     {
       "version": "1.8.1",
       "file": [
