@@ -40372,7 +40372,7 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/electron-v54-darwin-x64/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "4eed9b0ef5a6aa389b90055c1111b43c.node")); } catch(e) {throw new Error('Cannot open ' + "4eed9b0ef5a6aa389b90055c1111b43c.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "fc3795e8ca6b5574a33a634e1a19a21a.node")); } catch(e) {throw new Error('Cannot open ' + "fc3795e8ca6b5574a33a634e1a19a21a.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -40380,7 +40380,7 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/electron-v54-win32-ia32/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "3bbf87da4265f77db4f132c88bb8977c.node")); } catch(e) {throw new Error('Cannot open ' + "3bbf87da4265f77db4f132c88bb8977c.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "18171e4a6aafb2b83b1f009935e93e30.node")); } catch(e) {throw new Error('Cannot open ' + "18171e4a6aafb2b83b1f009935e93e30.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -40388,7 +40388,7 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/electron-v54-win32-x64/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "a29ba847906fd6943335ea4ae07b0317.node")); } catch(e) {throw new Error('Cannot open ' + "a29ba847906fd6943335ea4ae07b0317.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "9c6bb21226093e1fd38659e2954360d4.node")); } catch(e) {throw new Error('Cannot open ' + "9c6bb21226093e1fd38659e2954360d4.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -40396,7 +40396,7 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/node-v57-darwin-x64/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "1c8b406e54922069fc353388550e3454.node")); } catch(e) {throw new Error('Cannot open ' + "1c8b406e54922069fc353388550e3454.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "7677242ec77fc265edebbc655d8e1fae.node")); } catch(e) {throw new Error('Cannot open ' + "7677242ec77fc265edebbc655d8e1fae.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -40404,7 +40404,7 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/node-v57-win32-ia32/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "ea485aa53a7eff87ead6c78b1545e049.node")); } catch(e) {throw new Error('Cannot open ' + "ea485aa53a7eff87ead6c78b1545e049.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "eee7bf8cc81a98b01e11f8ff663a486a.node")); } catch(e) {throw new Error('Cannot open ' + "eee7bf8cc81a98b01e11f8ff663a486a.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
@@ -40412,15 +40412,13 @@ webpackContext.id = "./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/
 /***/ "./node_modules/iohook/builds/node-v57-win32-x64/build/Release/iohook.node":
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "36893d50e9414347700f3017eea572f4.node")); } catch(e) {throw new Error('Cannot open ' + "36893d50e9414347700f3017eea572f4.node" + ': ' + e);}
+/* WEBPACK VAR INJECTION */(function(module) {try { var path = __webpack_require__(0); global.process.dlopen(module, path.join(__dirname, '/', "d4a3d8cb14bce8641386cb0564cb74bf.node")); } catch(e) {throw new Error('Cannot open ' + "d4a3d8cb14bce8641386cb0564cb74bf.node" + ': ' + e);}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
 
 /***/ "./node_modules/iohook/index.js":
 /***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
 
 const EventEmitter = __webpack_require__(8);
 const path = __webpack_require__(0);
@@ -40430,6 +40428,7 @@ try {
   const SegfaultHandler = __webpack_require__("./node_modules/segfault-handler/index.js");
   SegfaultHandler.registerHandler("iohook-crash.log");
 } catch (e) {}
+
 const runtime = process.versions["electron"] ? "electron" : "node";
 const essential =
   runtime +
@@ -40439,12 +40438,9 @@ const essential =
   process.platform +
   "-" +
   process.arch;
+
 if (process.env.DEBUG) {
-  console.info(
-    "Loading native binary: ./builds/" +
-      essential +
-      "/build/Release/iohook.node"
-  );
+  console.info("Loading native binary:", modulePath);
 }
 let NodeHookAddon = __webpack_require__("./node_modules/iohook/builds recursive ^\\.\\/.*\\/build\\/Release\\/iohook\\.node$")("./" +
   essential +
@@ -40467,6 +40463,11 @@ class IOHook extends EventEmitter {
     super();
     this.active = false;
     this.shortcuts = [];
+
+    this.lastKeydownShift = false;
+    this.lastKeydownAlt = false;
+    this.lastKeydownCtrl = false;
+    this.lastKeydownMeta = false;
 
     this.load();
     this.setDebug(false);
@@ -40553,31 +40554,128 @@ class IOHook extends EventEmitter {
   }
 
   /**
+   * Disable mouse click propagation.
+   * The click event are captured and the event emitted but not propagated to the window.
+   */
+  disableClickPropagation() {
+    NodeHookAddon.grabMouseClick(true);
+  }
+
+  /**
+   * Enable mouse click propagation (enabled by default).
+   * The click event are emitted and propagated.
+   */
+  enableClickPropagation() {
+    NodeHookAddon.grabMouseClick(false);
+  }
+
+  /**
    * Local event handler. Don't use it in your code!
    * @param msg Raw event message
    * @private
    */
   _handler(msg) {
-    if (this.active === false) {
-      return;
-    }
-
-    if (!msg) {
-      return;
-    }
+    if (this.active === false || !msg) return;
 
     if (events[msg.type]) {
-      let event = msg.mouse || msg.keyboard || msg.wheel;
+      const event = msg.mouse || msg.keyboard || msg.wheel;
+
       event.type = events[msg.type];
+
+      this._handleShift(event);
+      this._handleAlt(event);
+      this._handleCtrl(event);
+      this._handleMeta(event);
+
       this.emit(events[msg.type], event);
+
+      // If there is any registered shortcuts then handle them.
       if (
         (event.type === "keydown" || event.type === "keyup") &&
         iohook.shortcuts.length > 0
       ) {
         this._handleShortcut(event);
       }
-    } else {
-      console.warn("Unregistered iohook event", msg);
+    }
+  }
+
+  /**
+   * Handles the shift key. Whenever shift is pressed, all future events would
+   * contain { shiftKey: true } in its object, until the shift key is released.
+   * @param event Event object
+   * @private
+   */
+  _handleShift(event) {
+    if (event.type === "keyup" && event.shiftKey) {
+      this.lastKeydownShift = false;
+    }
+
+    if (event.type === "keydown" && event.shiftKey) {
+      this.lastKeydownShift = true;
+    }
+
+    if (this.lastKeydownShift) {
+      event.shiftKey = true;
+    }
+  }
+
+  /**
+   * Handles the alt key. Whenever alt is pressed, all future events would
+   * contain { altKey: true } in its object, until the alt key is released.
+   * @param event Event object
+   * @private
+   */
+  _handleAlt(event) {
+    if (event.type === "keyup" && event.altKey) {
+      this.lastKeydownAlt = false;
+    }
+
+    if (event.type === "keydown" && event.altKey) {
+      this.lastKeydownAlt = true;
+    }
+
+    if (this.lastKeydownAlt) {
+      event.altKey = true;
+    }
+  }
+
+  /**
+   * Handles the ctrl key. Whenever ctrl is pressed, all future events would
+   * contain { ctrlKey: true } in its object, until the ctrl key is released.
+   * @param event Event object
+   * @private
+   */
+  _handleCtrl(event) {
+    if (event.type === "keyup" && event.ctrlKey) {
+      this.lastKeydownCtrl = false;
+    }
+
+    if (event.type === "keydown" && event.ctrlKey) {
+      this.lastKeydownCtrl = true;
+    }
+
+    if (this.lastKeydownCtrl) {
+      event.ctrlKey = true;
+    }
+  }
+
+  /**
+   * Handles the meta key. Whenever meta is pressed, all future events would
+   * contain { metaKey: true } in its object, until the meta key is released.
+   * @param event Event object
+   * @private
+   */
+  _handleMeta(event) {
+    if (event.type === "keyup" && event.metaKey) {
+      this.lastKeydownMeta = false;
+    }
+
+    if (event.type === "keydown" && event.metaKey) {
+      this.lastKeydownMeta = true;
+    }
+
+    if (this.lastKeydownMeta) {
+      event.metaKey = true;
     }
   }
 

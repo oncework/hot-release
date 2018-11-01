@@ -1,7 +1,20 @@
 {
   "name": "oncework",
-  "version": "1.8.3",
+  "version": "1.8.4",
   "manifest": [
+    {
+      "version": "1.8.4",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Add contact information."
+      ]
+    },
     {
       "version": "1.8.3",
       "file": [
