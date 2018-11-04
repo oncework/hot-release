@@ -1,7 +1,21 @@
 {
   "name": "oncework",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "manifest": [
+    {
+      "version": "1.9.1",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Remove the welcome screen."
+      ]
+    },
     {
       "version": "1.9.0",
       "file": [

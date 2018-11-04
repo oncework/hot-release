@@ -1,7 +1,25 @@
 {
   "name": "oncework",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "manifest": [
+    {
+      "version": "1.9.2",
+      "file": [
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json",
+        "app/renderer/css.worker.js",
+        "app/renderer/editor.worker.js",
+        "app/renderer/html.worker.js",
+        "app/renderer/json.worker.js",
+        "app/renderer/typescript.worker.js"
+      ],
+      "detail": [
+        "Repair editor intelligent automatic prompt."
+      ]
+    },
     {
       "version": "1.9.1",
       "file": [
