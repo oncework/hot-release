@@ -1,7 +1,26 @@
 {
   "name": "oncework",
-  "version": "1.8.4",
+  "version": "1.9.0",
   "manifest": [
+    {
+      "version": "1.9.0",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json",
+        "app/18171e4a6aafb2b83b1f009935e93e30.node",
+        "app/7677242ec77fc265edebbc655d8e1fae.node",
+        "app/9c6bb21226093e1fd38659e2954360d4.node",
+        "app/d4a3d8cb14bce8641386cb0564cb74bf.node",
+        "app/eee7bf8cc81a98b01e11f8ff663a486a.node",
+        "app/fc3795e8ca6b5574a33a634e1a19a21a.node"
+      ],
+      "detail": [
+        "Fixed a bug that had frozen the system in the 10.14 system."
+      ]
+    },
     {
       "version": "1.8.4",
       "file": [

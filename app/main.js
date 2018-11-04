@@ -104182,6 +104182,21 @@ module.exports = __webpack_require__(2).deprecate;
 
 /***/ }),
 
+/***/ "./node_modules/uuid/index.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+var v1 = __webpack_require__("./node_modules/uuid/v1.js");
+var v4 = __webpack_require__("./node_modules/uuid/v4.js");
+
+var uuid = v4;
+uuid.v1 = v1;
+uuid.v4 = v4;
+
+module.exports = uuid;
+
+
+/***/ }),
+
 /***/ "./node_modules/uuid/lib/bytesToUuid.js":
 /***/ (function(module, exports) {
 
@@ -104224,6 +104239,122 @@ var crypto = __webpack_require__(13);
 module.exports = function nodeRNG() {
   return crypto.randomBytes(16);
 };
+
+
+/***/ }),
+
+/***/ "./node_modules/uuid/v1.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+var rng = __webpack_require__("./node_modules/uuid/lib/rng.js");
+var bytesToUuid = __webpack_require__("./node_modules/uuid/lib/bytesToUuid.js");
+
+// **`v1()` - Generate time-based UUID**
+//
+// Inspired by https://github.com/LiosK/UUID.js
+// and http://docs.python.org/library/uuid.html
+
+var _nodeId;
+var _clockseq;
+
+// Previous uuid creation time
+var _lastMSecs = 0;
+var _lastNSecs = 0;
+
+// See https://github.com/broofa/node-uuid for API details
+function v1(options, buf, offset) {
+  var i = buf && offset || 0;
+  var b = buf || [];
+
+  options = options || {};
+  var node = options.node || _nodeId;
+  var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq;
+
+  // node and clockseq need to be initialized to random values if they're not
+  // specified.  We do this lazily to minimize issues related to insufficient
+  // system entropy.  See #189
+  if (node == null || clockseq == null) {
+    var seedBytes = rng();
+    if (node == null) {
+      // Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
+      node = _nodeId = [
+        seedBytes[0] | 0x01,
+        seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]
+      ];
+    }
+    if (clockseq == null) {
+      // Per 4.2.2, randomize (14 bit) clockseq
+      clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 0x3fff;
+    }
+  }
+
+  // UUID timestamps are 100 nano-second units since the Gregorian epoch,
+  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
+  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
+  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
+  var msecs = options.msecs !== undefined ? options.msecs : new Date().getTime();
+
+  // Per 4.2.1.2, use count of uuid's generated during the current clock
+  // cycle to simulate higher resolution clock
+  var nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1;
+
+  // Time since last uuid creation (in msecs)
+  var dt = (msecs - _lastMSecs) + (nsecs - _lastNSecs)/10000;
+
+  // Per 4.2.1.2, Bump clockseq on clock regression
+  if (dt < 0 && options.clockseq === undefined) {
+    clockseq = clockseq + 1 & 0x3fff;
+  }
+
+  // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
+  // time interval
+  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
+    nsecs = 0;
+  }
+
+  // Per 4.2.1.2 Throw error if too many uuids are requested
+  if (nsecs >= 10000) {
+    throw new Error('uuid.v1(): Can\'t create more than 10M uuids/sec');
+  }
+
+  _lastMSecs = msecs;
+  _lastNSecs = nsecs;
+  _clockseq = clockseq;
+
+  // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
+  msecs += 12219292800000;
+
+  // `time_low`
+  var tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
+  b[i++] = tl >>> 24 & 0xff;
+  b[i++] = tl >>> 16 & 0xff;
+  b[i++] = tl >>> 8 & 0xff;
+  b[i++] = tl & 0xff;
+
+  // `time_mid`
+  var tmh = (msecs / 0x100000000 * 10000) & 0xfffffff;
+  b[i++] = tmh >>> 8 & 0xff;
+  b[i++] = tmh & 0xff;
+
+  // `time_high_and_version`
+  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
+  b[i++] = tmh >>> 16 & 0xff;
+
+  // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
+  b[i++] = clockseq >>> 8 | 0x80;
+
+  // `clock_seq_low`
+  b[i++] = clockseq & 0xff;
+
+  // `node`
+  for (var n = 0; n < 6; ++n) {
+    b[i + n] = node[n];
+  }
+
+  return buf ? buf : bytesToUuid(b);
+}
+
+module.exports = v1;
 
 
 /***/ }),
@@ -110287,7 +110418,7 @@ const NPM_MAP={"http://registry.npmjs.org":"npm","http://registry.npm.taobao.org
 /***/ "./src/renderer/language/en.js":
 /***/ (function(module, exports) {
 
-module.exports={"function-cursor":"Move cursor to here","function-clipboard":"Copy from the paste board","fill-in-title":"FillIn Model","fill-in-single-line":"Single-line Field","fill-in-width":"Width","fill-in-name":"Name","fill-in-name-show":"Enter a text id name here","fill-in-value":"Value","fill-in-value-show":"Enter text content here","fill-in-multi-line":"Multi-line Field","fill-in-multi-line-rows":"Rows","fill-in-option-section":"Optional Section","fill-in-option-section-isCheck":"Is Check","fill-in-Popup-menu":"Popup Menu","once.tray.quit":"Exit","once.tray.show":"Open Oncework","once.tray.enable.oncework":"Disable Replace Snippet","once.tray.enable.autoOpen":"Disable Keyless Trigger","once.intro.create.tag":"Create Tag","once.intro.create.snippet":"Create Snippet","once.intro.snippet.replace":"Snippet Replace","once.intro.warning.desc":"When you first set the security and privacy Settings in the system preferences, restart the software to use the replacement function.","once.intro.info.shortcuts":"Shortcuts","once.intro.tag.desc":"Snippet support multiple tags","once.intro.snippet.desc":"Automatically load the clipboard","once.intro.done.desc":"Support for custom Settings","once.intro.usage.title":"Usage","once.intro.updater.title":"Update History","once.intro.author.title":"About the author","once.menu.tag":"TAG","once.menu.tag.remove":"Snippet still exist under this tag.","once.menu.tag.create":"Create Tag","once.menu.tag.create.success":"Create Tag Success","once.menu.tag.create.empty":"The tag name cannot be empty.","once.menu.snippet.add":"Add Snippet","once.menu.tag.delete":"Remove Tag","once.menu.tag.delete.content":"Please confirm again to delete this tag?","once.menu.all":"ALL","once.gist.list.sum":"snippets","once.gist.list.sum.delimiter":" of ","search.notFoundContent":"no result.","search.tip":"Please input snippet like name\u3001tag...","welcome.description":"Life is only once, so is work.","update.unidentified":"NoTag","once.script.not.support":"This feature is not currently supported.","once.basic.yes":"Yes","once.basic.no":"No","once.basic.copy":"Replicating success.","once.basic.welcome":"Welcome back","once.basic.config":"Settings","once.basic.logout":"Sign Out","once.basic.notImplemented":"Not Implemented","once.basic.upload.success":"Automatic Upload","once.basic.file.missing":"Snippet being downloaded or damaged.","once.basic.file.missing.desc":"The local snippet has been damaged, please update from the gist","once.basic.token.error":"Please log in again.","once.basic.gist.response.error":"The error message","once.basic.token.login":"Please try to login.","once.basic.app.restart":"Restart","once.basic.info.less":"No description.","once.basic.info.noset":"No Setting","once.basic.system.error":"Error Message","once.basic.tip":"Reminder","once.basic.pay.left":"The number of effective use of non members:","once.basic.pay.right":",Reboot software can be reset.","once.basic.save":"Save","once.basic.help":"Usage Help","once.basic.no.more":"No Found","once.basic.copy.link":"Share Snippet","once.basic.install.plugin":"Install Gist Plugin","once.basic.secret":"Secret","once.basic.install.env":"Please install and use","once.basic.install.env.tip":"More","once.basic.link":"Linking...","once.basic.link.list":"Loading list...","once.basic.link.success":"Link success","once.basic.unlink":"Unlinking...","once.basic.unlink.success":"Unlink success","once.basic.regex.filename":"Please verify and fill in the valid file name.","once.basic.regex.snippet.config":"No matching [ / ] characters or chinese allowed.","once.basic.regex.snippet.config.label":"No matching [ / ] characters.","once.basic.contact":"Contact","once.basic.contact.email":"Email: xudaolong@gmail.com","once.basic.contact.website":"Website: https://once.work","once.basic.contact.name":"Name: Dillon Xu","once.update.check":"Check for updates...","once.update.checking":"Checking the version...","once.update.latest":"There are currently no updates available.","once.update.unknown":"Unknown version","once.update.inPast":"Your application is too low, please update.","once.update.inFurther":"Experience version","once.update.readme":"Update content","once.update.ok":"update","once.update.no":"Ignore update","config.setting":"Software","config.setting.lang":"Language","config.setting.lang.title":"Switching language types requires a reboot of the software to take effect. Is restart allowed?","config.setting.lang.zh":"\u4E2D\u6587","config.setting.lang.en":"English","config.setting.enableAbbr":"Enable Oncework","config.setting.enableSound":"Play Sound","config.setting.triggerKey":"Delimiters","config.setting.jumpNextCursor":"CursorKey","config.setting.pythonPath":"PythonPath","config.setting.pythonPath.tip":"Please input Python folder","config.profile":"Personal","config.profile.member.valid":"Members:","config.profile.member.today":"Today","config.profile.avatar":"Avatar","config.profile.name":"My Name","config.profile.id":"ID","config.profile.email":"My Email","config.profile.home":"Homepage","config.hotkeys":"Hotkeys","config.hotkeys.create.snippet":"Create Snippet","config.hotkeys.search.snippet":"Search Bar","config.pay":"Member","config.pay.package":"Package","config.pay.package.month":"Month","config.pay.package.season":"Season","config.pay.package.year":"Year","config.pay.package.lifetime":"Perm.","config.pay.type":"Payment","config.pay.type.weixin":"WeChat","config.pay.type.alipay":"Alipay","config.pay.amount":"Amount","config.pay.qrcode.first":"Submit","config.pay.qrcode.next":"Scan","config.pay.confirm":"Submit","config.pay.activation":"I have paid","config.pay.activation.success":"Get Member Information Successful","config.pay.confirm.tip":"Resubmit","config.pay.orderInfo":"Order Information","config.pay.orderCol.sourceUuid":"OrderUuid","config.pay.orderCol.realprice":"Amount","config.pay.orderCol.created_at":"Create Date","snippet.env":"Runtime Environment","snippet.plain":"Plain","snippet.js":"Javascript","snippet.shell":"Shell","snippet.python":"Python","snippet.applescript":"AppleScript","snippet.label":"Label","snippet.abbreviation":"Abbreviation","snippet.run":"Run","snippet.run.result":"Preview","snippet.tool.clock":"Time","creator.add":"Add Snippet","creator.private.tip":"isPublic","creator.tagType":"Tag","creator.description.tip":"(Optional) Snippet Content","creator.description.error":"Please enter valid Snippet content","creator.filename":"(Optional) Snippet name","creator.filename.tip":"Snippet name","creator.filename.error":"Please enter a valid Snippet name","creator.content.error":"Please enter a valid Snippet fragment","creator.save":"Save","creator.close":"Close","snippet.header.addTag":"Tag","snippet.tabs.remove.title":"Warm Tips","snippet.tabs.remove.content":"Do you want to delete currently specified Snippet?","snippet.tabs.add.title":"Add Snippet","snippet.tabs.edit.title":"Rename File","snippet.tabs.edit.title.empty":"Please enter a valid filename","snippet.tabs.delete.snippet":"Delete","snippet.tabs.add.tip":"Do not recommend creating multiple files on the same Snippet","snippet.change.language.tip":"Whether to automatically replace the file suffix","gist.list.search":"Search...","gist.list.search.tip":"Name, label, abbreviation.","gist.header.sync.all":"Reset synchronization","gist.header.sync.all.title":"Tips","gist.header.sync.all.content":"Please confirm if you want to re-sync all Snippet on Gist?","gist.header.sync.download":"Update Current Snippet from Gist","gist.header.sync.download.success":"Update From Gist.","gist.header.sync.download.fail":"Update Failed","gist.header.sync.download.notFound":"Please open the Snippet","gist.header.sync.upload":"Manually upload to Gist","gist.header.sync.welcome":"Welcome","menu.none":"Please add ...","gist.login":"Sign In","gist.registry":"Sign Up","gist.login.success":"Login Successful","gist.clear":"Clear Data","gist.clear.success":"Empty success","gist.reLogin":"Please wait...","gist.sync":"User sync completed"};
+module.exports={"function-cursor":"Move cursor to here","function-clipboard":"Copy from the paste board","fill-in-title":"FillIn Model","fill-in-single-line":"Single-line Field","fill-in-width":"Width","fill-in-name":"Name","fill-in-name-show":"Enter a text id name here","fill-in-value":"Value","fill-in-value-show":"Enter text content here","fill-in-multi-line":"Multi-line Field","fill-in-multi-line-rows":"Rows","fill-in-option-section":"Optional Section","fill-in-option-section-isCheck":"Is Check","fill-in-Popup-menu":"Popup Menu","once.tray.quit":"Exit","once.tray.show":"Open Oncework","once.tray.enable.oncework":"Disable Replace Snippet","once.tray.enable.autoOpen":"Disable Keyless Trigger","once.intro.create.tag":"CREATE TAG","once.intro.create.snippet":"CREATE SNIPPET","once.intro.snippet.replace":"SNIPPET REPLACE","once.intro.warning.desc":"When you first set the security and privacy Settings in the system preferences, restart the software to use the replacement function.","once.intro.info.shortcuts":"Shortcuts","once.intro.tag.desc":"Snippet support multiple tags","once.intro.snippet.desc":"Automatically load the clipboard","once.intro.done.desc":"Support for custom Settings","once.intro.usage.title":"Usage","once.intro.updater.title":"Update History","once.intro.author.title":"About the author","once.menu.tag":"TAG","once.menu.tag.remove":"Snippet still exist under this tag.","once.menu.tag.create":"Create Tag","once.menu.tag.create.success":"Create Tag Success","once.menu.tag.create.empty":"The tag name cannot be empty.","once.menu.snippet.add":"Add Snippet","once.menu.tag.delete":"Remove Tag","once.menu.tag.delete.content":"Please confirm again to delete this tag?","once.menu.all":"ALL","once.gist.list.sum":"snippets","once.gist.list.sum.delimiter":" of ","search.notFoundContent":"no result.","search.tip":"Please input snippet like name\u3001tag...","welcome.description":"Life is only once, so is work.","update.unidentified":"NoTag","once.script.not.support":"This feature is not currently supported.","once.basic.yes":"Yes","once.basic.no":"No","once.basic.copy":"Replicating success.","once.basic.welcome":"Welcome back","once.basic.config":"Settings","once.basic.logout":"Sign Out","once.basic.notImplemented":"Not Implemented","once.basic.upload.success":"Automatic Upload","once.basic.file.missing":"Snippet being downloaded or damaged.","once.basic.file.missing.desc":"The local snippet has been damaged, please update from the gist","once.basic.token.error":"Please log in again.","once.basic.gist.response.error":"The error message","once.basic.token.login":"Please try to login.","once.basic.app.restart":"Restart","once.basic.info.less":"No description.","once.basic.info.noset":"No Setting","once.basic.system.error":"Error Message","once.basic.tip":"Reminder","once.basic.pay.left":"The number of effective use of non members:","once.basic.pay.right":",Reboot software can be reset.","once.basic.save":"Save","once.basic.help":"Usage Help","once.basic.no.more":"No Found","once.basic.copy.link":"Share Snippet","once.basic.install.plugin":"Install Gist Plugin","once.basic.secret":"Secret","once.basic.install.env":"Please install and use","once.basic.install.env.tip":"More","once.basic.link":"Linking...","once.basic.link.list":"Loading list...","once.basic.link.success":"Link success","once.basic.unlink":"Unlinking...","once.basic.unlink.success":"Unlink success","once.basic.regex.filename":"Please verify and fill in the valid file name.","once.basic.regex.snippet.config":"No matching [ / ] characters or chinese allowed.","once.basic.regex.snippet.config.label":"No matching [ / ] characters.","once.basic.contact":"Contact","once.basic.contact.email":"Email: xudaolong@gmail.com","once.basic.contact.website":"Website: https://once.work","once.basic.contact.name":"Name: Dillon Xu","once.update.check":"Check for updates...","once.update.checking":"Checking the version...","once.update.latest":"There are currently no updates available.","once.update.unknown":"Unknown version","once.update.inPast":"Your application is too low, please update.","once.update.inFurther":"Experience version","once.update.readme":"Update content","once.update.ok":"update","once.update.no":"Ignore update","config.setting":"Software","config.setting.lang":"Language","config.setting.lang.title":"Switching language types requires a reboot of the software to take effect. Is restart allowed?","config.setting.lang.zh":"\u4E2D\u6587","config.setting.lang.en":"English","config.setting.enableAbbr":"Enable Oncework","config.setting.enableSound":"Play Sound","config.setting.triggerKey":"Delimiters","config.setting.jumpNextCursor":"CursorKey","config.setting.pythonPath":"PythonPath","config.setting.pythonPath.tip":"Please input Python folder","config.profile":"Personal","config.profile.member.valid":"Members:","config.profile.member.today":"Today","config.profile.avatar":"Avatar","config.profile.name":"My Name","config.profile.id":"ID","config.profile.email":"My Email","config.profile.home":"Homepage","config.hotkeys":"Hotkeys","config.hotkeys.create.snippet":"Create Snippet","config.hotkeys.search.snippet":"Search Bar","config.pay":"Member","config.pay.package":"Package","config.pay.package.month":"Month","config.pay.package.season":"Season","config.pay.package.year":"Year","config.pay.package.lifetime":"Perm.","config.pay.type":"Payment","config.pay.type.weixin":"WeChat","config.pay.type.alipay":"Alipay","config.pay.amount":"Amount","config.pay.qrcode.first":"Submit","config.pay.qrcode.next":"Scan","config.pay.confirm":"Submit","config.pay.activation":"I have paid","config.pay.activation.success":"Get Member Information Successful","config.pay.confirm.tip":"Resubmit","config.pay.orderInfo":"Order Information","config.pay.orderCol.sourceUuid":"OrderUuid","config.pay.orderCol.realprice":"Amount","config.pay.orderCol.created_at":"Create Date","snippet.env":"Runtime Environment","snippet.plain":"Plain","snippet.js":"Javascript","snippet.shell":"Shell","snippet.python":"Python","snippet.applescript":"AppleScript","snippet.label":"Label","snippet.abbreviation":"Abbreviation","snippet.run":"Run","snippet.run.result":"Preview","snippet.tool.clock":"Time","creator.add":"Add Snippet","creator.private.tip":"isPublic","creator.tagType":"Tag","creator.description.tip":"(Optional) Snippet Content","creator.description.error":"Please enter valid Snippet content","creator.filename":"(Optional) Snippet name","creator.filename.tip":"Snippet name","creator.filename.error":"Please enter a valid Snippet name","creator.content.error":"Please enter a valid Snippet fragment","creator.save":"Save","creator.close":"Close","snippet.header.addTag":"Tag","snippet.tabs.remove.title":"Warm Tips","snippet.tabs.remove.content":"Do you want to delete currently specified Snippet?","snippet.tabs.add.title":"Add Snippet","snippet.tabs.edit.title":"Rename File","snippet.tabs.edit.title.empty":"Please enter a valid filename","snippet.tabs.delete.snippet":"Delete","snippet.tabs.add.tip":"Do not recommend creating multiple files on the same Snippet","snippet.change.language.tip":"Whether to automatically replace the file suffix","gist.list.search":"Search...","gist.list.search.tip":"Name, label, abbreviation.","gist.header.sync.all":"Reset synchronization","gist.header.sync.all.title":"Tips","gist.header.sync.all.content":"Please confirm if you want to re-sync all Snippet on Gist?","gist.header.sync.download":"Update Current Snippet from Gist","gist.header.sync.download.success":"Update From Gist.","gist.header.sync.download.fail":"Update Failed","gist.header.sync.download.notFound":"Please open the Snippet","gist.header.sync.upload":"Manually upload to Gist","gist.header.sync.welcome":"Welcome","menu.none":"Please add ...","gist.login":"Sign In","gist.registry":"Sign Up","gist.login.success":"Login Successful","gist.clear":"Clear Data","gist.clear.success":"Empty success","gist.reLogin":"Please wait...","gist.sync":"User sync completed"};
 
 /***/ }),
 
@@ -110353,6 +110484,26 @@ const checkDiff=(a,b)=>{return!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_command_exists__ = __webpack_require__("./node_modules/command-exists/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_command_exists___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_command_exists__);
 const commandExistsList=(a)=>{const b=[];return a.forEach((c)=>{c&&b.push({command:c,isExist:__WEBPACK_IMPORTED_MODULE_0_command_exists___default.a.sync(c)})}),b};
+
+/***/ }),
+
+/***/ "./src/shared/constants.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+const gistOauthConfig={id:"27d19faf0c1a91047ab1",secret:"6d5ae2a4160a9ec8263f7c60772fe5f2c06de41a",scopes:["gist"]};
+/* harmony export (immutable) */ __webpack_exports__["a"] = gistOauthConfig;
+const website="http://www.sucheye.com/oncework/api";
+/* unused harmony export website */
+const WELCOME_PAGE="WELCOME_PAGE";
+/* unused harmony export WELCOME_PAGE */
+const GIST_PAGE="GIST_PAGE";
+/* unused harmony export GIST_PAGE */
+const SHUTDOWN_PAGE="SHUTDOWN_PAGE";
+/* unused harmony export SHUTDOWN_PAGE */
+const LANGUAGE="LANGUAGE";
+/* unused harmony export LANGUAGE */
+
 
 /***/ }),
 
@@ -110442,64 +110593,32 @@ let exec=(()=>{var a=__WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_asyncToGe
 
 /***/ }),
 
-/***/ "./src/shared/gist-api.js":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify__ = __webpack_require__("./node_modules/babel-runtime/core-js/json/stringify.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_object_assign__ = __webpack_require__("./node_modules/babel-runtime/core-js/object/assign.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_object_assign___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_object_assign__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator__ = __webpack_require__("./node_modules/babel-runtime/helpers/asyncToGenerator.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_gists__ = __webpack_require__("./node_modules/gists/index.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_gists___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_gists__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_es6_promisify__ = __webpack_require__("./node_modules/es6-promisify/dist/promisify.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_es6_promisify___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_const_renderer_once__ = __webpack_require__("./src/renderer/constants.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__request__ = __webpack_require__("./src/shared/request.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__request___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__request__);
-class GistAPI{constructor(){this.OAUTH=__WEBPACK_IMPORTED_MODULE_5_const_renderer_once__["a" /* GIST_OAUTH */],this.gist=null,this.getP=null}getUserInfo(){var a=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){const b=yield a.getP("/user");return a.gist.options=__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_object_assign___default()({},a.gist.options,{username:b.login}),b})()}getToken(a){var b=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){const{data:c}=yield __WEBPACK_IMPORTED_MODULE_6__request___default()("https://github.com/login/oauth/access_token",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify___default()({client_id:b.OAUTH.id,client_secret:b.OAUTH.secret,code:a})});return b.initGist(c.access_token),c.access_token})()}initGist(a){return this.gist=new __WEBPACK_IMPORTED_MODULE_3_gists___default.a({token:a}),this.makePromise()}makePromise(){return this.getP=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.get).bind(this.gist),this.gist.list=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.list).bind(this.gist),this.gist.all=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.all).bind(this.gist),this.gist.allPublic=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.allPublic),this.gist.starred=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.starred),this.gist.download=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.download),this.gist.revision=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.revision),this.gist.commits=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.commits),this.gist.forks=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.forks),this.gist.create=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.create),this.gist.fork=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.fork),this.gist.edit=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.edit),this.gist.star=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.star),this.gist.unstar=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.unstar),this.gist.isStarred=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.isStarred),this.gist.destroy=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.destroy).bind(this.gist),this.gist.comment=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.comment).bind(this.gist),this.gist.editComment=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.editComment).bind(this.gist),this.gist.destroyComment=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.destroyComment).bind(this.gist),this.gist.getComment=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.getComment).bind(this.gist),this.gist.getComments=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.getComments).bind(this.gist),this}}/* unused harmony default export */ var _unused_webpack_default_export = (new GistAPI);
-
-/***/ }),
-
 /***/ "./src/shared/index.js":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_promise__ = __webpack_require__("./node_modules/babel-runtime/core-js/promise.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_promise___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_promise__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_electron_is__ = __webpack_require__("./node_modules/electron-is/is.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_electron_is___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_electron_is__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__request__ = __webpack_require__("./src/shared/request.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__request___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__request__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__electron_sudo__ = __webpack_require__("./src/shared/electron-sudo/index.js");
+/* unused harmony reexport Sudoer */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__request__ = __webpack_require__("./src/shared/request.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__request___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__request__);
 /* unused harmony reexport request */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__gist_api__ = __webpack_require__("./src/shared/gist-api.js");
-/* unused harmony reexport gistApi */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__checkver__ = __webpack_require__("./src/shared/checkver.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__snippet_api__ = __webpack_require__("./src/shared/snippet-api.js");
+/* unused harmony reexport SnippetAPI */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__checkver__ = __webpack_require__("./src/shared/checkver.js");
 /* unused harmony reexport checkver */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__command__ = __webpack_require__("./src/shared/command.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__command__ = __webpack_require__("./src/shared/command.js");
 /* unused harmony reexport commandExistsList */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__npmList__ = __webpack_require__("./src/shared/npmList.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__npmList__ = __webpack_require__("./src/shared/npmList.js");
 /* unused harmony reexport npmList */
 /* unused harmony reexport linkPkg */
 /* unused harmony reexport unLinkPkg */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__electron_sudo__ = __webpack_require__("./src/shared/electron-sudo/index.js");
-/* unused harmony reexport Sudoer */
-const isDev=__WEBPACK_IMPORTED_MODULE_1_electron_is___default.a.dev();
-/* harmony export (immutable) */ __webpack_exports__["a"] = isDev;
-const isMac=__WEBPACK_IMPORTED_MODULE_1_electron_is___default.a.macOS();
-/* harmony export (immutable) */ __webpack_exports__["b"] = isMac;
-const isWin=__WEBPACK_IMPORTED_MODULE_1_electron_is___default.a.windows();
-/* harmony export (immutable) */ __webpack_exports__["c"] = isWin;
-const isLinux=__WEBPACK_IMPORTED_MODULE_1_electron_is___default.a.linux();
-/* unused harmony export isLinux */
-const delay=(a)=>new __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_promise___default.a((b)=>setTimeout(b,a));
-/* unused harmony export delay */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__runtime__ = __webpack_require__("./src/shared/runtime.js");
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_6__runtime__["a"]; });
+/* unused harmony reexport isLinux */
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_6__runtime__["b"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_6__runtime__["c"]; });
 const throttle=(a,b)=>{let c;return function(){const d=this,e=arguments;clearTimeout(c),c=setTimeout(()=>a.apply(d,e),b)}};
 /* unused harmony export throttle */
-const PROD_DINGDING_TOKEN="be77cc501c1d5a466f91690266495a28b1a0e0cb654cc578cfd5a00dbd1b7850",DEV_DINGDING_TOKEN="399b920a41af24d5c4d0e12f302a496a37e816bf7eaad10aa59fb93f8330cc78";const FEEDBACK_URL=`https://oapi.dingtalk.com/robot/send?access_token=${isDev?DEV_DINGDING_TOKEN:PROD_DINGDING_TOKEN}`;
-/* unused harmony export FEEDBACK_URL */
 
 
 /***/ }),
@@ -110531,6 +110650,52 @@ const getNpmPrefix=(a)=>{try{const b=__WEBPACK_IMPORTED_MODULE_2_child_process__
 /***/ (function(module, exports, __webpack_require__) {
 
 const fetch=__webpack_require__("./node_modules/node-fetch/index.js"),debug=__webpack_require__("./node_modules/debug/src/index.js")("once:request");function parseJSON(a){return a.json()}function checkStatus(a){if(200<=a.status&&300>a.status)return a;const b=new Error(a.statusText);throw b.response=a,b}module.exports=(a,b)=>fetch(a,b).then(checkStatus).then(parseJSON).then((c)=>{return 0<=a.indexOf("github")&&(debug("\u8BF7\u6C42\u7684URL",a),debug("\u8FD4\u56DE\u7684DATA",c)),{data:c}}).catch((c)=>({err:c}));
+
+/***/ }),
+
+/***/ "./src/shared/runtime.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_electron_is__ = __webpack_require__("./node_modules/electron-is/is.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_electron_is___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_electron_is__);
+const isDev=__WEBPACK_IMPORTED_MODULE_0_electron_is___default.a.dev();
+/* harmony export (immutable) */ __webpack_exports__["a"] = isDev;
+const isMac=__WEBPACK_IMPORTED_MODULE_0_electron_is___default.a.macOS();
+/* harmony export (immutable) */ __webpack_exports__["b"] = isMac;
+const isWin=__WEBPACK_IMPORTED_MODULE_0_electron_is___default.a.windows();
+/* harmony export (immutable) */ __webpack_exports__["c"] = isWin;
+const isLinux=__WEBPACK_IMPORTED_MODULE_0_electron_is___default.a.linux();
+/* unused harmony export isLinux */
+
+
+/***/ }),
+
+/***/ "./src/shared/snippet-api.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_assign__ = __webpack_require__("./node_modules/babel-runtime/core-js/object/assign.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_assign___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_assign__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_json_stringify__ = __webpack_require__("./node_modules/babel-runtime/core-js/json/stringify.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_json_stringify___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_json_stringify__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator__ = __webpack_require__("./node_modules/babel-runtime/helpers/asyncToGenerator.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_gists__ = __webpack_require__("./node_modules/gists/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_gists___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_gists__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_es6_promisify__ = __webpack_require__("./node_modules/es6-promisify/dist/promisify.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_es6_promisify___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__constants__ = __webpack_require__("./src/shared/constants.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__request__ = __webpack_require__("./src/shared/request.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__request___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__request__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__runtime__ = __webpack_require__("./src/shared/runtime.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_path__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_path___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_path__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_lodash__ = __webpack_require__("./node_modules/lodash/lodash.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9_lodash__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_uuid__ = __webpack_require__("./node_modules/uuid/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_uuid___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10_uuid__);
+class SnippetAPI{constructor(){this.gist=null,this.cloud={path:__WEBPACK_IMPORTED_MODULE_7__runtime__["a" /* isDev */]?__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8_path__["join"])(__dirname,"./dummy/cloud"):""}}all(a){var b=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){if(b.gist)return yield b.gist.all(a);return b.cloud?-1:void 0})()}create(a){var b=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){if(b.gist)return yield b.gist.create(a);return b.cloud?(console.info("cloud create",__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_json_stringify___default()(a)),-1):void 0})()}destroy(a){var b=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){if(b.gist)return yield b.gist.destroy(a);return b.cloud?-1:void 0})()}edit(a){var b=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){if(b.gist)return yield b.gist.edit(a);return b.cloud?-1:void 0})()}download(a,b){var c=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){if(c.gist)return yield c.gist.download(a,b);return c.cloud?-1:void 0})()}setCloudConfig(a){this.cloud=__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_assign___default()({},this.cloud,a)}getGistUser(){var a=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){const b=yield a.gist.getP("/user");return a.gist.options=__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_assign___default()({},a.gist.options,{username:b.login}),b})()}getGistToken(a){var b=this;return __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_asyncToGenerator___default()(function*(){const{data:c}=yield __WEBPACK_IMPORTED_MODULE_6__request___default()("https://github.com/login/oauth/access_token",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_json_stringify___default()({client_id:__WEBPACK_IMPORTED_MODULE_5__constants__["a" /* gistOauthConfig */].id,client_secret:__WEBPACK_IMPORTED_MODULE_5__constants__["a" /* gistOauthConfig */].secret,code:a})});return b.tryInitGist(c.access_token),c.access_token})()}tryInitGist(a){return __WEBPACK_IMPORTED_MODULE_9_lodash___default.a.isEmpty(a)?this:(this.gist=new __WEBPACK_IMPORTED_MODULE_3_gists___default.a({token:a}),this.promisifyGist())}promisifyGist(){return this.gist.getP=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.get).bind(this.gist),this.gist.list=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.list).bind(this.gist),this.gist.all=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.all).bind(this.gist),this.gist.allPublic=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.allPublic),this.gist.starred=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.starred),this.gist.download=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.download),this.gist.revision=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.revision),this.gist.commits=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.commits),this.gist.forks=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.forks),this.gist.create=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.create),this.gist.fork=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.fork),this.gist.edit=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.edit),this.gist.star=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.star),this.gist.unstar=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.unstar),this.gist.isStarred=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.isStarred),this.gist.destroy=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.destroy).bind(this.gist),this.gist.comment=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.comment).bind(this.gist),this.gist.editComment=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.editComment).bind(this.gist),this.gist.destroyComment=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.destroyComment).bind(this.gist),this.gist.getComment=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.getComment).bind(this.gist),this.gist.getComments=__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_es6_promisify__["promisify"])(this.gist.getComments).bind(this.gist),this}}/* unused harmony default export */ var _unused_webpack_default_export = (new SnippetAPI);
 
 /***/ }),
 
