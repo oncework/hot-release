@@ -56,7 +56,6 @@
   else conf.usage = true
 
   if (conf.version) {
-    console.log(npm.version)
     return errorHandler.exit(0)
   }
 

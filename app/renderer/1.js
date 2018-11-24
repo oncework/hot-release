@@ -20,7 +20,8 @@ webpackJsonp([1],{
 function removeProperty(text, path, formattingOptions) {
     return setProperty(text, path, void 0, formattingOptions);
 }
-function setProperty(text, path, value, formattingOptions, getInsertionIndex) {
+function setProperty(text, originalPath, value, formattingOptions, getInsertionIndex) {
+    var path = originalPath.slice();
     var errors = [];
     var root = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__parser_js__["c" /* parseTree */])(text, errors);
     var parent = void 0;
@@ -1495,23 +1496,23 @@ function applyEdits(text, edits) {
 /* unused harmony export Color */
 /* unused harmony export ColorInformation */
 /* unused harmony export ColorPresentation */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return FoldingRangeKind; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return FoldingRangeKind; });
 /* unused harmony export FoldingRange */
 /* unused harmony export DiagnosticRelatedInformation */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return DiagnosticSeverity; });
 /* unused harmony export Diagnostic */
 /* unused harmony export Command */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return TextEdit; });
+/* unused harmony export TextEdit */
 /* unused harmony export TextDocumentEdit */
 /* unused harmony export WorkspaceEdit */
 /* unused harmony export WorkspaceChange */
 /* unused harmony export TextDocumentIdentifier */
 /* unused harmony export VersionedTextDocumentIdentifier */
 /* unused harmony export TextDocumentItem */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return MarkupKind; });
+/* unused harmony export MarkupKind */
 /* unused harmony export MarkupContent */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return CompletionItemKind; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return InsertTextFormat; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return InsertTextFormat; });
 /* unused harmony export CompletionItem */
 /* unused harmony export CompletionList */
 /* unused harmony export MarkedString */
@@ -1520,7 +1521,7 @@ function applyEdits(text, edits) {
 /* unused harmony export SignatureInformation */
 /* unused harmony export DocumentHighlightKind */
 /* unused harmony export DocumentHighlight */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return SymbolKind; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return SymbolKind; });
 /* unused harmony export SymbolInformation */
 /* unused harmony export DocumentSymbol */
 /* unused harmony export CodeActionKind */
@@ -2453,8 +2454,9 @@ var DocumentSymbol = /** @class */ (function () {
     function is(value) {
         var candidate = value;
         return candidate &&
-            Is.string(candidate.name) && Is.string(candidate.detail) && Is.number(candidate.kind) &&
+            Is.string(candidate.name) && Is.number(candidate.kind) &&
             Range.is(candidate.range) && Range.is(candidate.selectionRange) &&
+            (candidate.detail === void 0 || Is.string(candidate.detail)) &&
             (candidate.deprecated === void 0 || Is.boolean(candidate.deprecated)) &&
             (candidate.children === void 0 || Array.isArray(candidate.children));
     }
@@ -3162,47 +3164,6 @@ function toTextEdit(textEdit) {
         text: textEdit.newText
     };
 }
-function toCompletionItem(entry) {
-    return {
-        label: entry.label,
-        insertText: entry.insertText,
-        sortText: entry.sortText,
-        filterText: entry.filterText,
-        documentation: entry.documentation,
-        detail: entry.detail,
-        kind: toCompletionItemKind(entry.kind),
-        textEdit: toTextEdit(entry.textEdit),
-        data: entry.data
-    };
-}
-function fromMarkdownString(entry) {
-    return {
-        kind: (typeof entry === 'string' ? __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["c" /* MarkupKind */].PlainText : __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["c" /* MarkupKind */].Markdown),
-        value: (typeof entry === 'string' ? entry : entry.value)
-    };
-}
-function fromCompletionItem(entry) {
-    var item = {
-        label: entry.label,
-        sortText: entry.sortText,
-        filterText: entry.filterText,
-        documentation: fromMarkdownString(entry.documentation),
-        detail: entry.detail,
-        kind: fromCompletionItemKind(entry.kind),
-        data: entry.data
-    };
-    if (typeof entry.insertText === 'object' && typeof entry.insertText.value === 'string') {
-        item.insertText = entry.insertText.value;
-        item.insertTextFormat = __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* InsertTextFormat */].Snippet;
-    }
-    else {
-        item.insertText = entry.insertText;
-    }
-    if (entry.range) {
-        item.textEdit = __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["e" /* TextEdit */].replace(fromRange(entry.range), item.insertText);
-    }
-    return item;
-}
 var CompletionAdapter = /** @class */ (function () {
     function CompletionAdapter(_worker) {
         this._worker = _worker;
@@ -3214,10 +3175,10 @@ var CompletionAdapter = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    CompletionAdapter.prototype.provideCompletionItems = function (model, position, token) {
+    CompletionAdapter.prototype.provideCompletionItems = function (model, position, context, token) {
         var wordInfo = model.getWordUntilPosition(position);
         var resource = model.uri;
-        return wireCancellationToken(token, this._worker(resource).then(function (worker) {
+        return this._worker(resource).then(function (worker) {
             return worker.doComplete(resource.toString(), fromPosition(position));
         }).then(function (info) {
             if (!info) {
@@ -3226,7 +3187,7 @@ var CompletionAdapter = /** @class */ (function () {
             var items = info.items.map(function (entry) {
                 var item = {
                     label: entry.label,
-                    insertText: entry.insertText,
+                    insertText: entry.insertText || entry.label,
                     sortText: entry.sortText,
                     filterText: entry.filterText,
                     documentation: entry.documentation,
@@ -3237,16 +3198,19 @@ var CompletionAdapter = /** @class */ (function () {
                     item.range = toRange(entry.textEdit.range);
                     item.insertText = entry.textEdit.newText;
                 }
-                if (entry.insertTextFormat === __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* InsertTextFormat */].Snippet) {
-                    item.insertText = { value: item.insertText };
+                if (entry.additionalTextEdits) {
+                    item.additionalTextEdits = entry.additionalTextEdits.map(toTextEdit);
+                }
+                if (entry.insertTextFormat === __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["c" /* InsertTextFormat */].Snippet) {
+                    item.insertTextRules = monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet;
                 }
                 return item;
             });
             return {
                 isIncomplete: info.isIncomplete,
-                items: items
+                suggestions: items
             };
-        }));
+        });
     };
     return CompletionAdapter;
 }());
@@ -3288,7 +3252,7 @@ var HoverAdapter = /** @class */ (function () {
     }
     HoverAdapter.prototype.provideHover = function (model, position, token) {
         var resource = model.uri;
-        return wireCancellationToken(token, this._worker(resource).then(function (worker) {
+        return this._worker(resource).then(function (worker) {
             return worker.doHover(resource.toString(), fromPosition(position));
         }).then(function (info) {
             if (!info) {
@@ -3298,7 +3262,7 @@ var HoverAdapter = /** @class */ (function () {
                 range: toRange(info.range),
                 contents: toMarkedStringArray(info.contents)
             };
-        }));
+        });
     };
     return HoverAdapter;
 }());
@@ -3314,24 +3278,24 @@ function toLocation(location) {
 function toSymbolKind(kind) {
     var mKind = monaco.languages.SymbolKind;
     switch (kind) {
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].File: return mKind.Array;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].Module: return mKind.Module;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].Namespace: return mKind.Namespace;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].Package: return mKind.Package;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].Class: return mKind.Class;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].Method: return mKind.Method;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].Property: return mKind.Property;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].Field: return mKind.Field;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].Constructor: return mKind.Constructor;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].Enum: return mKind.Enum;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].Interface: return mKind.Interface;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].Function: return mKind.Function;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].Variable: return mKind.Variable;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].Constant: return mKind.Constant;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].String: return mKind.String;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].Number: return mKind.Number;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].Boolean: return mKind.Boolean;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* SymbolKind */].Array: return mKind.Array;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].File: return mKind.Array;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].Module: return mKind.Module;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].Namespace: return mKind.Namespace;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].Package: return mKind.Package;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].Class: return mKind.Class;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].Method: return mKind.Method;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].Property: return mKind.Property;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].Field: return mKind.Field;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].Constructor: return mKind.Constructor;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].Enum: return mKind.Enum;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].Interface: return mKind.Interface;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].Function: return mKind.Function;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].Variable: return mKind.Variable;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].Constant: return mKind.Constant;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].String: return mKind.String;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].Number: return mKind.Number;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].Boolean: return mKind.Boolean;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* SymbolKind */].Array: return mKind.Array;
     }
     return mKind.Function;
 }
@@ -3341,7 +3305,7 @@ var DocumentSymbolAdapter = /** @class */ (function () {
     }
     DocumentSymbolAdapter.prototype.provideDocumentSymbols = function (model, token) {
         var resource = model.uri;
-        return wireCancellationToken(token, this._worker(resource).then(function (worker) { return worker.findDocumentSymbols(resource.toString()); }).then(function (items) {
+        return this._worker(resource).then(function (worker) { return worker.findDocumentSymbols(resource.toString()); }).then(function (items) {
             if (!items) {
                 return;
             }
@@ -3353,7 +3317,7 @@ var DocumentSymbolAdapter = /** @class */ (function () {
                 range: toRange(item.location.range),
                 selectionRange: toRange(item.location.range)
             }); });
-        }));
+        });
     };
     return DocumentSymbolAdapter;
 }());
@@ -3370,14 +3334,14 @@ var DocumentFormattingEditProvider = /** @class */ (function () {
     }
     DocumentFormattingEditProvider.prototype.provideDocumentFormattingEdits = function (model, options, token) {
         var resource = model.uri;
-        return wireCancellationToken(token, this._worker(resource).then(function (worker) {
+        return this._worker(resource).then(function (worker) {
             return worker.format(resource.toString(), null, fromFormattingOptions(options)).then(function (edits) {
                 if (!edits || edits.length === 0) {
                     return;
                 }
                 return edits.map(toTextEdit);
             });
-        }));
+        });
     };
     return DocumentFormattingEditProvider;
 }());
@@ -3388,14 +3352,14 @@ var DocumentRangeFormattingEditProvider = /** @class */ (function () {
     }
     DocumentRangeFormattingEditProvider.prototype.provideDocumentRangeFormattingEdits = function (model, range, options, token) {
         var resource = model.uri;
-        return wireCancellationToken(token, this._worker(resource).then(function (worker) {
+        return this._worker(resource).then(function (worker) {
             return worker.format(resource.toString(), fromRange(range), fromFormattingOptions(options)).then(function (edits) {
                 if (!edits || edits.length === 0) {
                     return;
                 }
                 return edits.map(toTextEdit);
             });
-        }));
+        });
     };
     return DocumentRangeFormattingEditProvider;
 }());
@@ -3406,7 +3370,7 @@ var DocumentColorAdapter = /** @class */ (function () {
     }
     DocumentColorAdapter.prototype.provideDocumentColors = function (model, token) {
         var resource = model.uri;
-        return wireCancellationToken(token, this._worker(resource).then(function (worker) { return worker.findDocumentColors(resource.toString()); }).then(function (infos) {
+        return this._worker(resource).then(function (worker) { return worker.findDocumentColors(resource.toString()); }).then(function (infos) {
             if (!infos) {
                 return;
             }
@@ -3414,11 +3378,11 @@ var DocumentColorAdapter = /** @class */ (function () {
                 color: item.color,
                 range: toRange(item.range)
             }); });
-        }));
+        });
     };
     DocumentColorAdapter.prototype.provideColorPresentations = function (model, info, token) {
         var resource = model.uri;
-        return wireCancellationToken(token, this._worker(resource).then(function (worker) { return worker.getColorPresentations(resource.toString(), info.color, fromRange(info.range)); }).then(function (presentations) {
+        return this._worker(resource).then(function (worker) { return worker.getColorPresentations(resource.toString(), info.color, fromRange(info.range)); }).then(function (presentations) {
             if (!presentations) {
                 return;
             }
@@ -3434,7 +3398,7 @@ var DocumentColorAdapter = /** @class */ (function () {
                 }
                 return item;
             });
-        }));
+        });
     };
     return DocumentColorAdapter;
 }());
@@ -3445,7 +3409,7 @@ var FoldingRangeAdapter = /** @class */ (function () {
     }
     FoldingRangeAdapter.prototype.provideFoldingRanges = function (model, context, token) {
         var resource = model.uri;
-        return wireCancellationToken(token, this._worker(resource).then(function (worker) { return worker.provideFoldingRanges(resource.toString(), context); }).then(function (ranges) {
+        return this._worker(resource).then(function (worker) { return worker.provideFoldingRanges(resource.toString(), context); }).then(function (ranges) {
             if (!ranges) {
                 return;
             }
@@ -3459,27 +3423,18 @@ var FoldingRangeAdapter = /** @class */ (function () {
                 }
                 return result;
             });
-        }));
+        });
     };
     return FoldingRangeAdapter;
 }());
 
 function toFoldingRangeKind(kind) {
     switch (kind) {
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["g" /* FoldingRangeKind */].Comment: return monaco.languages.FoldingRangeKind.Comment;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["g" /* FoldingRangeKind */].Imports: return monaco.languages.FoldingRangeKind.Imports;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["g" /* FoldingRangeKind */].Region: return monaco.languages.FoldingRangeKind.Region;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["e" /* FoldingRangeKind */].Comment: return monaco.languages.FoldingRangeKind.Comment;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["e" /* FoldingRangeKind */].Imports: return monaco.languages.FoldingRangeKind.Imports;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["e" /* FoldingRangeKind */].Region: return monaco.languages.FoldingRangeKind.Region;
     }
     return void 0;
-}
-/**
- * Hook a cancellation token to a WinJS Promise
- */
-function wireCancellationToken(token, promise) {
-    if (promise.cancel) {
-        token.onCancellationRequested(function () { return promise.cancel(); });
-    }
-    return promise;
 }
 
 
@@ -3664,7 +3619,6 @@ function tokenize(comments, line, state, offsetDelta, stopAtOffset) {
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-var Promise = monaco.Promise;
 var STOP_WHEN_IDLE_FOR = 2 * 60 * 1000; // 2min
 var WorkerManager = /** @class */ (function () {
     function WorkerManager(defaults) {
@@ -3706,7 +3660,8 @@ var WorkerManager = /** @class */ (function () {
                 // passed in to the create() method
                 createData: {
                     languageSettings: this._defaults.diagnosticsOptions,
-                    languageId: this._defaults.languageId
+                    languageId: this._defaults.languageId,
+                    enableSchemaRequest: this._defaults.diagnosticsOptions.enableSchemaRequest
                 }
             });
             this._client = this._worker.getProxy();
@@ -3720,25 +3675,15 @@ var WorkerManager = /** @class */ (function () {
             resources[_i] = arguments[_i];
         }
         var _client;
-        return toShallowCancelPromise(this._getClient().then(function (client) {
+        return this._getClient().then(function (client) {
             _client = client;
         }).then(function (_) {
             return _this._worker.withSyncedResources(resources);
-        }).then(function (_) { return _client; }));
+        }).then(function (_) { return _client; });
     };
     return WorkerManager;
 }());
 
-function toShallowCancelPromise(p) {
-    var completeCallback;
-    var errorCallback;
-    var r = new Promise(function (c, e) {
-        completeCallback = c;
-        errorCallback = e;
-    }, function () { });
-    p.then(completeCallback, errorCallback);
-    return r;
-}
 
 
 /***/ })

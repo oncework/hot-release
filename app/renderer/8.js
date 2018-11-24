@@ -133,18 +133,6 @@ var language = {
                     }
                 }]
         ],
-        // Flow Scalars (quoted strings)
-        string: [
-            [/[^\\"']+/, 'string'],
-            [/@escapes/, 'string.escape'],
-            [/\\./, 'string.escape.invalid'],
-            [/["']/, {
-                    cases: {
-                        '$#==$S2': { token: 'string', next: '@pop' },
-                        '@default': 'string'
-                    }
-                }]
-        ],
         // First line of a Block Style
         multiString: [
             [/^( +).+$/, 'string', '@multiStringContinued.$1']
@@ -173,8 +161,16 @@ var language = {
         ],
         // Start Flow Scalars (quoted strings)
         flowScalars: [
-            [/"/, 'string', '@string."'],
-            [/'/, 'string', '@string.\'']
+            [/"([^"\\]|\\.)*$/, 'string.invalid'],
+            [/'([^'\\]|\\.)*$/, 'string.invalid'],
+            [/'[^']*'/, 'string'],
+            [/"/, 'string', '@doubleQuotedString']
+        ],
+        doubleQuotedString: [
+            [/[^\\"]+/, 'string'],
+            [/@escapes/, 'string.escape'],
+            [/\\./, 'string.escape.invalid'],
+            [/"/, 'string', '@pop']
         ],
         // Start Block Scalar
         blockStyle: [

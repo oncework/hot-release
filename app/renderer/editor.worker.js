@@ -68,39 +68,277 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./node_modules/monaco-editor/esm/vs/base/common/arrays.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export tail */
+/* unused harmony export tail2 */
+/* unused harmony export equals */
+/* unused harmony export binarySearch */
+/* unused harmony export findFirstInSorted */
+/* harmony export (immutable) */ __webpack_exports__["a"] = mergeSort;
+/* unused harmony export groupBy */
+/* unused harmony export coalesce */
+/* unused harmony export isFalsyOrEmpty */
+/* unused harmony export distinct */
+/* unused harmony export firstIndex */
+/* unused harmony export first */
+/* unused harmony export flatten */
+/* unused harmony export range */
+/* unused harmony export arrayInsert */
+/**
+ * Returns the last element of an array.
+ * @param array The array.
+ * @param n Which element from the end (default is zero).
+ */
+function tail(array, n) {
+    if (n === void 0) { n = 0; }
+    return array[array.length - (1 + n)];
+}
+function tail2(arr) {
+    if (arr.length === 0) {
+        throw new Error('Invalid tail call');
+    }
+    return [arr.slice(0, arr.length - 1), arr[arr.length - 1]];
+}
+function equals(one, other, itemEquals) {
+    if (itemEquals === void 0) { itemEquals = function (a, b) { return a === b; }; }
+    if (one === other) {
+        return true;
+    }
+    if (!one || !other) {
+        return false;
+    }
+    if (one.length !== other.length) {
+        return false;
+    }
+    for (var i = 0, len = one.length; i < len; i++) {
+        if (!itemEquals(one[i], other[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+function binarySearch(array, key, comparator) {
+    var low = 0, high = array.length - 1;
+    while (low <= high) {
+        var mid = ((low + high) / 2) | 0;
+        var comp = comparator(array[mid], key);
+        if (comp < 0) {
+            low = mid + 1;
+        }
+        else if (comp > 0) {
+            high = mid - 1;
+        }
+        else {
+            return mid;
+        }
+    }
+    return -(low + 1);
+}
+/**
+ * Takes a sorted array and a function p. The array is sorted in such a way that all elements where p(x) is false
+ * are located before all elements where p(x) is true.
+ * @returns the least x for which p(x) is true or array.length if no element fullfills the given function.
+ */
+function findFirstInSorted(array, p) {
+    var low = 0, high = array.length;
+    if (high === 0) {
+        return 0; // no children
+    }
+    while (low < high) {
+        var mid = Math.floor((low + high) / 2);
+        if (p(array[mid])) {
+            high = mid;
+        }
+        else {
+            low = mid + 1;
+        }
+    }
+    return low;
+}
+/**
+ * Like `Array#sort` but always stable. Usually runs a little slower `than Array#sort`
+ * so only use this when actually needing stable sort.
+ */
+function mergeSort(data, compare) {
+    _sort(data, compare, 0, data.length - 1, []);
+    return data;
+}
+function _merge(a, compare, lo, mid, hi, aux) {
+    var leftIdx = lo, rightIdx = mid + 1;
+    for (var i = lo; i <= hi; i++) {
+        aux[i] = a[i];
+    }
+    for (var i = lo; i <= hi; i++) {
+        if (leftIdx > mid) {
+            // left side consumed
+            a[i] = aux[rightIdx++];
+        }
+        else if (rightIdx > hi) {
+            // right side consumed
+            a[i] = aux[leftIdx++];
+        }
+        else if (compare(aux[rightIdx], aux[leftIdx]) < 0) {
+            // right element is less -> comes first
+            a[i] = aux[rightIdx++];
+        }
+        else {
+            // left element comes first (less or equal)
+            a[i] = aux[leftIdx++];
+        }
+    }
+}
+function _sort(a, compare, lo, hi, aux) {
+    if (hi <= lo) {
+        return;
+    }
+    var mid = lo + ((hi - lo) / 2) | 0;
+    _sort(a, compare, lo, mid, aux);
+    _sort(a, compare, mid + 1, hi, aux);
+    if (compare(a[mid], a[mid + 1]) <= 0) {
+        // left and right are sorted and if the last-left element is less
+        // or equals than the first-right element there is nothing else
+        // to do
+        return;
+    }
+    _merge(a, compare, lo, mid, hi, aux);
+}
+function groupBy(data, compare) {
+    var result = [];
+    var currentGroup = undefined;
+    for (var _i = 0, _a = mergeSort(data.slice(0), compare); _i < _a.length; _i++) {
+        var element = _a[_i];
+        if (!currentGroup || compare(currentGroup[0], element) !== 0) {
+            currentGroup = [element];
+            result.push(currentGroup);
+        }
+        else {
+            currentGroup.push(element);
+        }
+    }
+    return result;
+}
+/**
+ * @returns a new array with all falsy values removed. The original array IS NOT modified.
+ */
+function coalesce(array) {
+    if (!array) {
+        return array;
+    }
+    return array.filter(function (e) { return !!e; });
+}
+/**
+ * @returns {{false}} if the provided object is an array
+ * 	and not empty.
+ */
+function isFalsyOrEmpty(obj) {
+    return !Array.isArray(obj) || obj.length === 0;
+}
+/**
+ * Removes duplicates from the given array. The optional keyFn allows to specify
+ * how elements are checked for equalness by returning a unique string for each.
+ */
+function distinct(array, keyFn) {
+    if (!keyFn) {
+        return array.filter(function (element, position) {
+            return array.indexOf(element) === position;
+        });
+    }
+    var seen = Object.create(null);
+    return array.filter(function (elem) {
+        var key = keyFn(elem);
+        if (seen[key]) {
+            return false;
+        }
+        seen[key] = true;
+        return true;
+    });
+}
+function firstIndex(array, fn) {
+    for (var i = 0; i < array.length; i++) {
+        var element = array[i];
+        if (fn(element)) {
+            return i;
+        }
+    }
+    return -1;
+}
+function first(array, fn, notFoundValue) {
+    if (notFoundValue === void 0) { notFoundValue = null; }
+    var index = firstIndex(array, fn);
+    return index < 0 ? notFoundValue : array[index];
+}
+function flatten(arr) {
+    var _a;
+    return (_a = []).concat.apply(_a, arr);
+}
+function range(arg, to) {
+    var from = typeof to === 'number' ? arg : 0;
+    if (typeof to === 'number') {
+        from = arg;
+    }
+    else {
+        from = 0;
+        to = arg;
+    }
+    var result = [];
+    if (from <= to) {
+        for (var i = from; i < to; i++) {
+            result.push(i);
+        }
+    }
+    else {
+        for (var i = from; i > to; i--) {
+            result.push(i);
+        }
+    }
+    return result;
+}
+/**
+ * Insert `insertArr` inside `target` at `insertIndex`.
+ * Please don't touch unless you understand https://jsperf.com/inserting-an-array-within-an-array
+ */
+function arrayInsert(target, insertIndex, insertArr) {
+    var before = target.slice(0, insertIndex);
+    var after = target.slice(insertIndex);
+    return before.concat(insertArr, after);
+}
+
+
+/***/ }),
+
 /***/ "./node_modules/monaco-editor/esm/vs/base/common/async.js":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* unused harmony export isThenable */
-/* unused harmony export toThenable */
+/* harmony export (immutable) */ __webpack_exports__["a"] = isThenable;
 /* unused harmony export createCancelablePromise */
-/* unused harmony export asWinJsPromise */
-/* unused harmony export wireCancellationToken */
-/* unused harmony export Throttler */
 /* unused harmony export Delayer */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ShallowCancelThenPromise; });
 /* unused harmony export timeout */
 /* unused harmony export always */
-/* unused harmony export first2 */
 /* unused harmony export first */
-/* unused harmony export setDisposableTimeout */
 /* unused harmony export TimeoutTimer */
 /* unused harmony export IntervalTimer */
 /* unused harmony export RunOnceScheduler */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__errors_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/errors.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__winjs_base_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/winjs.base.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__cancellation_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/cancellation.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__lifecycle_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/lifecycle.js");
+/* unused harmony export runWhenIdle */
+/* unused harmony export IdleValue */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__cancellation_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/cancellation.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__errors_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/errors.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__lifecycle_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/lifecycle.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__winjs_base_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/winjs.base.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -114,20 +352,12 @@ var __extends = (this && this.__extends) || (function () {
 function isThenable(obj) {
     return obj && typeof obj.then === 'function';
 }
-function toThenable(arg) {
-    if (isThenable(arg)) {
-        return arg;
-    }
-    else {
-        return __WEBPACK_IMPORTED_MODULE_1__winjs_base_js__["a" /* TPromise */].as(arg);
-    }
-}
 function createCancelablePromise(callback) {
-    var source = new __WEBPACK_IMPORTED_MODULE_2__cancellation_js__["a" /* CancellationTokenSource */]();
+    var source = new __WEBPACK_IMPORTED_MODULE_0__cancellation_js__["a" /* CancellationTokenSource */]();
     var thenable = callback(source.token);
     var promise = new Promise(function (resolve, reject) {
         source.token.onCancellationRequested(function () {
-            reject(__WEBPACK_IMPORTED_MODULE_0__errors_js__["b" /* canceled */]());
+            reject(__WEBPACK_IMPORTED_MODULE_1__errors_js__["b" /* canceled */]());
         });
         Promise.resolve(thenable).then(function (value) {
             source.dispose();
@@ -152,122 +382,6 @@ function createCancelablePromise(callback) {
         return class_1;
     }());
 }
-function asWinJsPromise(callback) {
-    var source = new __WEBPACK_IMPORTED_MODULE_2__cancellation_js__["a" /* CancellationTokenSource */]();
-    return new __WEBPACK_IMPORTED_MODULE_1__winjs_base_js__["a" /* TPromise */](function (resolve, reject, progress) {
-        var item = callback(source.token);
-        if (item instanceof __WEBPACK_IMPORTED_MODULE_1__winjs_base_js__["a" /* TPromise */]) {
-            item.then(function (result) {
-                source.dispose();
-                resolve(result);
-            }, function (err) {
-                source.dispose();
-                reject(err);
-            }, progress);
-        }
-        else if (isThenable(item)) {
-            item.then(function (result) {
-                source.dispose();
-                resolve(result);
-            }, function (err) {
-                source.dispose();
-                reject(err);
-            });
-        }
-        else {
-            source.dispose();
-            resolve(item);
-        }
-    }, function () {
-        source.cancel();
-    });
-}
-/**
- * Hook a cancellation token to a WinJS Promise
- */
-function wireCancellationToken(token, promise, resolveAsUndefinedWhenCancelled) {
-    var subscription = token.onCancellationRequested(function () { return promise.cancel(); });
-    if (resolveAsUndefinedWhenCancelled) {
-        promise = promise.then(undefined, function (err) {
-            if (!__WEBPACK_IMPORTED_MODULE_0__errors_js__["c" /* isPromiseCanceledError */](err)) {
-                return __WEBPACK_IMPORTED_MODULE_1__winjs_base_js__["a" /* TPromise */].wrapError(err);
-            }
-            return undefined;
-        });
-    }
-    return always(promise, function () { return subscription.dispose(); });
-}
-/**
- * A helper to prevent accumulation of sequential async tasks.
- *
- * Imagine a mail man with the sole task of delivering letters. As soon as
- * a letter submitted for delivery, he drives to the destination, delivers it
- * and returns to his base. Imagine that during the trip, N more letters were submitted.
- * When the mail man returns, he picks those N letters and delivers them all in a
- * single trip. Even though N+1 submissions occurred, only 2 deliveries were made.
- *
- * The throttler implements this via the queue() method, by providing it a task
- * factory. Following the example:
- *
- * 		const throttler = new Throttler();
- * 		const letters = [];
- *
- * 		function deliver() {
- * 			const lettersToDeliver = letters;
- * 			letters = [];
- * 			return makeTheTrip(lettersToDeliver);
- * 		}
- *
- * 		function onLetterReceived(l) {
- * 			letters.push(l);
- * 			throttler.queue(deliver);
- * 		}
- */
-var Throttler = /** @class */ (function () {
-    function Throttler() {
-        this.activePromise = null;
-        this.queuedPromise = null;
-        this.queuedPromiseFactory = null;
-    }
-    Throttler.prototype.queue = function (promiseFactory) {
-        var _this = this;
-        if (this.activePromise) {
-            this.queuedPromiseFactory = promiseFactory;
-            if (!this.queuedPromise) {
-                var onComplete_1 = function () {
-                    _this.queuedPromise = null;
-                    var result = _this.queue(_this.queuedPromiseFactory);
-                    _this.queuedPromiseFactory = null;
-                    return result;
-                };
-                this.queuedPromise = new __WEBPACK_IMPORTED_MODULE_1__winjs_base_js__["a" /* TPromise */](function (c, e, p) {
-                    _this.activePromise.then(onComplete_1, onComplete_1, p).done(c);
-                }, function () {
-                    _this.activePromise.cancel();
-                });
-            }
-            return new __WEBPACK_IMPORTED_MODULE_1__winjs_base_js__["a" /* TPromise */](function (c, e, p) {
-                _this.queuedPromise.then(c, e, p);
-            }, function () {
-                // no-op
-            });
-        }
-        this.activePromise = promiseFactory();
-        return new __WEBPACK_IMPORTED_MODULE_1__winjs_base_js__["a" /* TPromise */](function (c, e, p) {
-            _this.activePromise.done(function (result) {
-                _this.activePromise = null;
-                c(result);
-            }, function (err) {
-                _this.activePromise = null;
-                e(err);
-            }, p);
-        }, function () {
-            _this.activePromise.cancel();
-        });
-    };
-    return Throttler;
-}());
-
 /**
  * A helper to delay execution of a task that is being requested often.
  *
@@ -296,7 +410,7 @@ var Delayer = /** @class */ (function () {
         this.defaultDelay = defaultDelay;
         this.timeout = null;
         this.completionPromise = null;
-        this.onSuccess = null;
+        this.doResolve = null;
         this.task = null;
     }
     Delayer.prototype.trigger = function (task, delay) {
@@ -305,13 +419,12 @@ var Delayer = /** @class */ (function () {
         this.task = task;
         this.cancelTimeout();
         if (!this.completionPromise) {
-            this.completionPromise = new __WEBPACK_IMPORTED_MODULE_1__winjs_base_js__["a" /* TPromise */](function (c) {
-                _this.onSuccess = c;
-            }, function () {
-                // no-op
+            this.completionPromise = new __WEBPACK_IMPORTED_MODULE_3__winjs_base_js__["a" /* TPromise */](function (c, e) {
+                _this.doResolve = c;
+                _this.doReject = e;
             }).then(function () {
                 _this.completionPromise = null;
-                _this.onSuccess = null;
+                _this.doResolve = null;
                 var task = _this.task;
                 _this.task = null;
                 return task();
@@ -319,14 +432,14 @@ var Delayer = /** @class */ (function () {
         }
         this.timeout = setTimeout(function () {
             _this.timeout = null;
-            _this.onSuccess(null);
+            _this.doResolve(null);
         }, delay);
         return this.completionPromise;
     };
     Delayer.prototype.cancel = function () {
         this.cancelTimeout();
         if (this.completionPromise) {
-            this.completionPromise.cancel();
+            this.doReject(__WEBPACK_IMPORTED_MODULE_1__errors_js__["b" /* canceled */]());
             this.completionPromise = null;
         }
     };
@@ -336,79 +449,44 @@ var Delayer = /** @class */ (function () {
             this.timeout = null;
         }
     };
+    Delayer.prototype.dispose = function () {
+        this.cancelTimeout();
+    };
     return Delayer;
 }());
 
-var ShallowCancelThenPromise = /** @class */ (function (_super) {
-    __extends(ShallowCancelThenPromise, _super);
-    function ShallowCancelThenPromise(outer) {
-        var _this = this;
-        var completeCallback, errorCallback, progressCallback;
-        _this = _super.call(this, function (c, e, p) {
-            completeCallback = c;
-            errorCallback = e;
-            progressCallback = p;
-        }, function () {
-            // cancel this promise but not the
-            // outer promise
-            errorCallback(__WEBPACK_IMPORTED_MODULE_0__errors_js__["b" /* canceled */]());
-        }) || this;
-        outer.then(completeCallback, errorCallback, progressCallback);
-        return _this;
+function timeout(millis, token) {
+    if (!token) {
+        return createCancelablePromise(function (token) { return timeout(millis, token); });
     }
-    return ShallowCancelThenPromise;
-}(__WEBPACK_IMPORTED_MODULE_1__winjs_base_js__["a" /* TPromise */]));
-
-/**
- * Replacement for `WinJS.TPromise.timeout`.
- */
-function timeout(n) {
-    return createCancelablePromise(function (token) {
-        return new Promise(function (resolve, reject) {
-            var handle = setTimeout(resolve, n);
-            token.onCancellationRequested(function (_) {
-                clearTimeout(handle);
-                reject(__WEBPACK_IMPORTED_MODULE_0__errors_js__["b" /* canceled */]());
-            });
+    return new Promise(function (resolve, reject) {
+        var handle = setTimeout(resolve, millis);
+        token.onCancellationRequested(function () {
+            clearTimeout(handle);
+            reject(__WEBPACK_IMPORTED_MODULE_1__errors_js__["b" /* canceled */]());
         });
     });
 }
-function isWinJSPromise(candidate) {
-    return __WEBPACK_IMPORTED_MODULE_1__winjs_base_js__["a" /* TPromise */].is(candidate) && typeof candidate.done === 'function';
-}
-function always(winjsPromiseOrThenable, f) {
-    if (isWinJSPromise(winjsPromiseOrThenable)) {
-        return new __WEBPACK_IMPORTED_MODULE_1__winjs_base_js__["a" /* TPromise */](function (c, e, p) {
-            winjsPromiseOrThenable.done(function (result) {
-                try {
-                    f(result);
-                }
-                catch (e1) {
-                    __WEBPACK_IMPORTED_MODULE_0__errors_js__["d" /* onUnexpectedError */](e1);
-                }
-                c(result);
-            }, function (err) {
-                try {
-                    f(err);
-                }
-                catch (e1) {
-                    __WEBPACK_IMPORTED_MODULE_0__errors_js__["d" /* onUnexpectedError */](e1);
-                }
-                e(err);
-            }, function (progress) {
-                p(progress);
-            });
-        }, function () {
-            winjsPromiseOrThenable.cancel();
-        });
+/**
+ * Returns a new promise that joins the provided promise. Upon completion of
+ * the provided promise the provided function will always be called. This
+ * method is comparable to a try-finally code block.
+ * @param promise a promise
+ * @param callback a function that will be call in the success and error case.
+ */
+function always(promise, callback) {
+    function safeCallback() {
+        try {
+            callback();
+        }
+        catch (err) {
+            __WEBPACK_IMPORTED_MODULE_1__errors_js__["c" /* onUnexpectedError */](err);
+        }
     }
-    else {
-        // simple
-        winjsPromiseOrThenable.then(function (_) { return f(); }, function (_) { return f(); });
-        return winjsPromiseOrThenable;
-    }
+    promise.then(function (_) { return safeCallback(); }, function (_) { return safeCallback(); });
+    return Promise.resolve(promise);
 }
-function first2(promiseFactories, shouldStop, defaultValue) {
+function first(promiseFactories, shouldStop, defaultValue) {
     if (shouldStop === void 0) { shouldStop = function (t) { return !!t; }; }
     if (defaultValue === void 0) { defaultValue = null; }
     var index = 0;
@@ -418,7 +496,7 @@ function first2(promiseFactories, shouldStop, defaultValue) {
             return Promise.resolve(defaultValue);
         }
         var factory = promiseFactories[index++];
-        var promise = factory();
+        var promise = Promise.resolve(factory());
         return promise.then(function (result) {
             if (shouldStop(result)) {
                 return Promise.resolve(result);
@@ -428,39 +506,14 @@ function first2(promiseFactories, shouldStop, defaultValue) {
     };
     return loop();
 }
-function first(promiseFactories, shouldStop, defaultValue) {
-    if (shouldStop === void 0) { shouldStop = function (t) { return !!t; }; }
-    if (defaultValue === void 0) { defaultValue = null; }
-    var index = 0;
-    var len = promiseFactories.length;
-    var loop = function () {
-        if (index >= len) {
-            return __WEBPACK_IMPORTED_MODULE_1__winjs_base_js__["a" /* TPromise */].as(defaultValue);
-        }
-        var factory = promiseFactories[index++];
-        var promise = factory();
-        return promise.then(function (result) {
-            if (shouldStop(result)) {
-                return __WEBPACK_IMPORTED_MODULE_1__winjs_base_js__["a" /* TPromise */].as(result);
-            }
-            return loop();
-        });
-    };
-    return loop();
-}
-function setDisposableTimeout(handler, timeout) {
-    var args = [];
-    for (var _i = 2; _i < arguments.length; _i++) {
-        args[_i - 2] = arguments[_i];
-    }
-    var handle = setTimeout.apply(void 0, [handler, timeout].concat(args));
-    return { dispose: function () { clearTimeout(handle); } };
-}
 var TimeoutTimer = /** @class */ (function (_super) {
     __extends(TimeoutTimer, _super);
-    function TimeoutTimer() {
+    function TimeoutTimer(runner, timeout) {
         var _this = _super.call(this) || this;
         _this._token = -1;
+        if (typeof runner === 'function' && typeof timeout === 'number') {
+            _this.setIfNotSet(runner, timeout);
+        }
         return _this;
     }
     TimeoutTimer.prototype.dispose = function () {
@@ -493,7 +546,7 @@ var TimeoutTimer = /** @class */ (function (_super) {
         }, timeout);
     };
     return TimeoutTimer;
-}(__WEBPACK_IMPORTED_MODULE_3__lifecycle_js__["a" /* Disposable */]));
+}(__WEBPACK_IMPORTED_MODULE_2__lifecycle_js__["a" /* Disposable */]));
 
 var IntervalTimer = /** @class */ (function (_super) {
     __extends(IntervalTimer, _super);
@@ -519,7 +572,7 @@ var IntervalTimer = /** @class */ (function (_super) {
         }, interval);
     };
     return IntervalTimer;
-}(__WEBPACK_IMPORTED_MODULE_3__lifecycle_js__["a" /* Disposable */]));
+}(__WEBPACK_IMPORTED_MODULE_2__lifecycle_js__["a" /* Disposable */]));
 
 var RunOnceScheduler = /** @class */ (function () {
     function RunOnceScheduler(runner, timeout) {
@@ -565,11 +618,91 @@ var RunOnceScheduler = /** @class */ (function () {
         }
     };
     RunOnceScheduler.prototype.doRun = function () {
-        this.runner();
+        if (this.runner) {
+            this.runner();
+        }
     };
     return RunOnceScheduler;
 }());
 
+/**
+ * Execute the callback the next time the browser is idle
+ */
+var runWhenIdle;
+(function () {
+    if (typeof requestIdleCallback !== 'function' || typeof cancelIdleCallback !== 'function') {
+        var dummyIdle_1 = Object.freeze({
+            didTimeout: true,
+            timeRemaining: function () { return 15; }
+        });
+        runWhenIdle = function (runner, timeout) {
+            if (timeout === void 0) { timeout = 0; }
+            var handle = setTimeout(function () { return runner(dummyIdle_1); }, timeout);
+            var disposed = false;
+            return {
+                dispose: function () {
+                    if (disposed) {
+                        return;
+                    }
+                    disposed = true;
+                    clearTimeout(handle);
+                }
+            };
+        };
+    }
+    else {
+        runWhenIdle = function (runner, timeout) {
+            var handle = requestIdleCallback(runner, typeof timeout === 'number' ? { timeout: timeout } : undefined);
+            var disposed = false;
+            return {
+                dispose: function () {
+                    if (disposed) {
+                        return;
+                    }
+                    disposed = true;
+                    cancelIdleCallback(handle);
+                }
+            };
+        };
+    }
+})();
+/**
+ * An implementation of the "idle-until-urgent"-strategy as introduced
+ * here: https://philipwalton.com/articles/idle-until-urgent/
+ */
+var IdleValue = /** @class */ (function () {
+    function IdleValue(executor) {
+        var _this = this;
+        this._executor = function () {
+            try {
+                _this._value = executor();
+            }
+            catch (err) {
+                _this._error = err;
+            }
+            finally {
+                _this._didRun = true;
+            }
+        };
+        this._handle = runWhenIdle(function () { return _this._executor(); });
+    }
+    IdleValue.prototype.dispose = function () {
+        this._handle.dispose();
+    };
+    IdleValue.prototype.getValue = function () {
+        if (!this._didRun) {
+            this._handle.dispose();
+            this._executor();
+        }
+        if (this._error) {
+            throw this._error;
+        }
+        return this._value;
+    };
+    return IdleValue;
+}());
+
+//#endregion
 
 
 /***/ }),
@@ -586,13 +719,26 @@ var RunOnceScheduler = /** @class */ (function () {
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
 var shortcutEvent = Object.freeze(function (callback, context) {
     var handle = setTimeout(callback.bind(context), 0);
     return { dispose: function () { clearTimeout(handle); } };
 });
 var CancellationToken;
 (function (CancellationToken) {
+    function isCancellationToken(thing) {
+        if (thing === CancellationToken.None || thing === CancellationToken.Cancelled) {
+            return true;
+        }
+        if (thing instanceof MutableToken) {
+            return true;
+        }
+        if (!thing || typeof thing !== 'object') {
+            return false;
+        }
+        return typeof thing.isCancellationRequested === 'boolean'
+            && typeof thing.onCancellationRequested === 'function';
+    }
+    CancellationToken.isCancellationToken = isCancellationToken;
     CancellationToken.None = Object.freeze({
         isCancellationRequested: false,
         onCancellationRequested: __WEBPACK_IMPORTED_MODULE_0__event_js__["a" /* Event */].None
@@ -605,6 +751,7 @@ var CancellationToken;
 var MutableToken = /** @class */ (function () {
     function MutableToken() {
         this._isCancelled = false;
+        this._emitter = null;
     }
     MutableToken.prototype.cancel = function () {
         if (!this._isCancelled) {
@@ -638,7 +785,7 @@ var MutableToken = /** @class */ (function () {
     MutableToken.prototype.dispose = function () {
         if (this._emitter) {
             this._emitter.dispose();
-            this._emitter = undefined;
+            this._emitter = null;
         }
     };
     return MutableToken;
@@ -700,7 +847,6 @@ var CancellationTokenSource = /** @class */ (function () {
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 
 function createStringSequence(a) {
     return {
@@ -887,7 +1033,7 @@ var LcsDiff = /** @class */ (function () {
             // We have to clean up the computed diff to be more intuitive
             // but it turns out this cannot be done correctly until the entire set
             // of diffs have been computed
-            return this.ShiftChanges(changes);
+            return this.PrettifyChanges(changes);
         }
         return changes;
     };
@@ -1091,7 +1237,7 @@ var LcsDiff = /** @class */ (function () {
      * @returns The diff changes, if available, otherwise null
      */
     LcsDiff.prototype.ComputeRecursionPoint = function (originalStart, originalEnd, modifiedStart, modifiedEnd, midOriginalArr, midModifiedArr, quitEarlyArr) {
-        var originalIndex, modifiedIndex;
+        var originalIndex = 0, modifiedIndex = 0;
         var diagonalForwardStart = 0, diagonalForwardEnd = 0;
         var diagonalReverseStart = 0, diagonalReverseEnd = 0;
         var numDifferences;
@@ -1284,41 +1430,29 @@ var LcsDiff = /** @class */ (function () {
      * @param changes The list of changes to shift
      * @returns The shifted changes
      */
-    LcsDiff.prototype.ShiftChanges = function (changes) {
-        var mergedDiffs;
-        do {
-            mergedDiffs = false;
-            // Shift all the changes down first
-            for (var i = 0; i < changes.length; i++) {
-                var change = changes[i];
-                var originalStop = (i < changes.length - 1) ? changes[i + 1].originalStart : this.OriginalSequence.getLength();
-                var modifiedStop = (i < changes.length - 1) ? changes[i + 1].modifiedStart : this.ModifiedSequence.getLength();
-                var checkOriginal = change.originalLength > 0;
-                var checkModified = change.modifiedLength > 0;
-                while (change.originalStart + change.originalLength < originalStop &&
-                    change.modifiedStart + change.modifiedLength < modifiedStop &&
-                    (!checkOriginal || this.OriginalElementsAreEqual(change.originalStart, change.originalStart + change.originalLength)) &&
-                    (!checkModified || this.ModifiedElementsAreEqual(change.modifiedStart, change.modifiedStart + change.modifiedLength))) {
-                    change.originalStart++;
-                    change.modifiedStart++;
-                }
+    LcsDiff.prototype.PrettifyChanges = function (changes) {
+        // Shift all the changes down first
+        for (var i = 0; i < changes.length; i++) {
+            var change = changes[i];
+            var originalStop = (i < changes.length - 1) ? changes[i + 1].originalStart : this.OriginalSequence.getLength();
+            var modifiedStop = (i < changes.length - 1) ? changes[i + 1].modifiedStart : this.ModifiedSequence.getLength();
+            var checkOriginal = change.originalLength > 0;
+            var checkModified = change.modifiedLength > 0;
+            while (change.originalStart + change.originalLength < originalStop &&
+                change.modifiedStart + change.modifiedLength < modifiedStop &&
+                (!checkOriginal || this.OriginalElementsAreEqual(change.originalStart, change.originalStart + change.originalLength)) &&
+                (!checkModified || this.ModifiedElementsAreEqual(change.modifiedStart, change.modifiedStart + change.modifiedLength))) {
+                change.originalStart++;
+                change.modifiedStart++;
             }
-            // Build up the new list (we have to build a new list because we
-            // might have changes we can merge together now)
-            var result = new Array();
             var mergedChangeArr = [null];
-            for (var i = 0; i < changes.length; i++) {
-                if (i < changes.length - 1 && this.ChangesOverlap(changes[i], changes[i + 1], mergedChangeArr)) {
-                    mergedDiffs = true;
-                    result.push(mergedChangeArr[0]);
-                    i++;
-                }
-                else {
-                    result.push(changes[i]);
-                }
+            if (i < changes.length - 1 && this.ChangesOverlap(changes[i], changes[i + 1], mergedChangeArr)) {
+                changes[i] = mergedChangeArr[0];
+                changes.splice(i + 1, 1);
+                i--;
+                continue;
             }
-            changes = result;
-        } while (mergedDiffs);
+        }
         // Shift changes back up until we hit empty or whitespace-only lines
         for (var i = changes.length - 1; i >= 0; i--) {
             var change = changes[i];
@@ -1412,7 +1546,6 @@ var LcsDiff = /** @class */ (function () {
      */
     LcsDiff.prototype.ConcatenateChanges = function (left, right) {
         var mergedChangeArr = [];
-        var result = null;
         if (left.length === 0 || right.length === 0) {
             return (right.length > 0) ? right : left;
         }
@@ -1421,14 +1554,14 @@ var LcsDiff = /** @class */ (function () {
             // might recurse in the middle of a change thereby splitting it into
             // two changes. Here in the combining stage, we detect and fuse those
             // changes back together
-            result = new Array(left.length + right.length - 1);
+            var result = new Array(left.length + right.length - 1);
             MyArray.Copy(left, 0, result, 0, left.length - 1);
             result[left.length - 1] = mergedChangeArr[0];
             MyArray.Copy(right, 1, result, left.length, right.length - 1);
             return result;
         }
         else {
-            result = new Array(left.length + right.length);
+            var result = new Array(left.length + right.length);
             MyArray.Copy(left, 0, result, 0, left.length);
             MyArray.Copy(right, 0, result, left.length, right.length);
             return result;
@@ -1511,7 +1644,6 @@ var LcsDiff = /** @class */ (function () {
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 /**
  * Represents information about a specific difference between two sequences.
  */
@@ -1552,10 +1684,10 @@ var DiffChange = /** @class */ (function () {
 "use strict";
 /* unused harmony export ErrorHandler */
 /* unused harmony export errorHandler */
-/* harmony export (immutable) */ __webpack_exports__["d"] = onUnexpectedError;
+/* harmony export (immutable) */ __webpack_exports__["c"] = onUnexpectedError;
 /* unused harmony export onUnexpectedExternalError */
 /* harmony export (immutable) */ __webpack_exports__["a"] = transformErrorForSerialization;
-/* harmony export (immutable) */ __webpack_exports__["c"] = isPromiseCanceledError;
+/* unused harmony export isPromiseCanceledError */
 /* harmony export (immutable) */ __webpack_exports__["b"] = canceled;
 /* unused harmony export illegalArgument */
 /* unused harmony export illegalState */
@@ -1564,7 +1696,6 @@ var DiffChange = /** @class */ (function () {
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 
 // ------ BEGIN Hook up error listeners to winjs promises
 var outstandingPromiseErrors = {};
@@ -1730,7 +1861,6 @@ function illegalState(name) {
 
 
 
-
 var Event;
 (function (Event) {
     var _disposable = { dispose: function () { } };
@@ -1759,7 +1889,12 @@ var Event;
  */
 var Emitter = /** @class */ (function () {
     function Emitter(_options) {
+        if (_options === void 0) { _options = null; }
         this._options = _options;
+        this._event = null;
+        this._disposed = false;
+        this._deliveryQueue = null;
+        this._listeners = null;
     }
     Object.defineProperty(Emitter.prototype, "event", {
         /**
@@ -1790,8 +1925,11 @@ var Emitter = /** @class */ (function () {
                             result.dispose = Emitter._noop;
                             if (!_this._disposed) {
                                 remove();
-                                if (_this._options && _this._options.onLastListenerRemove && _this._listeners.isEmpty()) {
-                                    _this._options.onLastListenerRemove(_this);
+                                if (_this._options && _this._options.onLastListenerRemove) {
+                                    var hasListeners = (_this._listeners && !_this._listeners.isEmpty());
+                                    if (!hasListeners) {
+                                        _this._options.onLastListenerRemove(_this);
+                                    }
                                 }
                             }
                         }
@@ -1833,14 +1971,14 @@ var Emitter = /** @class */ (function () {
                     }
                 }
                 catch (e) {
-                    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__errors_js__["d" /* onUnexpectedError */])(e);
+                    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__errors_js__["c" /* onUnexpectedError */])(e);
                 }
             }
         }
     };
     Emitter.prototype.dispose = function () {
         if (this._listeners) {
-            this._listeners = undefined;
+            this._listeners = null;
         }
         if (this._deliveryQueue) {
             this._deliveryQueue.length = 0;
@@ -1899,7 +2037,9 @@ var EventMultiplexer = /** @class */ (function () {
         e.listener = e.event(function (r) { return _this.emitter.fire(r); });
     };
     EventMultiplexer.prototype.unhook = function (e) {
-        e.listener.dispose();
+        if (e.listener) {
+            e.listener.dispose();
+        }
         e.listener = null;
     };
     EventMultiplexer.prototype.dispose = function () {
@@ -1911,10 +2051,23 @@ var EventMultiplexer = /** @class */ (function () {
 function once(event) {
     return function (listener, thisArgs, disposables) {
         if (thisArgs === void 0) { thisArgs = null; }
+        // we need this, in case the event fires during the listener call
+        var didFire = false;
         var result = event(function (e) {
-            result.dispose();
+            if (didFire) {
+                return;
+            }
+            else if (result) {
+                result.dispose();
+            }
+            else {
+                didFire = true;
+            }
             return listener.call(thisArgs, e);
         }, null, disposables);
+        if (didFire) {
+            result.dispose();
+        }
         return result;
     };
 }
@@ -2002,9 +2155,10 @@ var EventBufferer = /** @class */ (function () {
     EventBufferer.prototype.bufferEvents = function (fn) {
         var buffer = [];
         this.buffers.push(buffer);
-        fn();
+        var r = fn();
         this.buffers.pop();
         buffer.forEach(function (flush) { return flush(); });
+        return r;
     };
     return EventBufferer;
 }());
@@ -2046,20 +2200,35 @@ function chain(event) {
 }
 var Relay = /** @class */ (function () {
     function Relay() {
-        this.emitter = new Emitter();
+        var _this = this;
+        this.listening = false;
+        this.inputEvent = Event.None;
+        this.inputEventListener = __WEBPACK_IMPORTED_MODULE_2__lifecycle_js__["a" /* Disposable */].None;
+        this.emitter = new Emitter({
+            onFirstListenerDidAdd: function () {
+                _this.listening = true;
+                _this.inputEventListener = _this.inputEvent(_this.emitter.fire, _this.emitter);
+            },
+            onLastListenerRemove: function () {
+                _this.listening = false;
+                _this.inputEventListener.dispose();
+            }
+        });
         this.event = this.emitter.event;
-        this.disposable = __WEBPACK_IMPORTED_MODULE_2__lifecycle_js__["a" /* Disposable */].None;
     }
     Object.defineProperty(Relay.prototype, "input", {
         set: function (event) {
-            this.disposable.dispose();
-            this.disposable = event(this.emitter.fire, this.emitter);
+            this.inputEvent = event;
+            if (this.listening) {
+                this.inputEventListener.dispose();
+                this.inputEventListener = event(this.emitter.fire, this.emitter);
+            }
         },
         enumerable: true,
         configurable: true
     });
     Relay.prototype.dispose = function () {
-        this.disposable.dispose();
+        this.inputEventListener.dispose();
         this.emitter.dispose();
     };
     return Relay;
@@ -2078,7 +2247,6 @@ var Relay = /** @class */ (function () {
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 function once(fn) {
     var _this = this;
     var didCall = false;
@@ -2092,6 +2260,178 @@ function once(fn) {
         return result;
     };
 }
+
+
+/***/ }),
+
+/***/ "./node_modules/monaco-editor/esm/vs/base/common/iterator.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FIN; });
+/* unused harmony export Iterator */
+/* unused harmony export ArrayIterator */
+/* unused harmony export ArrayNavigator */
+/* unused harmony export MappedIterator */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var FIN = { done: true, value: undefined };
+var Iterator;
+(function (Iterator) {
+    var _empty = {
+        next: function () {
+            return FIN;
+        }
+    };
+    function empty() {
+        return _empty;
+    }
+    Iterator.empty = empty;
+    function fromArray(array, index, length) {
+        if (index === void 0) { index = 0; }
+        if (length === void 0) { length = array.length; }
+        return {
+            next: function () {
+                if (index >= length) {
+                    return FIN;
+                }
+                return { done: false, value: array[index++] };
+            }
+        };
+    }
+    Iterator.fromArray = fromArray;
+    function from(elements) {
+        if (!elements) {
+            return Iterator.empty();
+        }
+        else if (Array.isArray(elements)) {
+            return Iterator.fromArray(elements);
+        }
+        else {
+            return elements;
+        }
+    }
+    Iterator.from = from;
+    function map(iterator, fn) {
+        return {
+            next: function () {
+                var element = iterator.next();
+                if (element.done) {
+                    return FIN;
+                }
+                else {
+                    return { done: false, value: fn(element.value) };
+                }
+            }
+        };
+    }
+    Iterator.map = map;
+    function filter(iterator, fn) {
+        return {
+            next: function () {
+                while (true) {
+                    var element = iterator.next();
+                    if (element.done) {
+                        return FIN;
+                    }
+                    if (fn(element.value)) {
+                        return { done: false, value: element.value };
+                    }
+                }
+            }
+        };
+    }
+    Iterator.filter = filter;
+    function forEach(iterator, fn) {
+        for (var next = iterator.next(); !next.done; next = iterator.next()) {
+            fn(next.value);
+        }
+    }
+    Iterator.forEach = forEach;
+    function collect(iterator) {
+        var result = [];
+        forEach(iterator, function (value) { return result.push(value); });
+        return result;
+    }
+    Iterator.collect = collect;
+})(Iterator || (Iterator = {}));
+var ArrayIterator = /** @class */ (function () {
+    function ArrayIterator(items, start, end, index) {
+        if (start === void 0) { start = 0; }
+        if (end === void 0) { end = items.length; }
+        if (index === void 0) { index = start - 1; }
+        this.items = items;
+        this.start = start;
+        this.end = end;
+        this.index = index;
+    }
+    ArrayIterator.prototype.next = function () {
+        this.index = Math.min(this.index + 1, this.end);
+        return this.current();
+    };
+    ArrayIterator.prototype.current = function () {
+        if (this.index === this.start - 1 || this.index === this.end) {
+            return null;
+        }
+        return this.items[this.index];
+    };
+    return ArrayIterator;
+}());
+
+var ArrayNavigator = /** @class */ (function (_super) {
+    __extends(ArrayNavigator, _super);
+    function ArrayNavigator(items, start, end, index) {
+        if (start === void 0) { start = 0; }
+        if (end === void 0) { end = items.length; }
+        if (index === void 0) { index = start - 1; }
+        return _super.call(this, items, start, end, index) || this;
+    }
+    ArrayNavigator.prototype.current = function () {
+        return _super.prototype.current.call(this);
+    };
+    ArrayNavigator.prototype.previous = function () {
+        this.index = Math.max(this.index - 1, this.start - 1);
+        return this.current();
+    };
+    ArrayNavigator.prototype.first = function () {
+        this.index = this.start;
+        return this.current();
+    };
+    ArrayNavigator.prototype.last = function () {
+        this.index = this.end - 1;
+        return this.current();
+    };
+    ArrayNavigator.prototype.parent = function () {
+        return null;
+    };
+    return ArrayNavigator;
+}(ArrayIterator));
+
+var MappedIterator = /** @class */ (function () {
+    function MappedIterator(iterator, fn) {
+        this.iterator = iterator;
+        this.fn = fn;
+        // noop
+    }
+    MappedIterator.prototype.next = function () { return this.fn(this.iterator.next()); };
+    return MappedIterator;
+}());
+
 
 
 /***/ }),
@@ -2112,7 +2452,6 @@ function once(fn) {
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 var KeyCodeStrMap = /** @class */ (function () {
     function KeyCodeStrMap() {
         this._keyCodeToStr = [];
@@ -2383,11 +2722,6 @@ var ResolvedKeybinding = /** @class */ (function () {
 /* harmony export (immutable) */ __webpack_exports__["b"] = toDisposable;
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Disposable; });
 /* unused harmony export ImmortalReference */
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-
 function isDisposable(thing) {
     return typeof thing.dispose === 'function'
         && thing.dispose.length === 0;
@@ -2424,11 +2758,6 @@ var Disposable = /** @class */ (function () {
     function Disposable() {
         this._toDispose = [];
     }
-    Object.defineProperty(Disposable.prototype, "toDispose", {
-        get: function () { return this._toDispose; },
-        enumerable: true,
-        configurable: true
-    });
     Disposable.prototype.dispose = function () {
         this._toDispose = dispose(this._toDispose);
     };
@@ -2457,6 +2786,7 @@ var ImmortalReference = /** @class */ (function () {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return LinkedList; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__iterator_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/iterator.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -2502,8 +2832,10 @@ var LinkedList = /** @class */ (function () {
             oldFirst.prev = newNode;
         }
         return function () {
-            for (var candidate = _this._first; candidate instanceof Node; candidate = candidate.next) {
+            var candidate = _this._first;
+            while (candidate instanceof Node) {
                 if (candidate !== newNode) {
+                    candidate = candidate.next;
                     continue;
                 }
                 if (candidate.prev && candidate.next) {
@@ -2533,22 +2865,20 @@ var LinkedList = /** @class */ (function () {
         };
     };
     LinkedList.prototype.iterator = function () {
-        var element = {
-            done: undefined,
-            value: undefined,
-        };
+        var element;
         var node = this._first;
         return {
             next: function () {
                 if (!node) {
-                    element.done = true;
-                    element.value = undefined;
+                    return __WEBPACK_IMPORTED_MODULE_0__iterator_js__["a" /* FIN */];
+                }
+                if (!element) {
+                    element = { done: false, value: node.element };
                 }
                 else {
-                    element.done = false;
                     element.value = node.element;
-                    node = node.next;
                 }
+                node = node.next;
                 return element;
             }
         };
@@ -2565,20 +2895,18 @@ var LinkedList = /** @class */ (function () {
 
 "use strict";
 /* unused harmony export LANGUAGE_DEFAULT */
-/* unused harmony export Platform */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return isWindows; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return isWindows; });
 /* unused harmony export isMacintosh */
 /* unused harmony export isLinux */
 /* unused harmony export isNative */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return isWeb; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return globals; });
-/* unused harmony export setImmediate */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return globals; });
+/* harmony export (immutable) */ __webpack_exports__["b"] = setImmediate;
 /* unused harmony export OS */
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 var _isWindows = false;
 var _isMacintosh = false;
 var _isLinux = false;
@@ -2588,8 +2916,18 @@ var _locale = undefined;
 var _language = undefined;
 var _translationsConfigFile = undefined;
 var LANGUAGE_DEFAULT = 'en';
+var isElectronRenderer = (typeof process !== 'undefined' && typeof process.versions !== 'undefined' && typeof process.versions.electron !== 'undefined' && process.type === 'renderer');
 // OS detection
-if (typeof process === 'object' && typeof process.nextTick === 'function' && typeof process.platform === 'string') {
+if (typeof navigator === 'object' && !isElectronRenderer) {
+    var userAgent = navigator.userAgent;
+    _isWindows = userAgent.indexOf('Windows') >= 0;
+    _isMacintosh = userAgent.indexOf('Macintosh') >= 0;
+    _isLinux = userAgent.indexOf('Linux') >= 0;
+    _isWeb = true;
+    _locale = navigator.language;
+    _language = _locale;
+}
+else if (typeof process === 'object') {
     _isWindows = (process.platform === 'win32');
     _isMacintosh = (process.platform === 'darwin');
     _isLinux = (process.platform === 'linux');
@@ -2610,32 +2948,16 @@ if (typeof process === 'object' && typeof process.nextTick === 'function' && typ
     }
     _isNative = true;
 }
-else if (typeof navigator === 'object') {
-    var userAgent = navigator.userAgent;
-    _isWindows = userAgent.indexOf('Windows') >= 0;
-    _isMacintosh = userAgent.indexOf('Macintosh') >= 0;
-    _isLinux = userAgent.indexOf('Linux') >= 0;
-    _isWeb = true;
-    _locale = navigator.language;
-    _language = _locale;
-}
-var Platform;
-(function (Platform) {
-    Platform[Platform["Web"] = 0] = "Web";
-    Platform[Platform["Mac"] = 1] = "Mac";
-    Platform[Platform["Linux"] = 2] = "Linux";
-    Platform[Platform["Windows"] = 3] = "Windows";
-})(Platform || (Platform = {}));
-var _platform = Platform.Web;
+var _platform = 0 /* Web */;
 if (_isNative) {
     if (_isMacintosh) {
-        _platform = Platform.Mac;
+        _platform = 1 /* Mac */;
     }
     else if (_isWindows) {
-        _platform = Platform.Windows;
+        _platform = 3 /* Windows */;
     }
     else if (_isLinux) {
-        _platform = Platform.Linux;
+        _platform = 2 /* Linux */;
     }
 }
 var isWindows = _isWindows;
@@ -2687,7 +3009,6 @@ var OS = (_isMacintosh ? 2 /* Macintosh */ : (_isWindows ? 1 /* Windows */ : 3 /
 /* unused harmony export getLeadingWhitespace */
 /* harmony export (immutable) */ __webpack_exports__["b"] = lastNonWhitespaceIndex;
 /* unused harmony export compare */
-/* unused harmony export compareIgnoreCase */
 /* unused harmony export isLowerAsciiLetter */
 /* unused harmony export isUpperAsciiLetter */
 /* unused harmony export equalsIgnoreCase */
@@ -2709,7 +3030,6 @@ var OS = (_isMacintosh ? 2 /* Macintosh */ : (_isWindows ? 1 /* Windows */ : 3 /
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 /**
  * The empty string.
  */
@@ -2797,8 +3117,8 @@ function ltrim(haystack, needle) {
     if (needleLen === 0 || haystack.length === 0) {
         return haystack;
     }
-    var offset = 0, idx = -1;
-    while ((idx = haystack.indexOf(needle, offset)) === offset) {
+    var offset = 0;
+    while (haystack.indexOf(needle, offset) === offset) {
         offset = offset + needleLen;
     }
     return haystack.substring(offset);
@@ -2901,7 +3221,7 @@ function regExpLeadsToEndlessLoop(regexp) {
     // We check against an empty string. If the regular expression doesn't advance
     // (e.g. ends in an endless loop) it will match an empty string.
     var match = regexp.exec('');
-    return (match && regexp.lastIndex === 0);
+    return !!(match && regexp.lastIndex === 0);
 }
 /**
  * Returns first index of the string that is not whitespace.
@@ -2950,44 +3270,6 @@ function compare(a, b) {
         return -1;
     }
     else if (a > b) {
-        return 1;
-    }
-    else {
-        return 0;
-    }
-}
-function compareIgnoreCase(a, b) {
-    var len = Math.min(a.length, b.length);
-    for (var i = 0; i < len; i++) {
-        var codeA = a.charCodeAt(i);
-        var codeB = b.charCodeAt(i);
-        if (codeA === codeB) {
-            // equal
-            continue;
-        }
-        if (isUpperAsciiLetter(codeA)) {
-            codeA += 32;
-        }
-        if (isUpperAsciiLetter(codeB)) {
-            codeB += 32;
-        }
-        var diff = codeA - codeB;
-        if (diff === 0) {
-            // equal -> ignoreCase
-            continue;
-        }
-        else if (isLowerAsciiLetter(codeA) && isLowerAsciiLetter(codeB)) {
-            //
-            return diff;
-        }
-        else {
-            return compare(a.toLowerCase(), b.toLowerCase());
-        }
-    }
-    if (a.length < b.length) {
-        return -1;
-    }
-    else if (a.length > b.length) {
         return 1;
     }
     else {
@@ -3171,7 +3453,7 @@ function isFullWidthCharacter(charCode) {
 // -- UTF-8 BOM
 var UTF8_BOM_CHARACTER = String.fromCharCode(65279 /* UTF8_BOM */);
 function startsWithUTF8BOM(str) {
-    return (str && str.length > 0 && str.charCodeAt(0) === 65279 /* UTF8_BOM */);
+    return !!(str && str.length > 0 && str.charCodeAt(0) === 65279 /* UTF8_BOM */);
 }
 function safeBtoa(str) {
     return btoa(encodeURIComponent(str)); // we use encodeURIComponent because btoa fails for non Latin 1 values
@@ -3191,16 +3473,19 @@ function repeat(s, count) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return URI; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__platform_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/platform.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -3212,7 +3497,17 @@ var _a;
 var _schemePattern = /^\w[\w\d+.-]*$/;
 var _singleSlashStart = /^\//;
 var _doubleSlashStart = /^\/\//;
+var _throwOnMissingSchema = true;
 function _validateUri(ret) {
+    // scheme, must be set
+    if (!ret.scheme) {
+        if (_throwOnMissingSchema) {
+            throw new Error("[UriError]: Scheme is missing: {scheme: \"\", authority: \"" + ret.authority + "\", path: \"" + ret.path + "\", query: \"" + ret.query + "\", fragment: \"" + ret.fragment + "\"}");
+        }
+        else {
+            console.warn("[UriError]: Scheme is missing: {scheme: \"\", authority: \"" + ret.authority + "\", path: \"" + ret.path + "\", query: \"" + ret.query + "\", fragment: \"" + ret.fragment + "\"}");
+        }
+    }
     // scheme, https://tools.ietf.org/html/rfc3986#section-3.1
     // ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
     if (ret.scheme && !_schemePattern.test(ret.scheme)) {
@@ -3261,7 +3556,7 @@ var _slash = '/';
 var _regexp = /^(([^:/?#]+?):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/;
 /**
  * Uniform Resource Identifier (URI) http://tools.ietf.org/html/rfc3986.
- * This class is a simple parser which creates the basic component paths
+ * This class is a simple parser which creates the basic component parts
  * (http://tools.ietf.org/html/rfc3986#section-3) with minimal validation
  * and encoding.
  *
@@ -3272,8 +3567,6 @@ var _regexp = /^(([^:/?#]+?):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/;
  *        |   _____________________|__
  *       / \ /                        \
  *       urn:example:animal:ferret:nose
- *
- *
  */
 var URI = /** @class */ (function () {
     /**
@@ -3316,11 +3609,32 @@ var URI = /** @class */ (function () {
         // ---- filesystem path -----------------------
         /**
          * Returns a string representing the corresponding file system path of this URI.
-         * Will handle UNC paths and normalize windows drive letters to lower-case. Also
-         * uses the platform specific path separator. Will *not* validate the path for
-         * invalid characters and semantics. Will *not* look at the scheme of this URI.
+         * Will handle UNC paths, normalizes windows drive letters to lower-case, and uses the
+         * platform specific path separator.
+         *
+         * * Will *not* validate the path for invalid characters and semantics.
+         * * Will *not* look at the scheme of this URI.
+         * * The result shall *not* be used for display purposes but for accessing a file on disk.
+         *
+         *
+         * The *difference* to `URI#path` is the use of the platform specific separator and the handling
+         * of UNC paths. See the below sample of a file-uri with an authority (UNC path).
+         *
+         * ```ts
+            const u = URI.parse('file://server/c$/folder/file.txt')
+            u.authority === 'server'
+            u.path === '/shares/c$/file.txt'
+            u.fsPath === '\\server\c$\folder\file.txt'
+        ```
+         *
+         * Using `URI#path` to read a file (using fs-apis) would not be enough because parts of the path,
+         * namely the server name, would be missing. Therefore `URI#fsPath` exists - it's sugar to ease working
+         * with URIs that represent files on disk (`file` scheme).
          */
         get: function () {
+            // if (this.scheme !== 'file') {
+            // 	console.warn(`[UriError] calling fsPath with scheme ${this.scheme}`);
+            // }
             return _makeFsPath(this);
         },
         enumerable: true,
@@ -3372,6 +3686,12 @@ var URI = /** @class */ (function () {
         return new _URI(scheme, authority, path, query, fragment);
     };
     // ---- parse & validate ------------------------
+    /**
+     * Creates a new URI from a string, e.g. `http://www.msft.com/some/path`,
+     * `file:///usr/home`, or `scheme:with/path`.
+     *
+     * @param value A string which represents an URI (see `URI#toString`).
+     */
     URI.parse = function (value) {
         var match = _regexp.exec(value);
         if (!match) {
@@ -3379,12 +3699,33 @@ var URI = /** @class */ (function () {
         }
         return new _URI(match[2] || _empty, decodeURIComponent(match[4] || _empty), decodeURIComponent(match[5] || _empty), decodeURIComponent(match[7] || _empty), decodeURIComponent(match[9] || _empty));
     };
+    /**
+     * Creates a new URI from a file system path, e.g. `c:\my\files`,
+     * `/usr/home`, or `\\server\share\some\path`.
+     *
+     * The *difference* between `URI#parse` and `URI#file` is that the latter treats the argument
+     * as path, not as stringified-uri. E.g. `URI.file(path)` is **not the same as**
+     * `URI.parse('file://' + path)` because the path might contain characters that are
+     * interpreted (# and ?). See the following sample:
+     * ```ts
+    const good = URI.file('/coding/c#/project1');
+    good.scheme === 'file';
+    good.path === '/coding/c#/project1';
+    good.fragment === '';
+    const bad = URI.parse('file://' + '/coding/c#/project1');
+    bad.scheme === 'file';
+    bad.path === '/coding/c'; // path is now broken
+    bad.fragment === '/project1';
+    ```
+     *
+     * @param path A file system path (see `URI#fsPath`)
+     */
     URI.file = function (path) {
         var authority = _empty;
         // normalize to fwd-slashes on windows,
         // on other systems bwd-slashes are valid
         // filename character, eg /f\oo/ba\r.txt
-        if (__WEBPACK_IMPORTED_MODULE_0__platform_js__["c" /* isWindows */]) {
+        if (__WEBPACK_IMPORTED_MODULE_0__platform_js__["d" /* isWindows */]) {
             path = path.replace(/\\/g, _slash);
         }
         // check for authority as used in UNC shares
@@ -3407,6 +3748,13 @@ var URI = /** @class */ (function () {
     };
     // ---- printing/externalize ---------------------------
     /**
+     * Creates a string presentation for this URI. It's guaranteed that calling
+     * `URI.parse` with the result of this function creates an URI which is equal
+     * to this URI.
+     *
+     * * The result shall *not* be used for display purposes but for externalization or transport.
+     * * The result will be encoded using the percentage encoding and encoding happens mostly
+     * ignore the scheme-specific encoding rules.
      *
      * @param skipEncoding Do not encode the result, default is `false`
      */
@@ -3433,7 +3781,7 @@ var URI = /** @class */ (function () {
     };
     return URI;
 }());
-/* harmony default export */ __webpack_exports__["a"] = (URI);
+
 // tslint:disable-next-line:class-name
 var _URI = /** @class */ (function (_super) {
     __extends(_URI, _super);
@@ -3608,7 +3956,7 @@ function _makeFsPath(uri) {
         // other path
         value = uri.path;
     }
-    if (__WEBPACK_IMPORTED_MODULE_0__platform_js__["c" /* isWindows */]) {
+    if (__WEBPACK_IMPORTED_MODULE_0__platform_js__["d" /* isWindows */]) {
         value = value.replace(/\//g, '\\');
     }
     return value;
@@ -3694,7 +4042,7 @@ function _asFormatted(uri, skipEncoding) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* unused harmony export Promise */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return Promise; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return TPromise; });
 /* unused harmony export PPromise */
 /**
@@ -5797,6 +6145,136 @@ var PPromise = __winjs_exports.PPromise;
 
 /***/ }),
 
+/***/ "./node_modules/monaco-editor/esm/vs/base/common/winjs.polyfill.promise.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return PolyfillPromise; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__winjs_base_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/winjs.base.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__platform_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/platform.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__async_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/async.js");
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+
+
+function isWinJSPromise(candidate) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__async_js__["a" /* isThenable */])(candidate) && typeof candidate.done === 'function';
+}
+/**
+ * A polyfill for the native promises. The implementation is based on
+ * WinJS promises but tries to gap differences between winjs promises
+ * and native promises.
+ */
+var PolyfillPromise = /** @class */ (function () {
+    function PolyfillPromise(initOrPromise) {
+        if (isWinJSPromise(initOrPromise)) {
+            this._winjsPromise = initOrPromise;
+        }
+        else {
+            this._winjsPromise = new __WEBPACK_IMPORTED_MODULE_0__winjs_base_js__["b" /* Promise */](function (resolve, reject) {
+                var initializing = true;
+                initOrPromise(function (value) {
+                    if (!initializing) {
+                        resolve(value);
+                    }
+                    else {
+                        __WEBPACK_IMPORTED_MODULE_1__platform_js__["b" /* setImmediate */](function () { return resolve(value); });
+                    }
+                }, function (err) {
+                    if (!initializing) {
+                        reject(err);
+                    }
+                    else {
+                        __WEBPACK_IMPORTED_MODULE_1__platform_js__["b" /* setImmediate */](function () { return reject(err); });
+                    }
+                });
+                initializing = false;
+            });
+        }
+    }
+    PolyfillPromise.all = function (thenables) {
+        return new PolyfillPromise(__WEBPACK_IMPORTED_MODULE_0__winjs_base_js__["b" /* Promise */].join(thenables).then(null, function (values) {
+            // WinJSPromise returns a sparse array whereas
+            // native promises return the *first* error
+            for (var key in values) {
+                if (values.hasOwnProperty(key)) {
+                    return values[key];
+                }
+            }
+        }));
+    };
+    PolyfillPromise.race = function (thenables) {
+        // WinJSPromise returns `{ key: <index/key>, value: <promise> }`
+        // from the `any` call and Promise.race just wants the value
+        return new PolyfillPromise(__WEBPACK_IMPORTED_MODULE_0__winjs_base_js__["b" /* Promise */].any(thenables).then(function (entry) { return entry.value; }, function (err) { return err.value; }));
+    };
+    PolyfillPromise.resolve = function (value) {
+        return new PolyfillPromise(__WEBPACK_IMPORTED_MODULE_0__winjs_base_js__["b" /* Promise */].wrap(value));
+    };
+    PolyfillPromise.reject = function (value) {
+        return new PolyfillPromise(__WEBPACK_IMPORTED_MODULE_0__winjs_base_js__["b" /* Promise */].wrapError(value));
+    };
+    PolyfillPromise.prototype.then = function (onFulfilled, onRejected) {
+        var sync = true;
+        // To support chaining, we need to return the value of the
+        // onFulfilled and onRejected callback.
+        // WinJSPromise supports a flat-map style #then, ie. the callbacks
+        // passed to WinJSPromise#then can return a Promise.
+        var promise = new PolyfillPromise(this._winjsPromise.then(onFulfilled && function (value) {
+            if (!sync) {
+                return onFulfilled(value);
+            }
+            else {
+                return new __WEBPACK_IMPORTED_MODULE_0__winjs_base_js__["b" /* Promise */](function (resolve, reject) {
+                    __WEBPACK_IMPORTED_MODULE_1__platform_js__["b" /* setImmediate */](function () {
+                        var result;
+                        try {
+                            result = onFulfilled(value);
+                        }
+                        catch (err2) {
+                            reject(err2);
+                            return;
+                        }
+                        resolve(result);
+                    });
+                });
+            }
+        }, onRejected && function (err) {
+            if (!sync) {
+                return onRejected(err);
+            }
+            else {
+                return new __WEBPACK_IMPORTED_MODULE_0__winjs_base_js__["b" /* Promise */](function (resolve, reject) {
+                    __WEBPACK_IMPORTED_MODULE_1__platform_js__["b" /* setImmediate */](function () {
+                        var result;
+                        try {
+                            result = onRejected(err);
+                        }
+                        catch (err2) {
+                            reject(err2);
+                            return;
+                        }
+                        resolve(result);
+                    });
+                });
+            }
+        }));
+        sync = false;
+        return promise;
+    };
+    PolyfillPromise.prototype.catch = function (onRejected) {
+        return this.then(null, onRejected);
+    };
+    return PolyfillPromise;
+}());
+
+
+
+/***/ }),
+
 /***/ "./node_modules/monaco-editor/esm/vs/base/common/worker/simpleWorker.js":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -5807,18 +6285,19 @@ var PPromise = __winjs_exports.PPromise;
 /* unused harmony export create */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__errors_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/errors.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__lifecycle_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/lifecycle.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__winjs_base_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/winjs.base.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__async_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/async.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__platform_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/platform.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__platform_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/platform.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__winjs_polyfill_promise_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/winjs.polyfill.promise.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -5829,11 +6308,16 @@ var __extends = (this && this.__extends) || (function () {
 
 
 
-
+var global = self;
+// When missing, polyfill the native promise
+// with our winjs-based polyfill
+if (typeof global.Promise === 'undefined') {
+    global.Promise = __WEBPACK_IMPORTED_MODULE_3__winjs_polyfill_promise_js__["a" /* PolyfillPromise */];
+}
 var INITIALIZE = '$initialize';
 var webWorkerWarningLogged = false;
 function logOnceWebWorkerWarning(err) {
-    if (!__WEBPACK_IMPORTED_MODULE_4__platform_js__["a" /* isWeb */]) {
+    if (!__WEBPACK_IMPORTED_MODULE_2__platform_js__["a" /* isWeb */]) {
         // running tests
         return;
     }
@@ -5854,25 +6338,20 @@ var SimpleWorkerProtocol = /** @class */ (function () {
         this._workerId = workerId;
     };
     SimpleWorkerProtocol.prototype.sendMessage = function (method, args) {
+        var _this = this;
         var req = String(++this._lastSentReq);
-        var reply = {
-            c: null,
-            e: null
-        };
-        var result = new __WEBPACK_IMPORTED_MODULE_2__winjs_base_js__["a" /* TPromise */](function (c, e) {
-            reply.c = c;
-            reply.e = e;
-        }, function () {
-            // Cancel not supported
+        return new Promise(function (resolve, reject) {
+            _this._pendingReplies[req] = {
+                resolve: resolve,
+                reject: reject
+            };
+            _this._send({
+                vsWorker: _this._workerId,
+                req: req,
+                method: method,
+                args: args
+            });
         });
-        this._pendingReplies[req] = reply;
-        this._send({
-            vsWorker: this._workerId,
-            req: req,
-            method: method,
-            args: args
-        });
-        return result;
     };
     SimpleWorkerProtocol.prototype.handleMessage = function (serializedMessage) {
         var message;
@@ -5881,6 +6360,7 @@ var SimpleWorkerProtocol = /** @class */ (function () {
         }
         catch (e) {
             // nothing
+            return;
         }
         if (!message || !message.vsWorker) {
             return;
@@ -5908,10 +6388,10 @@ var SimpleWorkerProtocol = /** @class */ (function () {
                     err.message = replyMessage.err.message;
                     err.stack = replyMessage.err.stack;
                 }
-                reply.e(err);
+                reply.reject(err);
                 return;
             }
-            reply.c(replyMessage.res);
+            reply.resolve(replyMessage.res);
             return;
         }
         var requestMessage = msg;
@@ -5951,14 +6431,15 @@ var SimpleWorkerClient = /** @class */ (function (_super) {
     __extends(SimpleWorkerClient, _super);
     function SimpleWorkerClient(workerFactory, moduleId) {
         var _this = _super.call(this) || this;
-        var lazyProxyFulfill = null;
         var lazyProxyReject = null;
         _this._worker = _this._register(workerFactory.create('vs/base/common/worker/simpleWorker', function (msg) {
             _this._protocol.handleMessage(msg);
         }, function (err) {
             // in Firefox, web workers fail lazily :(
             // we will reject the proxy
-            lazyProxyReject(err);
+            if (lazyProxyReject) {
+                lazyProxyReject(err);
+            }
         }));
         _this._protocol = new SimpleWorkerProtocol({
             sendMessage: function (msg) {
@@ -5966,7 +6447,7 @@ var SimpleWorkerClient = /** @class */ (function (_super) {
             },
             handleMessage: function (method, args) {
                 // Intentionally not supporting worker -> main requests
-                return __WEBPACK_IMPORTED_MODULE_2__winjs_base_js__["a" /* TPromise */].as(null);
+                return Promise.resolve(null);
             }
         });
         _this._protocol.setWorkerId(_this._worker.getId());
@@ -5980,25 +6461,24 @@ var SimpleWorkerClient = /** @class */ (function (_super) {
             // Get the configuration from requirejs
             loaderConfiguration = self.requirejs.s.contexts._.config;
         }
-        _this._lazyProxy = new __WEBPACK_IMPORTED_MODULE_2__winjs_base_js__["a" /* TPromise */](function (c, e) {
-            lazyProxyFulfill = c;
-            lazyProxyReject = e;
-        }, function () { });
         // Send initialize message
         _this._onModuleLoaded = _this._protocol.sendMessage(INITIALIZE, [
             _this._worker.getId(),
             moduleId,
             loaderConfiguration
         ]);
-        _this._onModuleLoaded.then(function (availableMethods) {
-            var proxy = {};
-            for (var i = 0; i < availableMethods.length; i++) {
-                proxy[availableMethods[i]] = createProxyMethod(availableMethods[i], proxyMethodRequest);
-            }
-            lazyProxyFulfill(proxy);
-        }, function (e) {
-            lazyProxyReject(e);
-            _this._onError('Worker failed to load ' + moduleId, e);
+        _this._lazyProxy = new Promise(function (resolve, reject) {
+            lazyProxyReject = reject;
+            _this._onModuleLoaded.then(function (availableMethods) {
+                var proxy = {};
+                for (var i = 0; i < availableMethods.length; i++) {
+                    proxy[availableMethods[i]] = createProxyMethod(availableMethods[i], proxyMethodRequest);
+                }
+                resolve(proxy);
+            }, function (e) {
+                reject(e);
+                _this._onError('Worker failed to load ' + moduleId, e);
+            });
         });
         // Create proxy to loaded code
         var proxyMethodRequest = function (method, args) {
@@ -6013,17 +6493,14 @@ var SimpleWorkerClient = /** @class */ (function (_super) {
         return _this;
     }
     SimpleWorkerClient.prototype.getProxyObject = function () {
-        // Do not allow chaining promises to cancel the proxy creation
-        return new __WEBPACK_IMPORTED_MODULE_3__async_js__["a" /* ShallowCancelThenPromise */](this._lazyProxy);
+        return this._lazyProxy;
     };
     SimpleWorkerClient.prototype._request = function (method, args) {
         var _this = this;
-        return new __WEBPACK_IMPORTED_MODULE_2__winjs_base_js__["a" /* TPromise */](function (c, e) {
+        return new Promise(function (resolve, reject) {
             _this._onModuleLoaded.then(function () {
-                _this._protocol.sendMessage(method, args).then(c, e);
-            }, e);
-        }, function () {
-            // Cancel intentionally not supported
+                _this._protocol.sendMessage(method, args).then(resolve, reject);
+            }, reject);
         });
     };
     SimpleWorkerClient.prototype._onError = function (message, error) {
@@ -6055,13 +6532,13 @@ var SimpleWorkerServer = /** @class */ (function () {
             return this.initialize(args[0], args[1], args[2]);
         }
         if (!this._requestHandler || typeof this._requestHandler[method] !== 'function') {
-            return __WEBPACK_IMPORTED_MODULE_2__winjs_base_js__["a" /* TPromise */].wrapError(new Error('Missing requestHandler or method: ' + method));
+            return Promise.reject(new Error('Missing requestHandler or method: ' + method));
         }
         try {
-            return __WEBPACK_IMPORTED_MODULE_2__winjs_base_js__["a" /* TPromise */].as(this._requestHandler[method].apply(this._requestHandler, args));
+            return Promise.resolve(this._requestHandler[method].apply(this._requestHandler, args));
         }
         catch (e) {
-            return __WEBPACK_IMPORTED_MODULE_2__winjs_base_js__["a" /* TPromise */].wrapError(e);
+            return Promise.reject(e);
         }
     };
     SimpleWorkerServer.prototype.initialize = function (workerId, moduleId, loaderConfig) {
@@ -6075,7 +6552,7 @@ var SimpleWorkerServer = /** @class */ (function () {
                     methods.push(prop);
                 }
             }
-            return __WEBPACK_IMPORTED_MODULE_2__winjs_base_js__["a" /* TPromise */].as(methods);
+            return Promise.resolve(methods);
         }
         if (loaderConfig) {
             // Remove 'baseUrl', handling it is beyond scope for now
@@ -6091,29 +6568,28 @@ var SimpleWorkerServer = /** @class */ (function () {
             loaderConfig.catchError = true;
             self.require.config(loaderConfig);
         }
-        var cc;
-        var ee;
-        var r = new __WEBPACK_IMPORTED_MODULE_2__winjs_base_js__["a" /* TPromise */](function (c, e) {
-            cc = c;
-            ee = e;
-        });
-        // Use the global require to be sure to get the global config
-        self.require([moduleId], function () {
-            var result = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                result[_i] = arguments[_i];
-            }
-            var handlerModule = result[0];
-            _this._requestHandler = handlerModule.create();
-            var methods = [];
-            for (var prop in _this._requestHandler) {
-                if (typeof _this._requestHandler[prop] === 'function') {
-                    methods.push(prop);
+        return new Promise(function (resolve, reject) {
+            // Use the global require to be sure to get the global config
+            self.require([moduleId], function () {
+                var result = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    result[_i] = arguments[_i];
                 }
-            }
-            cc(methods);
-        }, ee);
-        return r;
+                var handlerModule = result[0];
+                _this._requestHandler = handlerModule.create();
+                if (!_this._requestHandler) {
+                    reject(new Error("No RequestHandler!"));
+                    return;
+                }
+                var methods = [];
+                for (var prop in _this._requestHandler) {
+                    if (typeof _this._requestHandler[prop] === 'function') {
+                        methods.push(prop);
+                    }
+                }
+                resolve(methods);
+            }, reject);
+        });
     };
     return SimpleWorkerServer;
 }());
@@ -6139,7 +6615,6 @@ function create(postMessage) {
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 
 /**
  * A fast character classifier that uses a compact array for ASCII values.
@@ -6204,7 +6679,6 @@ var CharacterSet = /** @class */ (function () {
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 /**
  * A position in the editor.
  */
@@ -6213,6 +6687,33 @@ var Position = /** @class */ (function () {
         this.lineNumber = lineNumber;
         this.column = column;
     }
+    /**
+     * Create a new postion from this position.
+     *
+     * @param newLineNumber new line number
+     * @param newColumn new column
+     */
+    Position.prototype.with = function (newLineNumber, newColumn) {
+        if (newLineNumber === void 0) { newLineNumber = this.lineNumber; }
+        if (newColumn === void 0) { newColumn = this.column; }
+        if (newLineNumber === this.lineNumber && newColumn === this.column) {
+            return this;
+        }
+        else {
+            return new Position(newLineNumber, newColumn);
+        }
+    };
+    /**
+     * Derive a new position from this position.
+     *
+     * @param deltaLineNumber line number delta
+     * @param deltaColumn column delta
+     */
+    Position.prototype.delta = function (deltaLineNumber, deltaColumn) {
+        if (deltaLineNumber === void 0) { deltaLineNumber = 0; }
+        if (deltaColumn === void 0) { deltaColumn = 0; }
+        return this.with(this.lineNumber + deltaLineNumber, this.column + deltaColumn);
+    };
     /**
      * Test if this position equals other position
      */
@@ -6328,7 +6829,6 @@ var Position = /** @class */ (function () {
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 
 /**
  * A range in the editor. (startLineNumber,startColumn) is <= (endLineNumber,endColumn)
@@ -6552,9 +7052,6 @@ var Range = /** @class */ (function () {
         if (end === void 0) { end = start; }
         return new Range(start.lineNumber, start.column, end.lineNumber, end.column);
     };
-    /**
-     * Create a `Range` from an `IRange`.
-     */
     Range.lift = function (range) {
         if (!range) {
             return null;
@@ -6606,24 +7103,29 @@ var Range = /** @class */ (function () {
      * It will first compare ranges on the startPosition and then on the endPosition
      */
     Range.compareRangesUsingStarts = function (a, b) {
-        var aStartLineNumber = a.startLineNumber | 0;
-        var bStartLineNumber = b.startLineNumber | 0;
-        if (aStartLineNumber === bStartLineNumber) {
-            var aStartColumn = a.startColumn | 0;
-            var bStartColumn = b.startColumn | 0;
-            if (aStartColumn === bStartColumn) {
-                var aEndLineNumber = a.endLineNumber | 0;
-                var bEndLineNumber = b.endLineNumber | 0;
-                if (aEndLineNumber === bEndLineNumber) {
-                    var aEndColumn = a.endColumn | 0;
-                    var bEndColumn = b.endColumn | 0;
-                    return aEndColumn - bEndColumn;
+        if (a && b) {
+            var aStartLineNumber = a.startLineNumber | 0;
+            var bStartLineNumber = b.startLineNumber | 0;
+            if (aStartLineNumber === bStartLineNumber) {
+                var aStartColumn = a.startColumn | 0;
+                var bStartColumn = b.startColumn | 0;
+                if (aStartColumn === bStartColumn) {
+                    var aEndLineNumber = a.endLineNumber | 0;
+                    var bEndLineNumber = b.endLineNumber | 0;
+                    if (aEndLineNumber === bEndLineNumber) {
+                        var aEndColumn = a.endColumn | 0;
+                        var bEndColumn = b.endColumn | 0;
+                        return aEndColumn - bEndColumn;
+                    }
+                    return aEndLineNumber - bEndLineNumber;
                 }
-                return aEndLineNumber - bEndLineNumber;
+                return aStartColumn - bStartColumn;
             }
-            return aStartColumn - bStartColumn;
+            return aStartLineNumber - bStartLineNumber;
         }
-        return aStartLineNumber - bStartLineNumber;
+        var aExists = (a ? 1 : 0);
+        var bExists = (b ? 1 : 0);
+        return aExists - bExists;
     };
     /**
      * A function that compares ranges, useful for sorting ranges
@@ -6658,19 +7160,20 @@ var Range = /** @class */ (function () {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return SelectionDirection; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Selection; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__range_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/core/range.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__position_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/core/position.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__position_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/core/position.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__range_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/core/range.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -6679,20 +7182,6 @@ var __extends = (this && this.__extends) || (function () {
 })();
 
 
-/**
- * The direction of a selection.
- */
-var SelectionDirection;
-(function (SelectionDirection) {
-    /**
-     * The selection starts above where it ends.
-     */
-    SelectionDirection[SelectionDirection["LTR"] = 0] = "LTR";
-    /**
-     * The selection starts below where it ends.
-     */
-    SelectionDirection[SelectionDirection["RTL"] = 1] = "RTL";
-})(SelectionDirection || (SelectionDirection = {}));
 /**
  * A selection in the editor.
  * The selection is a range that has an orientation.
@@ -6739,15 +7228,15 @@ var Selection = /** @class */ (function (_super) {
      */
     Selection.prototype.getDirection = function () {
         if (this.selectionStartLineNumber === this.startLineNumber && this.selectionStartColumn === this.startColumn) {
-            return SelectionDirection.LTR;
+            return 0 /* LTR */;
         }
-        return SelectionDirection.RTL;
+        return 1 /* RTL */;
     };
     /**
      * Create a new selection with a different `positionLineNumber` and `positionColumn`.
      */
     Selection.prototype.setEndPosition = function (endLineNumber, endColumn) {
-        if (this.getDirection() === SelectionDirection.LTR) {
+        if (this.getDirection() === 0 /* LTR */) {
             return new Selection(this.startLineNumber, this.startColumn, endLineNumber, endColumn);
         }
         return new Selection(endLineNumber, endColumn, this.startLineNumber, this.startColumn);
@@ -6756,13 +7245,13 @@ var Selection = /** @class */ (function (_super) {
      * Get the position at `positionLineNumber` and `positionColumn`.
      */
     Selection.prototype.getPosition = function () {
-        return new __WEBPACK_IMPORTED_MODULE_1__position_js__["a" /* Position */](this.positionLineNumber, this.positionColumn);
+        return new __WEBPACK_IMPORTED_MODULE_0__position_js__["a" /* Position */](this.positionLineNumber, this.positionColumn);
     };
     /**
      * Create a new selection with a different `selectionStartLineNumber` and `selectionStartColumn`.
      */
     Selection.prototype.setStartPosition = function (startLineNumber, startColumn) {
-        if (this.getDirection() === SelectionDirection.LTR) {
+        if (this.getDirection() === 0 /* LTR */) {
             return new Selection(startLineNumber, startColumn, this.endLineNumber, this.endColumn);
         }
         return new Selection(this.endLineNumber, this.endColumn, startLineNumber, startColumn);
@@ -6815,13 +7304,13 @@ var Selection = /** @class */ (function (_super) {
      * Create with a direction.
      */
     Selection.createWithDirection = function (startLineNumber, startColumn, endLineNumber, endColumn, direction) {
-        if (direction === SelectionDirection.LTR) {
+        if (direction === 0 /* LTR */) {
             return new Selection(startLineNumber, startColumn, endLineNumber, endColumn);
         }
         return new Selection(endLineNumber, endColumn, startLineNumber, startColumn);
     };
     return Selection;
-}(__WEBPACK_IMPORTED_MODULE_0__range_js__["a" /* Range */]));
+}(__WEBPACK_IMPORTED_MODULE_1__range_js__["a" /* Range */]));
 
 
 
@@ -6838,7 +7327,6 @@ var Selection = /** @class */ (function (_super) {
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 var Token = /** @class */ (function () {
     function Token(offset, type, language) {
         this.offset = offset | 0; // @perf
@@ -6883,7 +7371,6 @@ var TokenizationResult2 = /** @class */ (function () {
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 var Uint8Matrix = /** @class */ (function () {
     function Uint8Matrix(rows, cols, defaultValue) {
         var data = new Uint8Array(rows * cols);
@@ -6944,7 +7431,6 @@ function toUint32Array(arr) {
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 
 
 var MAXIMUM_RUN_TIME = 5000; // 5 seconds
@@ -7123,7 +7609,7 @@ var LineChange = /** @class */ (function () {
         var originalEndLineNumber;
         var modifiedStartLineNumber;
         var modifiedEndLineNumber;
-        var charChanges;
+        var charChanges = undefined;
         if (diffChange.originalLength === 0) {
             originalStartLineNumber = originalLineSequence.getStartLineNumber(diffChange.originalStart) - 1;
             originalEndLineNumber = 0;
@@ -7286,7 +7772,7 @@ var DiffComputer = /** @class */ (function () {
             // Merged into previous
             return;
         }
-        var charChanges;
+        var charChanges = undefined;
         if (this.shouldComputeCharChanges) {
             charChanges = [new CharChange(originalLineNumber, originalStartColumn, originalLineNumber, originalEndColumn, modifiedLineNumber, modifiedStartColumn, modifiedLineNumber, modifiedEndColumn)];
         }
@@ -7331,13 +7817,12 @@ var DiffComputer = /** @class */ (function () {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MirrorTextModel; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__viewModel_prefixSumComputer_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/viewModel/prefixSumComputer.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__core_position_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/core/position.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__core_position_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/core/position.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__viewModel_prefixSumComputer_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/viewModel/prefixSumComputer.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 
 
 var MirrorTextModel = /** @class */ (function () {
@@ -7346,6 +7831,7 @@ var MirrorTextModel = /** @class */ (function () {
         this._lines = lines;
         this._eol = eol;
         this._versionId = versionId;
+        this._lineStarts = null;
     }
     MirrorTextModel.prototype.dispose = function () {
         this._lines.length = 0;
@@ -7363,7 +7849,7 @@ var MirrorTextModel = /** @class */ (function () {
         for (var i = 0, len = changes.length; i < len; i++) {
             var change = changes[i];
             this._acceptDeleteRange(change.range);
-            this._acceptInsertText(new __WEBPACK_IMPORTED_MODULE_1__core_position_js__["a" /* Position */](change.range.startLineNumber, change.range.startColumn), change.text);
+            this._acceptInsertText(new __WEBPACK_IMPORTED_MODULE_0__core_position_js__["a" /* Position */](change.range.startLineNumber, change.range.startColumn), change.text);
         }
         this._versionId = e.versionId;
     };
@@ -7375,7 +7861,7 @@ var MirrorTextModel = /** @class */ (function () {
             for (var i = 0; i < linesLength; i++) {
                 lineStartValues[i] = this._lines[i].length + eolLength;
             }
-            this._lineStarts = new __WEBPACK_IMPORTED_MODULE_0__viewModel_prefixSumComputer_js__["a" /* PrefixSumComputer */](lineStartValues);
+            this._lineStarts = new __WEBPACK_IMPORTED_MODULE_1__viewModel_prefixSumComputer_js__["a" /* PrefixSumComputer */](lineStartValues);
         }
     };
     /**
@@ -7457,7 +7943,6 @@ var MirrorTextModel = /** @class */ (function () {
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 var USUAL_WORD_SEPARATORS = '`~!@#$%^&*()-=+[{]}\\|;:\'",.<>/?';
 /**
  * Create a word definition regular expression based on default word separators.
@@ -7511,10 +7996,11 @@ function getWordAtPosFast(column, wordDefinition, text, textOffset) {
     wordDefinition.lastIndex = start;
     var match;
     while (match = wordDefinition.exec(text)) {
-        if (match.index <= pos && wordDefinition.lastIndex >= pos) {
+        var matchIndex = match.index || 0;
+        if (matchIndex <= pos && wordDefinition.lastIndex >= pos) {
             return {
                 word: match[0],
-                startColumn: textOffset + 1 + match.index,
+                startColumn: textOffset + 1 + matchIndex,
                 endColumn: textOffset + 1 + wordDefinition.lastIndex
             };
         }
@@ -7529,7 +8015,8 @@ function getWordAtPosSlow(column, wordDefinition, text, textOffset) {
     wordDefinition.lastIndex = 0;
     var match;
     while (match = wordDefinition.exec(text)) {
-        if (match.index > pos) {
+        var matchIndex = match.index || 0;
+        if (matchIndex > pos) {
             // |nW -> matched only after the pos
             return null;
         }
@@ -7537,7 +8024,7 @@ function getWordAtPosSlow(column, wordDefinition, text, textOffset) {
             // W|W -> match encloses pos
             return {
                 word: match[0],
-                startColumn: textOffset + 1 + match.index,
+                startColumn: textOffset + 1 + matchIndex,
                 endColumn: textOffset + 1 + wordDefinition.lastIndex
             };
         }
@@ -7579,7 +8066,6 @@ function getWordAtText(column, wordDefinition, text, textOffset) {
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 
 
 var StateMachine = /** @class */ (function () {
@@ -7819,7 +8305,6 @@ function computeLinks(model) {
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 var BasicInplaceReplace = /** @class */ (function () {
     function BasicInplaceReplace() {
         this._defaultValueSet = [
@@ -7914,33 +8399,37 @@ var BasicInplaceReplace = /** @class */ (function () {
 /* unused harmony export BaseEditorSimpleWorker */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return EditorSimpleWorkerImpl; });
 /* unused harmony export create */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__base_common_uri_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/uri.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__base_common_winjs_base_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/winjs.base.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__core_range_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/core/range.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__diff_diffComputer_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/diff/diffComputer.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__base_common_diff_diff_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/diff/diff.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__base_common_arrays_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/arrays.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__base_common_diff_diff_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/diff/diff.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__base_common_iterator_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/iterator.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__base_common_platform_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/platform.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__base_common_uri_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/uri.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__core_position_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/core/position.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__model_mirrorTextModel_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/model/mirrorTextModel.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__modes_linkComputer_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/modes/linkComputer.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__modes_supports_inplaceReplaceSupport_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/modes/supports/inplaceReplaceSupport.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__core_range_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/core/range.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__diff_diffComputer_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/diff/diffComputer.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__model_mirrorTextModel_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/model/mirrorTextModel.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__model_wordHelper_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/model/wordHelper.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__standalone_standaloneBase_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/standalone/standaloneBase.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__base_common_platform_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/platform.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__modes_linkComputer_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/modes/linkComputer.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__modes_supports_inplaceReplaceSupport_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/modes/supports/inplaceReplaceSupport.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__standalone_standaloneBase_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/standalone/standaloneBase.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+
 
 
 
@@ -7997,7 +8486,7 @@ var MirrorModel = /** @class */ (function (_super) {
     MirrorModel.prototype.getWordAtPosition = function (position, wordDefinition) {
         var wordAtText = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_9__model_wordHelper_js__["a" /* getWordAtText */])(position.column, __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_9__model_wordHelper_js__["b" /* ensureValidWordDefinition */])(wordDefinition), this._lines[position.lineNumber - 1], 0);
         if (wordAtText) {
-            return new __WEBPACK_IMPORTED_MODULE_2__core_range_js__["a" /* Range */](position.lineNumber, wordAtText.startColumn, position.lineNumber, wordAtText.endColumn);
+            return new __WEBPACK_IMPORTED_MODULE_6__core_range_js__["a" /* Range */](position.lineNumber, wordAtText.startColumn, position.lineNumber, wordAtText.endColumn);
         }
         return null;
     };
@@ -8018,23 +8507,25 @@ var MirrorModel = /** @class */ (function (_super) {
     };
     MirrorModel.prototype.createWordIterator = function (wordDefinition) {
         var _this = this;
-        var obj = {
-            done: false,
-            value: ''
-        };
+        var obj;
         var lineNumber = 0;
         var lineText;
         var wordRangesIdx = 0;
         var wordRanges = [];
         var next = function () {
             if (wordRangesIdx < wordRanges.length) {
-                obj.done = false;
-                obj.value = lineText.substring(wordRanges[wordRangesIdx].start, wordRanges[wordRangesIdx].end);
+                var value = lineText.substring(wordRanges[wordRangesIdx].start, wordRanges[wordRangesIdx].end);
                 wordRangesIdx += 1;
+                if (!obj) {
+                    obj = { done: false, value: value };
+                }
+                else {
+                    obj.value = value;
+                }
+                return obj;
             }
             else if (lineNumber >= _this._lines.length) {
-                obj.done = true;
-                obj.value = undefined;
+                return __WEBPACK_IMPORTED_MODULE_2__base_common_iterator_js__["a" /* FIN */];
             }
             else {
                 lineText = _this._lines[lineNumber];
@@ -8043,9 +8534,22 @@ var MirrorModel = /** @class */ (function (_super) {
                 lineNumber += 1;
                 return next();
             }
-            return obj;
         };
         return { next: next };
+    };
+    MirrorModel.prototype.getLineWords = function (lineNumber, wordDefinition) {
+        var content = this._lines[lineNumber - 1];
+        var ranges = this._wordenize(content, wordDefinition);
+        var words = [];
+        for (var _i = 0, ranges_1 = ranges; _i < ranges_1.length; _i++) {
+            var range = ranges_1[_i];
+            words.push({
+                word: content.substring(range.start, range.end),
+                startColumn: range.start + 1,
+                endColumn: range.end + 1
+            });
+        }
+        return words;
     };
     MirrorModel.prototype._wordenize = function (content, wordDefinition) {
         var result = [];
@@ -8144,7 +8648,7 @@ var MirrorModel = /** @class */ (function (_super) {
         }
     };
     return MirrorModel;
-}(__WEBPACK_IMPORTED_MODULE_6__model_mirrorTextModel_js__["a" /* MirrorTextModel */]));
+}(__WEBPACK_IMPORTED_MODULE_8__model_mirrorTextModel_js__["a" /* MirrorTextModel */]));
 /**
  * @internal
  */
@@ -8158,25 +8662,54 @@ var BaseEditorSimpleWorker = /** @class */ (function () {
         var original = this._getModel(originalUrl);
         var modified = this._getModel(modifiedUrl);
         if (!original || !modified) {
-            return null;
+            return Promise.resolve(null);
         }
         var originalLines = original.getLinesContent();
         var modifiedLines = modified.getLinesContent();
-        var diffComputer = new __WEBPACK_IMPORTED_MODULE_3__diff_diffComputer_js__["a" /* DiffComputer */](originalLines, modifiedLines, {
+        var diffComputer = new __WEBPACK_IMPORTED_MODULE_7__diff_diffComputer_js__["a" /* DiffComputer */](originalLines, modifiedLines, {
             shouldComputeCharChanges: true,
             shouldPostProcessCharChanges: true,
             shouldIgnoreTrimWhitespace: ignoreTrimWhitespace,
             shouldMakePrettyDiff: true
         });
-        return __WEBPACK_IMPORTED_MODULE_1__base_common_winjs_base_js__["a" /* TPromise */].as(diffComputer.computeDiff());
+        var changes = diffComputer.computeDiff();
+        var identical = (changes.length > 0 ? false : this._modelsAreIdentical(original, modified));
+        return Promise.resolve({
+            identical: identical,
+            changes: changes
+        });
+    };
+    BaseEditorSimpleWorker.prototype._modelsAreIdentical = function (original, modified) {
+        var originalLineCount = original.getLineCount();
+        var modifiedLineCount = modified.getLineCount();
+        if (originalLineCount !== modifiedLineCount) {
+            return false;
+        }
+        for (var line = 1; line <= originalLineCount; line++) {
+            var originalLine = original.getLineContent(line);
+            var modifiedLine = modified.getLineContent(line);
+            if (originalLine !== modifiedLine) {
+                return false;
+            }
+        }
+        return true;
     };
     BaseEditorSimpleWorker.prototype.computeMoreMinimalEdits = function (modelUrl, edits) {
         var model = this._getModel(modelUrl);
         if (!model) {
-            return __WEBPACK_IMPORTED_MODULE_1__base_common_winjs_base_js__["a" /* TPromise */].as(edits);
+            return Promise.resolve(edits);
         }
         var result = [];
-        var lastEol;
+        var lastEol = undefined;
+        edits = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__base_common_arrays_js__["a" /* mergeSort */])(edits, function (a, b) {
+            if (a.range && b.range) {
+                return __WEBPACK_IMPORTED_MODULE_6__core_range_js__["a" /* Range */].compareRangesUsingStarts(a.range, b.range);
+            }
+            // eol only changes should go to the end
+            var aRng = a.range ? 0 : 1;
+            var bRng = b.range ? 0 : 1;
+            return aRng - bRng;
+        });
         for (var _i = 0, edits_1 = edits; _i < edits_1.length; _i++) {
             var _a = edits_1[_i], range = _a.range, text = _a.text, eol = _a.eol;
             if (typeof eol === 'number') {
@@ -8198,8 +8731,8 @@ var BaseEditorSimpleWorker = /** @class */ (function () {
                 continue;
             }
             // compute diff between original and edit.text
-            var changes = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__base_common_diff_diff_js__["a" /* stringDiff */])(original, text, false);
-            var editOffset = model.offsetAt(__WEBPACK_IMPORTED_MODULE_2__core_range_js__["a" /* Range */].lift(range).getStartPosition());
+            var changes = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__base_common_diff_diff_js__["a" /* stringDiff */])(original, text, false);
+            var editOffset = model.offsetAt(__WEBPACK_IMPORTED_MODULE_6__core_range_js__["a" /* Range */].lift(range).getStartPosition());
             for (var _b = 0, changes_1 = changes; _b < changes_1.length; _b++) {
                 var change = changes_1[_b];
                 var start = model.positionAt(editOffset + change.originalStart);
@@ -8216,50 +8749,80 @@ var BaseEditorSimpleWorker = /** @class */ (function () {
         if (typeof lastEol === 'number') {
             result.push({ eol: lastEol, text: undefined, range: undefined });
         }
-        return __WEBPACK_IMPORTED_MODULE_1__base_common_winjs_base_js__["a" /* TPromise */].as(result);
+        return Promise.resolve(result);
     };
     // ---- END minimal edits ---------------------------------------------------------------
     BaseEditorSimpleWorker.prototype.computeLinks = function (modelUrl) {
         var model = this._getModel(modelUrl);
         if (!model) {
-            return null;
+            return Promise.resolve(null);
         }
-        return __WEBPACK_IMPORTED_MODULE_1__base_common_winjs_base_js__["a" /* TPromise */].as(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__modes_linkComputer_js__["a" /* computeLinks */])(model));
+        return Promise.resolve(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_10__modes_linkComputer_js__["a" /* computeLinks */])(model));
     };
     BaseEditorSimpleWorker.prototype.textualSuggest = function (modelUrl, position, wordDef, wordDefFlags) {
         var model = this._getModel(modelUrl);
-        if (model) {
-            var suggestions = [];
-            var wordDefRegExp = new RegExp(wordDef, wordDefFlags);
-            var currentWord = model.getWordUntilPosition(position, wordDefRegExp).word;
-            var seen = Object.create(null);
-            seen[currentWord] = true;
-            for (var iter = model.createWordIterator(wordDefRegExp), e = iter.next(); !e.done && suggestions.length <= BaseEditorSimpleWorker._suggestionsLimit; e = iter.next()) {
-                var word = e.value;
-                if (seen[word]) {
-                    continue;
-                }
-                seen[word] = true;
-                if (!isNaN(Number(word))) {
-                    continue;
-                }
-                suggestions.push({
-                    type: 'text',
-                    label: word,
-                    insertText: word,
-                    noAutoAccept: true,
-                    overwriteBefore: currentWord.length
-                });
-            }
-            return __WEBPACK_IMPORTED_MODULE_1__base_common_winjs_base_js__["a" /* TPromise */].as({ suggestions: suggestions });
+        if (!model) {
+            return Promise.resolve(null);
         }
-        return undefined;
+        var suggestions = [];
+        var wordDefRegExp = new RegExp(wordDef, wordDefFlags);
+        var currentWord = model.getWordUntilPosition(position, wordDefRegExp);
+        var seen = Object.create(null);
+        seen[currentWord.word] = true;
+        for (var iter = model.createWordIterator(wordDefRegExp), e = iter.next(); !e.done && suggestions.length <= BaseEditorSimpleWorker._suggestionsLimit; e = iter.next()) {
+            var word = e.value;
+            if (seen[word]) {
+                continue;
+            }
+            seen[word] = true;
+            if (!isNaN(Number(word))) {
+                continue;
+            }
+            suggestions.push({
+                kind: 18 /* Text */,
+                label: word,
+                insertText: word,
+                range: { startLineNumber: position.lineNumber, startColumn: currentWord.startColumn, endLineNumber: position.lineNumber, endColumn: currentWord.endColumn }
+            });
+        }
+        return Promise.resolve({ suggestions: suggestions });
     };
     // ---- END suggest --------------------------------------------------------------------------
+    //#region -- word ranges --
+    BaseEditorSimpleWorker.prototype.computeWordRanges = function (modelUrl, range, wordDef, wordDefFlags) {
+        var model = this._getModel(modelUrl);
+        if (!model) {
+            return Promise.resolve(Object.create(null));
+        }
+        var wordDefRegExp = new RegExp(wordDef, wordDefFlags);
+        var result = Object.create(null);
+        for (var line = range.startLineNumber; line < range.endLineNumber; line++) {
+            var words = model.getLineWords(line, wordDefRegExp);
+            for (var _i = 0, words_1 = words; _i < words_1.length; _i++) {
+                var word = words_1[_i];
+                if (!isNaN(Number(word.word))) {
+                    continue;
+                }
+                var array = result[word.word];
+                if (!array) {
+                    array = [];
+                    result[word.word] = array;
+                }
+                array.push({
+                    startLineNumber: line,
+                    startColumn: word.startColumn,
+                    endLineNumber: line,
+                    endColumn: word.endColumn
+                });
+            }
+        }
+        return Promise.resolve(result);
+    };
+    //#endregion
     BaseEditorSimpleWorker.prototype.navigateValueSet = function (modelUrl, range, up, wordDef, wordDefFlags) {
         var model = this._getModel(modelUrl);
         if (!model) {
-            return null;
+            return Promise.resolve(null);
         }
         var wordDefRegExp = new RegExp(wordDef, wordDefFlags);
         if (range.startColumn === range.endColumn) {
@@ -8272,12 +8835,12 @@ var BaseEditorSimpleWorker = /** @class */ (function () {
         }
         var selectionText = model.getValueInRange(range);
         var wordRange = model.getWordAtPosition({ lineNumber: range.startLineNumber, column: range.startColumn }, wordDefRegExp);
-        var word = null;
-        if (wordRange !== null) {
-            word = model.getValueInRange(wordRange);
+        if (!wordRange) {
+            return Promise.resolve(null);
         }
-        var result = __WEBPACK_IMPORTED_MODULE_8__modes_supports_inplaceReplaceSupport_js__["a" /* BasicInplaceReplace */].INSTANCE.navigateValueSet(range, selectionText, wordRange, word, up);
-        return __WEBPACK_IMPORTED_MODULE_1__base_common_winjs_base_js__["a" /* TPromise */].as(result);
+        var word = model.getValueInRange(wordRange);
+        var result = __WEBPACK_IMPORTED_MODULE_11__modes_supports_inplaceReplaceSupport_js__["a" /* BasicInplaceReplace */].INSTANCE.navigateValueSet(range, selectionText, wordRange, word, up);
+        return Promise.resolve(result);
     };
     // ---- BEGIN foreign module support --------------------------------------------------------------------------
     BaseEditorSimpleWorker.prototype.loadForeignModule = function (moduleId, createData) {
@@ -8296,10 +8859,10 @@ var BaseEditorSimpleWorker = /** @class */ (function () {
                     methods.push(prop);
                 }
             }
-            return __WEBPACK_IMPORTED_MODULE_1__base_common_winjs_base_js__["a" /* TPromise */].as(methods);
+            return Promise.resolve(methods);
         }
         // ESM-comment-begin
-        // 		return new TPromise<any>((c, e) => {
+        // 		return new Promise<any>((resolve, reject) => {
         // 			require([moduleId], (foreignModule: { create: IForeignModuleFactory }) => {
         // 				this._foreignModule = foreignModule.create(ctx, createData);
         // 
@@ -8310,25 +8873,25 @@ var BaseEditorSimpleWorker = /** @class */ (function () {
         // 					}
         // 				}
         // 
-        // 				c(methods);
+        // 				resolve(methods);
         // 
-        // 			}, e);
+        // 			}, reject);
         // 		});
         // ESM-comment-end
         // ESM-uncomment-begin
-        return __WEBPACK_IMPORTED_MODULE_1__base_common_winjs_base_js__["a" /* TPromise */].wrapError(new Error("Unexpected usage"));
+        return Promise.reject(new Error("Unexpected usage"));
         // ESM-uncomment-end
     };
     // foreign method request
     BaseEditorSimpleWorker.prototype.fmr = function (method, args) {
         if (!this._foreignModule || typeof this._foreignModule[method] !== 'function') {
-            return __WEBPACK_IMPORTED_MODULE_1__base_common_winjs_base_js__["a" /* TPromise */].wrapError(new Error('Missing requestHandler or method: ' + method));
+            return Promise.reject(new Error('Missing requestHandler or method: ' + method));
         }
         try {
-            return __WEBPACK_IMPORTED_MODULE_1__base_common_winjs_base_js__["a" /* TPromise */].as(this._foreignModule[method].apply(this._foreignModule, args));
+            return Promise.resolve(this._foreignModule[method].apply(this._foreignModule, args));
         }
         catch (e) {
-            return __WEBPACK_IMPORTED_MODULE_1__base_common_winjs_base_js__["a" /* TPromise */].wrapError(e);
+            return Promise.reject(e);
         }
     };
     // ---- END diff --------------------------------------------------------------------------
@@ -8362,7 +8925,7 @@ var EditorSimpleWorkerImpl = /** @class */ (function (_super) {
         return all;
     };
     EditorSimpleWorkerImpl.prototype.acceptNewModel = function (data) {
-        this._models[data.url] = new MirrorModel(__WEBPACK_IMPORTED_MODULE_0__base_common_uri_js__["a" /* default */].parse(data.url), data.lines, data.EOL, data.versionId);
+        this._models[data.url] = new MirrorModel(__WEBPACK_IMPORTED_MODULE_4__base_common_uri_js__["a" /* URI */].parse(data.url), data.lines, data.EOL, data.versionId);
     };
     EditorSimpleWorkerImpl.prototype.acceptModelChanged = function (strURL, e) {
         if (!this._models[strURL]) {
@@ -8389,7 +8952,7 @@ function create() {
 }
 if (typeof importScripts === 'function') {
     // Running in a web worker
-    __WEBPACK_IMPORTED_MODULE_11__base_common_platform_js__["b" /* globals */].monaco = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_10__standalone_standaloneBase_js__["a" /* createMonacoBaseAPI */])();
+    __WEBPACK_IMPORTED_MODULE_3__base_common_platform_js__["c" /* globals */].monaco = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_12__standalone_standaloneBase_js__["a" /* createMonacoBaseAPI */])();
 }
 
 
@@ -8399,20 +8962,18 @@ if (typeof importScripts === 'function') {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* unused harmony export MarkerTag */
-/* unused harmony export MarkerSeverity */
 /* unused harmony export KeyMod */
-/* unused harmony export KeyCode */
 /* harmony export (immutable) */ __webpack_exports__["a"] = createMonacoBaseAPI;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__base_common_event_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/event.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__base_common_keyCodes_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/keyCodes.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__core_position_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/core/position.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__core_range_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/core/range.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__core_selection_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/core/selection.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__base_common_winjs_base_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/winjs.base.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__base_common_cancellation_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/cancellation.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__core_token_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/core/token.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__base_common_uri_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/uri.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__base_common_cancellation_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/cancellation.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__base_common_event_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/event.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__base_common_keyCodes_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/keyCodes.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__base_common_uri_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/uri.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__base_common_winjs_base_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/winjs.base.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__core_position_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/core/position.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__core_range_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/core/range.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__core_selection_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/core/selection.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__core_token_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/core/token.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__standaloneEnums_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/standalone/standaloneEnums.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -8427,10 +8988,78 @@ if (typeof importScripts === 'function') {
 
 
 
-// --------------------------------------------
-// This is repeated here so it can be exported
-// because TS inlines const enums
-// --------------------------------------------
+var KeyMod = /** @class */ (function () {
+    function KeyMod() {
+    }
+    KeyMod.chord = function (firstPart, secondPart) {
+        return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__base_common_keyCodes_js__["a" /* KeyChord */])(firstPart, secondPart);
+    };
+    KeyMod.CtrlCmd = 2048 /* CtrlCmd */;
+    KeyMod.Shift = 1024 /* Shift */;
+    KeyMod.Alt = 512 /* Alt */;
+    KeyMod.WinCtrl = 256 /* WinCtrl */;
+    return KeyMod;
+}());
+
+function createMonacoBaseAPI() {
+    return {
+        editor: undefined,
+        languages: undefined,
+        CancellationTokenSource: __WEBPACK_IMPORTED_MODULE_0__base_common_cancellation_js__["a" /* CancellationTokenSource */],
+        Emitter: __WEBPACK_IMPORTED_MODULE_1__base_common_event_js__["b" /* Emitter */],
+        KeyCode: __WEBPACK_IMPORTED_MODULE_9__standaloneEnums_js__["a" /* KeyCode */],
+        KeyMod: KeyMod,
+        Position: __WEBPACK_IMPORTED_MODULE_5__core_position_js__["a" /* Position */],
+        Range: __WEBPACK_IMPORTED_MODULE_6__core_range_js__["a" /* Range */],
+        Selection: __WEBPACK_IMPORTED_MODULE_7__core_selection_js__["a" /* Selection */],
+        SelectionDirection: __WEBPACK_IMPORTED_MODULE_9__standaloneEnums_js__["b" /* SelectionDirection */],
+        MarkerSeverity: __WEBPACK_IMPORTED_MODULE_9__standaloneEnums_js__["c" /* MarkerSeverity */],
+        MarkerTag: __WEBPACK_IMPORTED_MODULE_9__standaloneEnums_js__["d" /* MarkerTag */],
+        Promise: __WEBPACK_IMPORTED_MODULE_4__base_common_winjs_base_js__["a" /* TPromise */],
+        Uri: __WEBPACK_IMPORTED_MODULE_3__base_common_uri_js__["a" /* URI */],
+        Token: __WEBPACK_IMPORTED_MODULE_8__core_token_js__["a" /* Token */]
+    };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/monaco-editor/esm/vs/editor/common/standalone/standaloneEnums.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return MarkerTag; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return MarkerSeverity; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return KeyCode; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return SelectionDirection; });
+/* unused harmony export ScrollbarVisibility */
+/* unused harmony export OverviewRulerLane */
+/* unused harmony export EndOfLinePreference */
+/* unused harmony export DefaultEndOfLine */
+/* unused harmony export EndOfLineSequence */
+/* unused harmony export TrackedRangeStickiness */
+/* unused harmony export ScrollType */
+/* unused harmony export CursorChangeReason */
+/* unused harmony export RenderMinimap */
+/* unused harmony export WrappingIndent */
+/* unused harmony export TextEditorCursorBlinkingStyle */
+/* unused harmony export TextEditorCursorStyle */
+/* unused harmony export RenderLineNumbersType */
+/* unused harmony export ContentWidgetPositionPreference */
+/* unused harmony export OverlayWidgetPositionPreference */
+/* unused harmony export MouseTargetType */
+/* unused harmony export IndentAction */
+/* unused harmony export CompletionItemKind */
+/* unused harmony export CompletionItemInsertTextRule */
+/* unused harmony export CompletionTriggerKind */
+/* unused harmony export SignatureHelpTriggerReason */
+/* unused harmony export DocumentHighlightKind */
+/* unused harmony export SymbolKind */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+// THIS IS A GENERATED FILE. DO NOT EDIT DIRECTLY.
 var MarkerTag;
 (function (MarkerTag) {
     MarkerTag[MarkerTag["Unnecessary"] = 1] = "Unnecessary";
@@ -8442,27 +9071,6 @@ var MarkerSeverity;
     MarkerSeverity[MarkerSeverity["Warning"] = 4] = "Warning";
     MarkerSeverity[MarkerSeverity["Error"] = 8] = "Error";
 })(MarkerSeverity || (MarkerSeverity = {}));
-// --------------------------------------------
-// This is repeated here so it can be exported
-// because TS inlines const enums
-// --------------------------------------------
-var KeyMod = /** @class */ (function () {
-    function KeyMod() {
-    }
-    KeyMod.chord = function (firstPart, secondPart) {
-        return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__base_common_keyCodes_js__["a" /* KeyChord */])(firstPart, secondPart);
-    };
-    KeyMod.CtrlCmd = 2048 /* CtrlCmd */;
-    KeyMod.Shift = 1024 /* Shift */;
-    KeyMod.Alt = 512 /* Alt */;
-    KeyMod.WinCtrl = 256 /* WinCtrl */;
-    return KeyMod;
-}());
-
-// --------------------------------------------
-// This is repeated here so it can be exported
-// because TS inlines const enums
-// --------------------------------------------
 /**
  * Virtual Key Codes, the value does not hold any inherent meaning.
  * Inspired somewhat from https://msdn.microsoft.com/en-us/library/windows/desktop/dd375731(v=vs.85).aspx
@@ -8644,25 +9252,458 @@ var KeyCode;
      */
     KeyCode[KeyCode["MAX_VALUE"] = 112] = "MAX_VALUE";
 })(KeyCode || (KeyCode = {}));
-function createMonacoBaseAPI() {
-    return {
-        editor: undefined,
-        languages: undefined,
-        CancellationTokenSource: __WEBPACK_IMPORTED_MODULE_6__base_common_cancellation_js__["a" /* CancellationTokenSource */],
-        Emitter: __WEBPACK_IMPORTED_MODULE_0__base_common_event_js__["b" /* Emitter */],
-        KeyCode: KeyCode,
-        KeyMod: KeyMod,
-        Position: __WEBPACK_IMPORTED_MODULE_2__core_position_js__["a" /* Position */],
-        Range: __WEBPACK_IMPORTED_MODULE_3__core_range_js__["a" /* Range */],
-        Selection: __WEBPACK_IMPORTED_MODULE_4__core_selection_js__["a" /* Selection */],
-        SelectionDirection: __WEBPACK_IMPORTED_MODULE_4__core_selection_js__["b" /* SelectionDirection */],
-        MarkerSeverity: MarkerSeverity,
-        MarkerTag: MarkerTag,
-        Promise: __WEBPACK_IMPORTED_MODULE_5__base_common_winjs_base_js__["a" /* TPromise */],
-        Uri: __WEBPACK_IMPORTED_MODULE_8__base_common_uri_js__["a" /* default */],
-        Token: __WEBPACK_IMPORTED_MODULE_7__core_token_js__["a" /* Token */]
-    };
-}
+/**
+ * The direction of a selection.
+ */
+var SelectionDirection;
+(function (SelectionDirection) {
+    /**
+     * The selection starts above where it ends.
+     */
+    SelectionDirection[SelectionDirection["LTR"] = 0] = "LTR";
+    /**
+     * The selection starts below where it ends.
+     */
+    SelectionDirection[SelectionDirection["RTL"] = 1] = "RTL";
+})(SelectionDirection || (SelectionDirection = {}));
+var ScrollbarVisibility;
+(function (ScrollbarVisibility) {
+    ScrollbarVisibility[ScrollbarVisibility["Auto"] = 1] = "Auto";
+    ScrollbarVisibility[ScrollbarVisibility["Hidden"] = 2] = "Hidden";
+    ScrollbarVisibility[ScrollbarVisibility["Visible"] = 3] = "Visible";
+})(ScrollbarVisibility || (ScrollbarVisibility = {}));
+/**
+ * Vertical Lane in the overview ruler of the editor.
+ */
+var OverviewRulerLane;
+(function (OverviewRulerLane) {
+    OverviewRulerLane[OverviewRulerLane["Left"] = 1] = "Left";
+    OverviewRulerLane[OverviewRulerLane["Center"] = 2] = "Center";
+    OverviewRulerLane[OverviewRulerLane["Right"] = 4] = "Right";
+    OverviewRulerLane[OverviewRulerLane["Full"] = 7] = "Full";
+})(OverviewRulerLane || (OverviewRulerLane = {}));
+/**
+ * End of line character preference.
+ */
+var EndOfLinePreference;
+(function (EndOfLinePreference) {
+    /**
+     * Use the end of line character identified in the text buffer.
+     */
+    EndOfLinePreference[EndOfLinePreference["TextDefined"] = 0] = "TextDefined";
+    /**
+     * Use line feed (\n) as the end of line character.
+     */
+    EndOfLinePreference[EndOfLinePreference["LF"] = 1] = "LF";
+    /**
+     * Use carriage return and line feed (\r\n) as the end of line character.
+     */
+    EndOfLinePreference[EndOfLinePreference["CRLF"] = 2] = "CRLF";
+})(EndOfLinePreference || (EndOfLinePreference = {}));
+/**
+ * The default end of line to use when instantiating models.
+ */
+var DefaultEndOfLine;
+(function (DefaultEndOfLine) {
+    /**
+     * Use line feed (\n) as the end of line character.
+     */
+    DefaultEndOfLine[DefaultEndOfLine["LF"] = 1] = "LF";
+    /**
+     * Use carriage return and line feed (\r\n) as the end of line character.
+     */
+    DefaultEndOfLine[DefaultEndOfLine["CRLF"] = 2] = "CRLF";
+})(DefaultEndOfLine || (DefaultEndOfLine = {}));
+/**
+ * End of line character preference.
+ */
+var EndOfLineSequence;
+(function (EndOfLineSequence) {
+    /**
+     * Use line feed (\n) as the end of line character.
+     */
+    EndOfLineSequence[EndOfLineSequence["LF"] = 0] = "LF";
+    /**
+     * Use carriage return and line feed (\r\n) as the end of line character.
+     */
+    EndOfLineSequence[EndOfLineSequence["CRLF"] = 1] = "CRLF";
+})(EndOfLineSequence || (EndOfLineSequence = {}));
+/**
+ * Describes the behavior of decorations when typing/editing near their edges.
+ * Note: Please do not edit the values, as they very carefully match `DecorationRangeBehavior`
+ */
+var TrackedRangeStickiness;
+(function (TrackedRangeStickiness) {
+    TrackedRangeStickiness[TrackedRangeStickiness["AlwaysGrowsWhenTypingAtEdges"] = 0] = "AlwaysGrowsWhenTypingAtEdges";
+    TrackedRangeStickiness[TrackedRangeStickiness["NeverGrowsWhenTypingAtEdges"] = 1] = "NeverGrowsWhenTypingAtEdges";
+    TrackedRangeStickiness[TrackedRangeStickiness["GrowsOnlyWhenTypingBefore"] = 2] = "GrowsOnlyWhenTypingBefore";
+    TrackedRangeStickiness[TrackedRangeStickiness["GrowsOnlyWhenTypingAfter"] = 3] = "GrowsOnlyWhenTypingAfter";
+})(TrackedRangeStickiness || (TrackedRangeStickiness = {}));
+var ScrollType;
+(function (ScrollType) {
+    ScrollType[ScrollType["Smooth"] = 0] = "Smooth";
+    ScrollType[ScrollType["Immediate"] = 1] = "Immediate";
+})(ScrollType || (ScrollType = {}));
+/**
+ * Describes the reason the cursor has changed its position.
+ */
+var CursorChangeReason;
+(function (CursorChangeReason) {
+    /**
+     * Unknown or not set.
+     */
+    CursorChangeReason[CursorChangeReason["NotSet"] = 0] = "NotSet";
+    /**
+     * A `model.setValue()` was called.
+     */
+    CursorChangeReason[CursorChangeReason["ContentFlush"] = 1] = "ContentFlush";
+    /**
+     * The `model` has been changed outside of this cursor and the cursor recovers its position from associated markers.
+     */
+    CursorChangeReason[CursorChangeReason["RecoverFromMarkers"] = 2] = "RecoverFromMarkers";
+    /**
+     * There was an explicit user gesture.
+     */
+    CursorChangeReason[CursorChangeReason["Explicit"] = 3] = "Explicit";
+    /**
+     * There was a Paste.
+     */
+    CursorChangeReason[CursorChangeReason["Paste"] = 4] = "Paste";
+    /**
+     * There was an Undo.
+     */
+    CursorChangeReason[CursorChangeReason["Undo"] = 5] = "Undo";
+    /**
+     * There was a Redo.
+     */
+    CursorChangeReason[CursorChangeReason["Redo"] = 6] = "Redo";
+})(CursorChangeReason || (CursorChangeReason = {}));
+var RenderMinimap;
+(function (RenderMinimap) {
+    RenderMinimap[RenderMinimap["None"] = 0] = "None";
+    RenderMinimap[RenderMinimap["Small"] = 1] = "Small";
+    RenderMinimap[RenderMinimap["Large"] = 2] = "Large";
+    RenderMinimap[RenderMinimap["SmallBlocks"] = 3] = "SmallBlocks";
+    RenderMinimap[RenderMinimap["LargeBlocks"] = 4] = "LargeBlocks";
+})(RenderMinimap || (RenderMinimap = {}));
+/**
+ * Describes how to indent wrapped lines.
+ */
+var WrappingIndent;
+(function (WrappingIndent) {
+    /**
+     * No indentation => wrapped lines begin at column 1.
+     */
+    WrappingIndent[WrappingIndent["None"] = 0] = "None";
+    /**
+     * Same => wrapped lines get the same indentation as the parent.
+     */
+    WrappingIndent[WrappingIndent["Same"] = 1] = "Same";
+    /**
+     * Indent => wrapped lines get +1 indentation toward the parent.
+     */
+    WrappingIndent[WrappingIndent["Indent"] = 2] = "Indent";
+    /**
+     * DeepIndent => wrapped lines get +2 indentation toward the parent.
+     */
+    WrappingIndent[WrappingIndent["DeepIndent"] = 3] = "DeepIndent";
+})(WrappingIndent || (WrappingIndent = {}));
+/**
+ * The kind of animation in which the editor's cursor should be rendered.
+ */
+var TextEditorCursorBlinkingStyle;
+(function (TextEditorCursorBlinkingStyle) {
+    /**
+     * Hidden
+     */
+    TextEditorCursorBlinkingStyle[TextEditorCursorBlinkingStyle["Hidden"] = 0] = "Hidden";
+    /**
+     * Blinking
+     */
+    TextEditorCursorBlinkingStyle[TextEditorCursorBlinkingStyle["Blink"] = 1] = "Blink";
+    /**
+     * Blinking with smooth fading
+     */
+    TextEditorCursorBlinkingStyle[TextEditorCursorBlinkingStyle["Smooth"] = 2] = "Smooth";
+    /**
+     * Blinking with prolonged filled state and smooth fading
+     */
+    TextEditorCursorBlinkingStyle[TextEditorCursorBlinkingStyle["Phase"] = 3] = "Phase";
+    /**
+     * Expand collapse animation on the y axis
+     */
+    TextEditorCursorBlinkingStyle[TextEditorCursorBlinkingStyle["Expand"] = 4] = "Expand";
+    /**
+     * No-Blinking
+     */
+    TextEditorCursorBlinkingStyle[TextEditorCursorBlinkingStyle["Solid"] = 5] = "Solid";
+})(TextEditorCursorBlinkingStyle || (TextEditorCursorBlinkingStyle = {}));
+/**
+ * The style in which the editor's cursor should be rendered.
+ */
+var TextEditorCursorStyle;
+(function (TextEditorCursorStyle) {
+    /**
+     * As a vertical line (sitting between two characters).
+     */
+    TextEditorCursorStyle[TextEditorCursorStyle["Line"] = 1] = "Line";
+    /**
+     * As a block (sitting on top of a character).
+     */
+    TextEditorCursorStyle[TextEditorCursorStyle["Block"] = 2] = "Block";
+    /**
+     * As a horizontal line (sitting under a character).
+     */
+    TextEditorCursorStyle[TextEditorCursorStyle["Underline"] = 3] = "Underline";
+    /**
+     * As a thin vertical line (sitting between two characters).
+     */
+    TextEditorCursorStyle[TextEditorCursorStyle["LineThin"] = 4] = "LineThin";
+    /**
+     * As an outlined block (sitting on top of a character).
+     */
+    TextEditorCursorStyle[TextEditorCursorStyle["BlockOutline"] = 5] = "BlockOutline";
+    /**
+     * As a thin horizontal line (sitting under a character).
+     */
+    TextEditorCursorStyle[TextEditorCursorStyle["UnderlineThin"] = 6] = "UnderlineThin";
+})(TextEditorCursorStyle || (TextEditorCursorStyle = {}));
+var RenderLineNumbersType;
+(function (RenderLineNumbersType) {
+    RenderLineNumbersType[RenderLineNumbersType["Off"] = 0] = "Off";
+    RenderLineNumbersType[RenderLineNumbersType["On"] = 1] = "On";
+    RenderLineNumbersType[RenderLineNumbersType["Relative"] = 2] = "Relative";
+    RenderLineNumbersType[RenderLineNumbersType["Interval"] = 3] = "Interval";
+    RenderLineNumbersType[RenderLineNumbersType["Custom"] = 4] = "Custom";
+})(RenderLineNumbersType || (RenderLineNumbersType = {}));
+/**
+ * A positioning preference for rendering content widgets.
+ */
+var ContentWidgetPositionPreference;
+(function (ContentWidgetPositionPreference) {
+    /**
+     * Place the content widget exactly at a position
+     */
+    ContentWidgetPositionPreference[ContentWidgetPositionPreference["EXACT"] = 0] = "EXACT";
+    /**
+     * Place the content widget above a position
+     */
+    ContentWidgetPositionPreference[ContentWidgetPositionPreference["ABOVE"] = 1] = "ABOVE";
+    /**
+     * Place the content widget below a position
+     */
+    ContentWidgetPositionPreference[ContentWidgetPositionPreference["BELOW"] = 2] = "BELOW";
+})(ContentWidgetPositionPreference || (ContentWidgetPositionPreference = {}));
+/**
+ * A positioning preference for rendering overlay widgets.
+ */
+var OverlayWidgetPositionPreference;
+(function (OverlayWidgetPositionPreference) {
+    /**
+     * Position the overlay widget in the top right corner
+     */
+    OverlayWidgetPositionPreference[OverlayWidgetPositionPreference["TOP_RIGHT_CORNER"] = 0] = "TOP_RIGHT_CORNER";
+    /**
+     * Position the overlay widget in the bottom right corner
+     */
+    OverlayWidgetPositionPreference[OverlayWidgetPositionPreference["BOTTOM_RIGHT_CORNER"] = 1] = "BOTTOM_RIGHT_CORNER";
+    /**
+     * Position the overlay widget in the top center
+     */
+    OverlayWidgetPositionPreference[OverlayWidgetPositionPreference["TOP_CENTER"] = 2] = "TOP_CENTER";
+})(OverlayWidgetPositionPreference || (OverlayWidgetPositionPreference = {}));
+/**
+ * Type of hit element with the mouse in the editor.
+ */
+var MouseTargetType;
+(function (MouseTargetType) {
+    /**
+     * Mouse is on top of an unknown element.
+     */
+    MouseTargetType[MouseTargetType["UNKNOWN"] = 0] = "UNKNOWN";
+    /**
+     * Mouse is on top of the textarea used for input.
+     */
+    MouseTargetType[MouseTargetType["TEXTAREA"] = 1] = "TEXTAREA";
+    /**
+     * Mouse is on top of the glyph margin
+     */
+    MouseTargetType[MouseTargetType["GUTTER_GLYPH_MARGIN"] = 2] = "GUTTER_GLYPH_MARGIN";
+    /**
+     * Mouse is on top of the line numbers
+     */
+    MouseTargetType[MouseTargetType["GUTTER_LINE_NUMBERS"] = 3] = "GUTTER_LINE_NUMBERS";
+    /**
+     * Mouse is on top of the line decorations
+     */
+    MouseTargetType[MouseTargetType["GUTTER_LINE_DECORATIONS"] = 4] = "GUTTER_LINE_DECORATIONS";
+    /**
+     * Mouse is on top of the whitespace left in the gutter by a view zone.
+     */
+    MouseTargetType[MouseTargetType["GUTTER_VIEW_ZONE"] = 5] = "GUTTER_VIEW_ZONE";
+    /**
+     * Mouse is on top of text in the content.
+     */
+    MouseTargetType[MouseTargetType["CONTENT_TEXT"] = 6] = "CONTENT_TEXT";
+    /**
+     * Mouse is on top of empty space in the content (e.g. after line text or below last line)
+     */
+    MouseTargetType[MouseTargetType["CONTENT_EMPTY"] = 7] = "CONTENT_EMPTY";
+    /**
+     * Mouse is on top of a view zone in the content.
+     */
+    MouseTargetType[MouseTargetType["CONTENT_VIEW_ZONE"] = 8] = "CONTENT_VIEW_ZONE";
+    /**
+     * Mouse is on top of a content widget.
+     */
+    MouseTargetType[MouseTargetType["CONTENT_WIDGET"] = 9] = "CONTENT_WIDGET";
+    /**
+     * Mouse is on top of the decorations overview ruler.
+     */
+    MouseTargetType[MouseTargetType["OVERVIEW_RULER"] = 10] = "OVERVIEW_RULER";
+    /**
+     * Mouse is on top of a scrollbar.
+     */
+    MouseTargetType[MouseTargetType["SCROLLBAR"] = 11] = "SCROLLBAR";
+    /**
+     * Mouse is on top of an overlay widget.
+     */
+    MouseTargetType[MouseTargetType["OVERLAY_WIDGET"] = 12] = "OVERLAY_WIDGET";
+    /**
+     * Mouse is outside of the editor.
+     */
+    MouseTargetType[MouseTargetType["OUTSIDE_EDITOR"] = 13] = "OUTSIDE_EDITOR";
+})(MouseTargetType || (MouseTargetType = {}));
+/**
+ * Describes what to do with the indentation when pressing Enter.
+ */
+var IndentAction;
+(function (IndentAction) {
+    /**
+     * Insert new line and copy the previous line's indentation.
+     */
+    IndentAction[IndentAction["None"] = 0] = "None";
+    /**
+     * Insert new line and indent once (relative to the previous line's indentation).
+     */
+    IndentAction[IndentAction["Indent"] = 1] = "Indent";
+    /**
+     * Insert two new lines:
+     *  - the first one indented which will hold the cursor
+     *  - the second one at the same indentation level
+     */
+    IndentAction[IndentAction["IndentOutdent"] = 2] = "IndentOutdent";
+    /**
+     * Insert new line and outdent once (relative to the previous line's indentation).
+     */
+    IndentAction[IndentAction["Outdent"] = 3] = "Outdent";
+})(IndentAction || (IndentAction = {}));
+var CompletionItemKind;
+(function (CompletionItemKind) {
+    CompletionItemKind[CompletionItemKind["Method"] = 0] = "Method";
+    CompletionItemKind[CompletionItemKind["Function"] = 1] = "Function";
+    CompletionItemKind[CompletionItemKind["Constructor"] = 2] = "Constructor";
+    CompletionItemKind[CompletionItemKind["Field"] = 3] = "Field";
+    CompletionItemKind[CompletionItemKind["Variable"] = 4] = "Variable";
+    CompletionItemKind[CompletionItemKind["Class"] = 5] = "Class";
+    CompletionItemKind[CompletionItemKind["Struct"] = 6] = "Struct";
+    CompletionItemKind[CompletionItemKind["Interface"] = 7] = "Interface";
+    CompletionItemKind[CompletionItemKind["Module"] = 8] = "Module";
+    CompletionItemKind[CompletionItemKind["Property"] = 9] = "Property";
+    CompletionItemKind[CompletionItemKind["Event"] = 10] = "Event";
+    CompletionItemKind[CompletionItemKind["Operator"] = 11] = "Operator";
+    CompletionItemKind[CompletionItemKind["Unit"] = 12] = "Unit";
+    CompletionItemKind[CompletionItemKind["Value"] = 13] = "Value";
+    CompletionItemKind[CompletionItemKind["Constant"] = 14] = "Constant";
+    CompletionItemKind[CompletionItemKind["Enum"] = 15] = "Enum";
+    CompletionItemKind[CompletionItemKind["EnumMember"] = 16] = "EnumMember";
+    CompletionItemKind[CompletionItemKind["Keyword"] = 17] = "Keyword";
+    CompletionItemKind[CompletionItemKind["Text"] = 18] = "Text";
+    CompletionItemKind[CompletionItemKind["Color"] = 19] = "Color";
+    CompletionItemKind[CompletionItemKind["File"] = 20] = "File";
+    CompletionItemKind[CompletionItemKind["Reference"] = 21] = "Reference";
+    CompletionItemKind[CompletionItemKind["Customcolor"] = 22] = "Customcolor";
+    CompletionItemKind[CompletionItemKind["Folder"] = 23] = "Folder";
+    CompletionItemKind[CompletionItemKind["TypeParameter"] = 24] = "TypeParameter";
+    CompletionItemKind[CompletionItemKind["Snippet"] = 25] = "Snippet";
+})(CompletionItemKind || (CompletionItemKind = {}));
+var CompletionItemInsertTextRule;
+(function (CompletionItemInsertTextRule) {
+    /**
+     * Adjust whitespace/indentation of multiline insert texts to
+     * match the current line indentation.
+     */
+    CompletionItemInsertTextRule[CompletionItemInsertTextRule["KeepWhitespace"] = 1] = "KeepWhitespace";
+    /**
+     * `insertText` is a snippet.
+     */
+    CompletionItemInsertTextRule[CompletionItemInsertTextRule["InsertAsSnippet"] = 4] = "InsertAsSnippet";
+})(CompletionItemInsertTextRule || (CompletionItemInsertTextRule = {}));
+/**
+ * How a suggest provider was triggered.
+ */
+var CompletionTriggerKind;
+(function (CompletionTriggerKind) {
+    CompletionTriggerKind[CompletionTriggerKind["Invoke"] = 0] = "Invoke";
+    CompletionTriggerKind[CompletionTriggerKind["TriggerCharacter"] = 1] = "TriggerCharacter";
+    CompletionTriggerKind[CompletionTriggerKind["TriggerForIncompleteCompletions"] = 2] = "TriggerForIncompleteCompletions";
+})(CompletionTriggerKind || (CompletionTriggerKind = {}));
+var SignatureHelpTriggerReason;
+(function (SignatureHelpTriggerReason) {
+    SignatureHelpTriggerReason[SignatureHelpTriggerReason["Invoke"] = 1] = "Invoke";
+    SignatureHelpTriggerReason[SignatureHelpTriggerReason["TriggerCharacter"] = 2] = "TriggerCharacter";
+    SignatureHelpTriggerReason[SignatureHelpTriggerReason["ContentChange"] = 3] = "ContentChange";
+})(SignatureHelpTriggerReason || (SignatureHelpTriggerReason = {}));
+/**
+ * A document highlight kind.
+ */
+var DocumentHighlightKind;
+(function (DocumentHighlightKind) {
+    /**
+     * A textual occurrence.
+     */
+    DocumentHighlightKind[DocumentHighlightKind["Text"] = 0] = "Text";
+    /**
+     * Read-access of a symbol, like reading a variable.
+     */
+    DocumentHighlightKind[DocumentHighlightKind["Read"] = 1] = "Read";
+    /**
+     * Write-access of a symbol, like writing to a variable.
+     */
+    DocumentHighlightKind[DocumentHighlightKind["Write"] = 2] = "Write";
+})(DocumentHighlightKind || (DocumentHighlightKind = {}));
+/**
+ * A symbol kind.
+ */
+var SymbolKind;
+(function (SymbolKind) {
+    SymbolKind[SymbolKind["File"] = 0] = "File";
+    SymbolKind[SymbolKind["Module"] = 1] = "Module";
+    SymbolKind[SymbolKind["Namespace"] = 2] = "Namespace";
+    SymbolKind[SymbolKind["Package"] = 3] = "Package";
+    SymbolKind[SymbolKind["Class"] = 4] = "Class";
+    SymbolKind[SymbolKind["Method"] = 5] = "Method";
+    SymbolKind[SymbolKind["Property"] = 6] = "Property";
+    SymbolKind[SymbolKind["Field"] = 7] = "Field";
+    SymbolKind[SymbolKind["Constructor"] = 8] = "Constructor";
+    SymbolKind[SymbolKind["Enum"] = 9] = "Enum";
+    SymbolKind[SymbolKind["Interface"] = 10] = "Interface";
+    SymbolKind[SymbolKind["Function"] = 11] = "Function";
+    SymbolKind[SymbolKind["Variable"] = 12] = "Variable";
+    SymbolKind[SymbolKind["Constant"] = 13] = "Constant";
+    SymbolKind[SymbolKind["String"] = 14] = "String";
+    SymbolKind[SymbolKind["Number"] = 15] = "Number";
+    SymbolKind[SymbolKind["Boolean"] = 16] = "Boolean";
+    SymbolKind[SymbolKind["Array"] = 17] = "Array";
+    SymbolKind[SymbolKind["Object"] = 18] = "Object";
+    SymbolKind[SymbolKind["Key"] = 19] = "Key";
+    SymbolKind[SymbolKind["Null"] = 20] = "Null";
+    SymbolKind[SymbolKind["EnumMember"] = 21] = "EnumMember";
+    SymbolKind[SymbolKind["Struct"] = 22] = "Struct";
+    SymbolKind[SymbolKind["Event"] = 23] = "Event";
+    SymbolKind[SymbolKind["Operator"] = 24] = "Operator";
+    SymbolKind[SymbolKind["TypeParameter"] = 25] = "TypeParameter";
+})(SymbolKind || (SymbolKind = {}));
 
 
 /***/ }),
@@ -8679,7 +9720,6 @@ function createMonacoBaseAPI() {
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 
 var PrefixSumIndexOfResult = /** @class */ (function () {
     function PrefixSumIndexOfResult(index, remainder) {
@@ -8796,9 +9836,9 @@ var PrefixSumComputer = /** @class */ (function () {
         this.getTotalValue();
         var low = 0;
         var high = this.values.length - 1;
-        var mid;
-        var midStop;
-        var midStart;
+        var mid = 0;
+        var midStop = 0;
+        var midStart = 0;
         while (low <= high) {
             mid = low + ((high - low) / 2) | 0;
             midStop = this.prefixSum[mid];
@@ -8886,13 +9926,12 @@ var PrefixSumComputerWithCache = /** @class */ (function () {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (immutable) */ __webpack_exports__["initialize"] = initialize;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__common_services_editorSimpleWorker_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/services/editorSimpleWorker.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__base_common_worker_simpleWorker_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/worker/simpleWorker.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__base_common_worker_simpleWorker_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/base/common/worker/simpleWorker.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__common_services_editorSimpleWorker_js__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/common/services/editorSimpleWorker.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 
 
 var initialized = false;
@@ -8901,8 +9940,8 @@ function initialize(foreignModule) {
         return;
     }
     initialized = true;
-    var editorWorker = new __WEBPACK_IMPORTED_MODULE_0__common_services_editorSimpleWorker_js__["a" /* EditorSimpleWorkerImpl */](foreignModule);
-    var simpleWorker = new __WEBPACK_IMPORTED_MODULE_1__base_common_worker_simpleWorker_js__["a" /* SimpleWorkerServer */](function (msg) {
+    var editorWorker = new __WEBPACK_IMPORTED_MODULE_1__common_services_editorSimpleWorker_js__["a" /* EditorSimpleWorkerImpl */](foreignModule);
+    var simpleWorker = new __WEBPACK_IMPORTED_MODULE_0__base_common_worker_simpleWorker_js__["a" /* SimpleWorkerServer */](function (msg) {
         self.postMessage(msg);
     }, editorWorker);
     self.onmessage = function (e) {

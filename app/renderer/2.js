@@ -10,30 +10,30 @@ webpackJsonp([2],{
 /* unused harmony export Color */
 /* unused harmony export ColorInformation */
 /* unused harmony export ColorPresentation */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return FoldingRangeKind; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return FoldingRangeKind; });
 /* unused harmony export FoldingRange */
 /* unused harmony export DiagnosticRelatedInformation */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return DiagnosticSeverity; });
 /* unused harmony export Diagnostic */
 /* unused harmony export Command */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return TextEdit; });
+/* unused harmony export TextEdit */
 /* unused harmony export TextDocumentEdit */
 /* unused harmony export WorkspaceEdit */
 /* unused harmony export WorkspaceChange */
 /* unused harmony export TextDocumentIdentifier */
 /* unused harmony export VersionedTextDocumentIdentifier */
 /* unused harmony export TextDocumentItem */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return MarkupKind; });
+/* unused harmony export MarkupKind */
 /* unused harmony export MarkupContent */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return CompletionItemKind; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return InsertTextFormat; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return InsertTextFormat; });
 /* unused harmony export CompletionItem */
 /* unused harmony export CompletionList */
 /* unused harmony export MarkedString */
 /* unused harmony export Hover */
 /* unused harmony export ParameterInformation */
 /* unused harmony export SignatureInformation */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return DocumentHighlightKind; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return DocumentHighlightKind; });
 /* unused harmony export DocumentHighlight */
 /* unused harmony export SymbolKind */
 /* unused harmony export SymbolInformation */
@@ -1645,47 +1645,6 @@ function toTextEdit(textEdit) {
         text: textEdit.newText
     };
 }
-function toCompletionItem(entry) {
-    return {
-        label: entry.label,
-        insertText: entry.insertText,
-        sortText: entry.sortText,
-        filterText: entry.filterText,
-        documentation: entry.documentation,
-        detail: entry.detail,
-        kind: toCompletionItemKind(entry.kind),
-        textEdit: toTextEdit(entry.textEdit),
-        data: entry.data
-    };
-}
-function fromMarkdownString(entry) {
-    return {
-        kind: (typeof entry === 'string' ? __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["c" /* MarkupKind */].PlainText : __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["c" /* MarkupKind */].Markdown),
-        value: (typeof entry === 'string' ? entry : entry.value)
-    };
-}
-function fromCompletionItem(entry) {
-    var item = {
-        label: entry.label,
-        sortText: entry.sortText,
-        filterText: entry.filterText,
-        documentation: fromMarkdownString(entry.documentation),
-        detail: entry.detail,
-        kind: fromCompletionItemKind(entry.kind),
-        data: entry.data
-    };
-    if (typeof entry.insertText === 'object' && typeof entry.insertText.value === 'string') {
-        item.insertText = entry.insertText.value;
-        item.insertTextFormat = __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* InsertTextFormat */].Snippet;
-    }
-    else {
-        item.insertText = entry.insertText;
-    }
-    if (entry.range) {
-        item.textEdit = __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["e" /* TextEdit */].replace(fromRange(entry.range), item.insertText);
-    }
-    return item;
-}
 var CompletionAdapter = /** @class */ (function () {
     function CompletionAdapter(_worker) {
         this._worker = _worker;
@@ -1697,10 +1656,10 @@ var CompletionAdapter = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    CompletionAdapter.prototype.provideCompletionItems = function (model, position, token) {
+    CompletionAdapter.prototype.provideCompletionItems = function (model, position, context, token) {
         var wordInfo = model.getWordUntilPosition(position);
         var resource = model.uri;
-        return wireCancellationToken(token, this._worker(resource).then(function (worker) {
+        return this._worker(resource).then(function (worker) {
             return worker.doComplete(resource.toString(), fromPosition(position));
         }).then(function (info) {
             if (!info) {
@@ -1709,7 +1668,7 @@ var CompletionAdapter = /** @class */ (function () {
             var items = info.items.map(function (entry) {
                 var item = {
                     label: entry.label,
-                    insertText: entry.insertText,
+                    insertText: entry.insertText || entry.label,
                     sortText: entry.sortText,
                     filterText: entry.filterText,
                     documentation: entry.documentation,
@@ -1720,16 +1679,19 @@ var CompletionAdapter = /** @class */ (function () {
                     item.range = toRange(entry.textEdit.range);
                     item.insertText = entry.textEdit.newText;
                 }
-                if (entry.insertTextFormat === __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* InsertTextFormat */].Snippet) {
-                    item.insertText = { value: item.insertText };
+                if (entry.additionalTextEdits) {
+                    item.additionalTextEdits = entry.additionalTextEdits.map(toTextEdit);
+                }
+                if (entry.insertTextFormat === __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["c" /* InsertTextFormat */].Snippet) {
+                    item.insertTextRules = monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet;
                 }
                 return item;
             });
             return {
                 isIncomplete: info.isIncomplete,
-                items: items
+                suggestions: items
             };
-        }));
+        });
     };
     return CompletionAdapter;
 }());
@@ -1758,9 +1720,9 @@ function toMarkdownString(entry) {
 function toHighlighKind(kind) {
     var mKind = monaco.languages.DocumentHighlightKind;
     switch (kind) {
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* DocumentHighlightKind */].Read: return mKind.Read;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* DocumentHighlightKind */].Write: return mKind.Write;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["f" /* DocumentHighlightKind */].Text: return mKind.Text;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* DocumentHighlightKind */].Read: return mKind.Read;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* DocumentHighlightKind */].Write: return mKind.Write;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["d" /* DocumentHighlightKind */].Text: return mKind.Text;
     }
     return mKind.Text;
 }
@@ -1770,7 +1732,7 @@ var DocumentHighlightAdapter = /** @class */ (function () {
     }
     DocumentHighlightAdapter.prototype.provideDocumentHighlights = function (model, position, token) {
         var resource = model.uri;
-        return wireCancellationToken(token, this._worker(resource).then(function (worker) { return worker.findDocumentHighlights(resource.toString(), fromPosition(position)); }).then(function (items) {
+        return this._worker(resource).then(function (worker) { return worker.findDocumentHighlights(resource.toString(), fromPosition(position)); }).then(function (items) {
             if (!items) {
                 return;
             }
@@ -1778,7 +1740,7 @@ var DocumentHighlightAdapter = /** @class */ (function () {
                 range: toRange(item.range),
                 kind: toHighlighKind(item.kind)
             }); });
-        }));
+        });
     };
     return DocumentHighlightAdapter;
 }());
@@ -1789,7 +1751,7 @@ var DocumentLinkAdapter = /** @class */ (function () {
     }
     DocumentLinkAdapter.prototype.provideLinks = function (model, token) {
         var resource = model.uri;
-        return wireCancellationToken(token, this._worker(resource).then(function (worker) { return worker.findDocumentLinks(resource.toString()); }).then(function (items) {
+        return this._worker(resource).then(function (worker) { return worker.findDocumentLinks(resource.toString()); }).then(function (items) {
             if (!items) {
                 return;
             }
@@ -1797,7 +1759,7 @@ var DocumentLinkAdapter = /** @class */ (function () {
                 range: toRange(item.range),
                 url: item.target
             }); });
-        }));
+        });
     };
     return DocumentLinkAdapter;
 }());
@@ -1814,14 +1776,14 @@ var DocumentFormattingEditProvider = /** @class */ (function () {
     }
     DocumentFormattingEditProvider.prototype.provideDocumentFormattingEdits = function (model, options, token) {
         var resource = model.uri;
-        return wireCancellationToken(token, this._worker(resource).then(function (worker) {
+        return this._worker(resource).then(function (worker) {
             return worker.format(resource.toString(), null, fromFormattingOptions(options)).then(function (edits) {
                 if (!edits || edits.length === 0) {
                     return;
                 }
                 return edits.map(toTextEdit);
             });
-        }));
+        });
     };
     return DocumentFormattingEditProvider;
 }());
@@ -1832,14 +1794,14 @@ var DocumentRangeFormattingEditProvider = /** @class */ (function () {
     }
     DocumentRangeFormattingEditProvider.prototype.provideDocumentRangeFormattingEdits = function (model, range, options, token) {
         var resource = model.uri;
-        return wireCancellationToken(token, this._worker(resource).then(function (worker) {
+        return this._worker(resource).then(function (worker) {
             return worker.format(resource.toString(), fromRange(range), fromFormattingOptions(options)).then(function (edits) {
                 if (!edits || edits.length === 0) {
                     return;
                 }
                 return edits.map(toTextEdit);
             });
-        }));
+        });
     };
     return DocumentRangeFormattingEditProvider;
 }());
@@ -1850,7 +1812,7 @@ var FoldingRangeAdapter = /** @class */ (function () {
     }
     FoldingRangeAdapter.prototype.provideFoldingRanges = function (model, context, token) {
         var resource = model.uri;
-        return wireCancellationToken(token, this._worker(resource).then(function (worker) { return worker.provideFoldingRanges(resource.toString(), context); }).then(function (ranges) {
+        return this._worker(resource).then(function (worker) { return worker.provideFoldingRanges(resource.toString(), context); }).then(function (ranges) {
             if (!ranges) {
                 return;
             }
@@ -1864,27 +1826,18 @@ var FoldingRangeAdapter = /** @class */ (function () {
                 }
                 return result;
             });
-        }));
+        });
     };
     return FoldingRangeAdapter;
 }());
 
 function toFoldingRangeKind(kind) {
     switch (kind) {
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["g" /* FoldingRangeKind */].Comment: return monaco.languages.FoldingRangeKind.Comment;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["g" /* FoldingRangeKind */].Imports: return monaco.languages.FoldingRangeKind.Imports;
-        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["g" /* FoldingRangeKind */].Region: return monaco.languages.FoldingRangeKind.Region;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["e" /* FoldingRangeKind */].Comment: return monaco.languages.FoldingRangeKind.Comment;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["e" /* FoldingRangeKind */].Imports: return monaco.languages.FoldingRangeKind.Imports;
+        case __WEBPACK_IMPORTED_MODULE_0__deps_vscode_languageserver_types_main_js__["e" /* FoldingRangeKind */].Region: return monaco.languages.FoldingRangeKind.Region;
     }
     return void 0;
-}
-/**
- * Hook a cancellation token to a WinJS Promise
- */
-function wireCancellationToken(token, promise) {
-    if (promise.cancel) {
-        token.onCancellationRequested(function () { return promise.cancel(); });
-    }
-    return promise;
 }
 
 
@@ -1900,7 +1853,6 @@ function wireCancellationToken(token, promise) {
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-var Promise = monaco.Promise;
 var STOP_WHEN_IDLE_FOR = 2 * 60 * 1000; // 2min
 var WorkerManager = /** @class */ (function () {
     function WorkerManager(defaults) {
@@ -1956,25 +1908,15 @@ var WorkerManager = /** @class */ (function () {
             resources[_i] = arguments[_i];
         }
         var _client;
-        return toShallowCancelPromise(this._getClient().then(function (client) {
+        return this._getClient().then(function (client) {
             _client = client;
         }).then(function (_) {
             return _this._worker.withSyncedResources(resources);
-        }).then(function (_) { return _client; }));
+        }).then(function (_) { return _client; });
     };
     return WorkerManager;
 }());
 
-function toShallowCancelPromise(p) {
-    var completeCallback;
-    var errorCallback;
-    var r = new Promise(function (c, e) {
-        completeCallback = c;
-        errorCallback = e;
-    }, function () { });
-    p.then(completeCallback, errorCallback);
-    return r;
-}
 
 
 /***/ })

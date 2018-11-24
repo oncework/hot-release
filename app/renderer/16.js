@@ -187,12 +187,30 @@ var language = {
             [/\$\d+/, 'variable.predefined'],
             [/\$\w+/, 'variable'],
             [/\$[*@#?\-$!0_]/, 'variable'],
-            [/\$['"{(]/, 'variable', '@parameterBody']
+            [/\$'/, 'variable', '@parameterBodyQuote'],
+            [/\$"/, 'variable', '@parameterBodyDoubleQuote'],
+            [/\$\(/, 'variable', '@parameterBodyParen'],
+            [/\$\{/, 'variable', '@parameterBodyCurlyBrace'],
         ],
-        parameterBody: [
+        parameterBodyQuote: [
+            [/[^#:%*@\-!_']+/, 'variable'],
             [/[#:%*@\-!_]/, 'delimiter'],
-            [/['"{(]/, 'variable', '@pop'],
-            [/./, 'variable']
+            [/[']/, 'variable', '@pop'],
+        ],
+        parameterBodyDoubleQuote: [
+            [/[^#:%*@\-!_"]+/, 'variable'],
+            [/[#:%*@\-!_]/, 'delimiter'],
+            [/["]/, 'variable', '@pop'],
+        ],
+        parameterBodyParen: [
+            [/[^#:%*@\-!_)]+/, 'variable'],
+            [/[#:%*@\-!_]/, 'delimiter'],
+            [/[)]/, 'variable', '@pop'],
+        ],
+        parameterBodyCurlyBrace: [
+            [/[^#:%*@\-!_}]+/, 'variable'],
+            [/[#:%*@\-!_]/, 'delimiter'],
+            [/[}]/, 'variable', '@pop'],
         ],
     }
 };
