@@ -1,7 +1,26 @@
 {
   "name": "oncework",
-  "version": "1.9.5",
+  "version": "1.9.6",
   "manifest": [
+    {
+      "version": "1.9.6",
+      "file": [
+        "app/assets/iconfont.css",
+        "app/assets/iconfont.eot",
+        "app/assets/iconfont.js",
+        "app/assets/iconfont.svg",
+        "app/assets/iconfont.ttf",
+        "app/assets/iconfont.woff",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Add cdKey icon and to optimize the user interface."
+      ]
+    },
     {
       "version": "1.9.5",
       "file": [

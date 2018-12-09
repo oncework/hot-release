@@ -1,7 +1,20 @@
 {
   "name": "oncework",
-  "version": "1.9.6",
+  "version": "1.9.7",
   "manifest": [
+    {
+      "version": "1.9.7",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Fix cdKey MAC address record."
+      ]
+    },
     {
       "version": "1.9.6",
       "file": [
