@@ -1,7 +1,33 @@
 {
   "name": "oncework",
-  "version": "1.9.4",
+  "version": "1.9.5",
   "manifest": [
+    {
+      "version": "1.9.5",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/css.worker.js",
+        "app/renderer/editor.worker.js",
+        "app/renderer/html.worker.js",
+        "app/renderer/index.html",
+        "app/renderer/json.worker.js",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/renderer/typescript.worker.js",
+        "app/upgrade.json",
+        "upgrade.json",
+        "app/16d8990cf0f0cc8bb1f626005963f7b0.node",
+        "app/1917ba05bd23dcb9a89acb38319bdd0c.node",
+        "app/a6b9efff2b986249801a68bf0a3ccec6.node",
+        "app/bd679feaf770143aa36a0c57e67cd87c.node",
+        "app/cdaea7b53df749a459f6f622add548e7.node",
+        "app/cfea33036289e7afacea2321ca43860d.node"
+      ],
+      "detail": [
+        "Fix some bugs and add cdKey verify."
+      ]
+    },
     {
       "version": "1.9.4",
       "file": [
