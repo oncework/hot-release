@@ -1,7 +1,19 @@
 {
   "name": "oncework",
-  "version": "1.9.7",
+  "version": "1.9.8",
   "manifest": [
+    {
+      "version": "1.9.8",
+      "file": [
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Fix the configuration loss caused by the 1.9.7 update."
+      ]
+    },
     {
       "version": "1.9.7",
       "file": [
