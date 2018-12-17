@@ -1,7 +1,19 @@
 {
   "name": "oncework",
-  "version": "1.9.8",
+  "version": "1.9.9",
   "manifest": [
+    {
+      "version": "1.9.9",
+      "file": [
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Fix the UI bug."
+      ]
+    },
     {
       "version": "1.9.8",
       "file": [
