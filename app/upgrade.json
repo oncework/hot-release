@@ -1,7 +1,24 @@
 {
   "name": "oncework",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "manifest": [
+    {
+      "version": "2.2.0",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json",
+        "app/470d4362c38313408ce52ad13013b1df.node",
+        "app/fe5f7c191c9ff9f40367362124709c15.node",
+        "app/script/activeWin"
+      ],
+      "detail": [
+        "Adds group Settings to allow abbreviations to be run in a specified program."
+      ]
+    },
     {
       "version": "2.1.2",
       "file": [
