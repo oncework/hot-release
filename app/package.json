@@ -1,6 +1,6 @@
 {
   "name": "oncework-gui",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "a smart snippet tool for person.",
   "productName": "OnceWork",
   "main": "./main.js",
