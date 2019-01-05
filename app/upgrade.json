@@ -1,7 +1,19 @@
 {
   "name": "oncework",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "manifest": [
+    {
+      "version": "2.1.2",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Add feature launch automatically after login - 2."
+      ]
+    },
     {
       "version": "2.1.1",
       "file": [
