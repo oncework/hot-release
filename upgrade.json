@@ -1,7 +1,21 @@
 {
   "name": "oncework",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "manifest": [
+    {
+      "version": "2.2.4",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/6.js",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Optimize the search toolbar interface."
+      ]
+    },
     {
       "version": "2.2.3",
       "file": [
