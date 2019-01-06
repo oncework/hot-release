@@ -1,7 +1,20 @@
 {
   "name": "oncework",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "manifest": [
+    {
+      "version": "2.2.2",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Modify the UI text description."
+      ]
+    },
     {
       "version": "2.2.1",
       "file": [

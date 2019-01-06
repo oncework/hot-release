@@ -1,7 +1,20 @@
 {
   "name": "oncework",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "manifest": [
+    {
+      "version": "2.2.3",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Added parameterized scripting capabilities."
+      ]
+    },
     {
       "version": "2.2.2",
       "file": [
