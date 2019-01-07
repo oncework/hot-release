@@ -118,7 +118,7 @@ module.exports = async appPath => {
   if (!appPath) {
     return;
   }
-  const stdout = await execFile(path.join(appPath, "/script/active-win"));
+  const stdout = await execFile(path.join(appPath, "/script/activeWin"));
   return parseMac(stdout);
 };
 
@@ -127,7 +127,7 @@ module.exports.sync = () => {
     return;
   }
   parseMac(
-    childProcess.execFileSync(path.join(appPath, "/script/active-win"), {
+    childProcess.execFileSync(path.join(appPath, "/script/activeWin"), {
       encoding: "utf8"
     })
   );
