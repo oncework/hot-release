@@ -1,7 +1,29 @@
 {
   "name": "oncework",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "manifest": [
+    {
+      "version": "2.2.5",
+      "file": [
+        "app/assets/iconfont.css",
+        "app/assets/iconfont.eot",
+        "app/assets/iconfont.js",
+        "app/assets/iconfont.svg",
+        "app/assets/iconfont.ttf",
+        "app/assets/iconfont.woff",
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json",
+        "app/assets/iconfont.woff2",
+        "app/script/active-win"
+      ],
+      "detail": [
+        "Optimize the snippet header interface."
+      ]
+    },
     {
       "version": "2.2.4",
       "file": [
