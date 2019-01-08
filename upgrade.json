@@ -1,7 +1,22 @@
 {
   "name": "oncework",
-  "version": "2.2.6",
+  "version": "2.2.7",
   "manifest": [
+    {
+      "version": "2.2.7",
+      "file": [
+        "app/assets/iconfont.js",
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/task/bin/npm-cli.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Fix some bug."
+      ]
+    },
     {
       "version": "2.2.6",
       "file": [

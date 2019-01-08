@@ -1,7 +1,19 @@
 {
   "name": "oncework",
-  "version": "2.2.5",
+  "version": "2.2.6",
   "manifest": [
+    {
+      "version": "2.2.6",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Optimize the snippet header interface again."
+      ]
+    },
     {
       "version": "2.2.5",
       "file": [
@@ -17,8 +29,7 @@
         "app/renderer/style.css",
         "app/upgrade.json",
         "upgrade.json",
-        "app/assets/iconfont.woff2",
-        "app/script/active-win"
+        "app/assets/iconfont.woff2"
       ],
       "detail": [
         "Optimize the snippet header interface."
