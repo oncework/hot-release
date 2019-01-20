@@ -1,7 +1,21 @@
 {
   "name": "oncework",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "manifest": [
+    {
+      "version": "2.3.1",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Update ux optimization."
+      ]
+    },
     {
       "version": "2.3.0",
       "file": [
