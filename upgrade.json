@@ -1,7 +1,24 @@
 {
   "name": "oncework",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "manifest": [
+    {
+      "version": "2.3.3",
+      "file": [
+        "app/assets/trayicon_win.png",
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json",
+        "app/077e2740eaedf0598b22115decbbf143.node",
+        "app/72416bb1445d5857d72068d7696372e0.node",
+        "app/package-lock.json"
+      ],
+      "detail": [
+        "Release windows version."
+      ]
+    },
     {
       "version": "2.3.2",
       "file": [
