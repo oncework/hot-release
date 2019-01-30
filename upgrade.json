@@ -1,7 +1,19 @@
 {
   "name": "oncework",
-  "version": "2.3.3",
+  "version": "2.3.4",
   "manifest": [
+    {
+      "version": "2.3.4",
+      "file": [
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Fix search bar file."
+      ]
+    },
     {
       "version": "2.3.3",
       "file": [
