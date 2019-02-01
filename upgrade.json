@@ -1,7 +1,20 @@
 {
   "name": "oncework",
-  "version": "2.3.4",
+  "version": "2.3.5",
   "manifest": [
+    {
+      "version": "2.3.5",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Changes cannot be previewed."
+      ]
+    },
     {
       "version": "2.3.4",
       "file": [
