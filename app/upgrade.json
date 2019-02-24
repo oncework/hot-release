@@ -1,7 +1,20 @@
 {
   "name": "oncework",
-  "version": "2.3.8",
+  "version": "2.3.9",
   "manifest": [
+    {
+      "version": "2.3.9",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Update UI style - 3."
+      ]
+    },
     {
       "version": "2.3.8",
       "file": [
