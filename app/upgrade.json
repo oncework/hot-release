@@ -1,7 +1,27 @@
 {
   "name": "oncework",
-  "version": "2.3.9",
+  "version": "2.4.0",
   "manifest": [
+    {
+      "version": "2.4.0",
+      "file": [
+        "app/assets/iconfont.css",
+        "app/assets/iconfont.eot",
+        "app/assets/iconfont.js",
+        "app/assets/iconfont.svg",
+        "app/assets/iconfont.ttf",
+        "app/assets/iconfont.woff",
+        "app/assets/iconfont.woff2",
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Add functions to quickly delete, share segments, and toggle grouping."
+      ]
+    },
     {
       "version": "2.3.9",
       "file": [
