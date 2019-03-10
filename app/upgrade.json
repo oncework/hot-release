@@ -1,7 +1,21 @@
 {
   "name": "oncework",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "manifest": [
+    {
+      "version": "2.4.1",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Add functions to quick start and fix some bugs."
+      ]
+    },
     {
       "version": "2.4.0",
       "file": [
