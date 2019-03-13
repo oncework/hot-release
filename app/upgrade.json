@@ -1,7 +1,20 @@
 {
   "name": "oncework",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "manifest": [
+    {
+      "version": "2.5.1",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Add functions to copy to clipboard about those beautiful images of your snippets."
+      ]
+    },
     {
       "version": "2.5.0",
       "file": [
@@ -128,7 +141,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Add functions to quick start and fix some bugs."]
+      "detail": [
+        "Add functions to quick start and fix some bugs."
+      ]
     },
     {
       "version": "2.4.0",
@@ -159,7 +174,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Update UI style - 3."]
+      "detail": [
+        "Update UI style - 3."
+      ]
     },
     {
       "version": "2.3.8",
@@ -170,7 +187,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Update UI style - 2."]
+      "detail": [
+        "Update UI style - 2."
+      ]
     },
     {
       "version": "2.3.7",
@@ -181,7 +200,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Update UI style."]
+      "detail": [
+        "Update UI style."
+      ]
     },
     {
       "version": "2.3.6",
@@ -193,7 +214,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Develop additional features."]
+      "detail": [
+        "Develop additional features."
+      ]
     },
     {
       "version": "2.3.5",
@@ -204,7 +227,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Changes cannot be previewed."]
+      "detail": [
+        "Changes cannot be previewed."
+      ]
     },
     {
       "version": "2.3.4",
@@ -214,7 +239,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Fix search bar file."]
+      "detail": [
+        "Fix search bar file."
+      ]
     },
     {
       "version": "2.3.3",
@@ -229,7 +256,9 @@
         "app/72416bb1445d5857d72068d7696372e0.node",
         "app/package-lock.json"
       ],
-      "detail": ["Release windows version."]
+      "detail": [
+        "Release windows version."
+      ]
     },
     {
       "version": "2.3.2",
@@ -239,7 +268,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Fix process env PATH."]
+      "detail": [
+        "Fix process env PATH."
+      ]
     },
     {
       "version": "2.3.1",
@@ -251,7 +282,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Update ux optimization."]
+      "detail": [
+        "Update ux optimization."
+      ]
     },
     {
       "version": "2.3.0",
@@ -343,7 +376,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Fix some bug."]
+      "detail": [
+        "Fix some bug."
+      ]
     },
     {
       "version": "2.2.6",
@@ -353,7 +388,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Optimize the snippet header interface again."]
+      "detail": [
+        "Optimize the snippet header interface again."
+      ]
     },
     {
       "version": "2.2.5",
@@ -372,7 +409,9 @@
         "upgrade.json",
         "app/assets/iconfont.woff2"
       ],
-      "detail": ["Optimize the snippet header interface."]
+      "detail": [
+        "Optimize the snippet header interface."
+      ]
     },
     {
       "version": "2.2.4",
@@ -384,7 +423,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Optimize the search toolbar interface."]
+      "detail": [
+        "Optimize the search toolbar interface."
+      ]
     },
     {
       "version": "2.2.3",
@@ -395,7 +436,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Added parameterized scripting capabilities."]
+      "detail": [
+        "Added parameterized scripting capabilities."
+      ]
     },
     {
       "version": "2.2.2",
@@ -406,7 +449,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Modify the UI text description."]
+      "detail": [
+        "Modify the UI text description."
+      ]
     },
     {
       "version": "2.2.1",
@@ -417,7 +462,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Remove the label setting to make the software simple."]
+      "detail": [
+        "Remove the label setting to make the software simple."
+      ]
     },
     {
       "version": "2.2.0",
@@ -444,7 +491,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Add feature launch automatically after login - 2."]
+      "detail": [
+        "Add feature launch automatically after login - 2."
+      ]
     },
     {
       "version": "2.1.1",
@@ -455,7 +504,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Add feature launch automatically after login."]
+      "detail": [
+        "Add feature launch automatically after login."
+      ]
     },
     {
       "version": "2.1.0",
@@ -473,7 +524,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Add custom date snippet feature."]
+      "detail": [
+        "Add custom date snippet feature."
+      ]
     },
     {
       "version": "2.0.0",
@@ -485,7 +538,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Add simulates clavier feature."]
+      "detail": [
+        "Add simulates clavier feature."
+      ]
     },
     {
       "version": "1.9.9",
@@ -495,7 +550,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Fix the UI bug."]
+      "detail": [
+        "Fix the UI bug."
+      ]
     },
     {
       "version": "1.9.8",
@@ -505,7 +562,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Fix the configuration loss caused by the 1.9.7 update."]
+      "detail": [
+        "Fix the configuration loss caused by the 1.9.7 update."
+      ]
     },
     {
       "version": "1.9.7",
@@ -516,7 +575,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Fix cdKey MAC address record."]
+      "detail": [
+        "Fix cdKey MAC address record."
+      ]
     },
     {
       "version": "1.9.6",
@@ -533,7 +594,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Add cdKey icon and to optimize the user interface."]
+      "detail": [
+        "Add cdKey icon and to optimize the user interface."
+      ]
     },
     {
       "version": "1.9.5",
@@ -557,7 +620,9 @@
         "app/cdaea7b53df749a459f6f622add548e7.node",
         "app/cfea33036289e7afacea2321ca43860d.node"
       ],
-      "detail": ["Fix some bugs and add cdKey verify."]
+      "detail": [
+        "Fix some bugs and add cdKey verify."
+      ]
     },
     {
       "version": "1.9.4",
@@ -568,7 +633,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Fix some bugs and optimizations."]
+      "detail": [
+        "Fix some bugs and optimizations."
+      ]
     },
     {
       "version": "1.9.3",
@@ -645,7 +712,9 @@
         "app/99427f4d20ff8fba22cc25f2576793d7.node",
         "app/b0e06a7fc4c811b12ea5f9e5770f1804.node"
       ],
-      "detail": ["Rewrite code structure and fix some bugs."]
+      "detail": [
+        "Rewrite code structure and fix some bugs."
+      ]
     },
     {
       "version": "1.9.2",
@@ -661,7 +730,9 @@
         "app/renderer/json.worker.js",
         "app/renderer/typescript.worker.js"
       ],
-      "detail": ["Repair editor intelligent automatic prompt."]
+      "detail": [
+        "Repair editor intelligent automatic prompt."
+      ]
     },
     {
       "version": "1.9.1",
@@ -673,7 +744,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Remove the welcome screen."]
+      "detail": [
+        "Remove the welcome screen."
+      ]
     },
     {
       "version": "1.9.0",
@@ -690,7 +763,9 @@
         "app/eee7bf8cc81a98b01e11f8ff663a486a.node",
         "app/fc3795e8ca6b5574a33a634e1a19a21a.node"
       ],
-      "detail": ["Fixed a bug that had frozen the system in the 10.14 system."]
+      "detail": [
+        "Fixed a bug that had frozen the system in the 10.14 system."
+      ]
     },
     {
       "version": "1.8.4",
@@ -701,7 +776,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Add contact information."]
+      "detail": [
+        "Add contact information."
+      ]
     },
     {
       "version": "1.8.3",
@@ -711,7 +788,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Error repairing shortcut creation fragment."]
+      "detail": [
+        "Error repairing shortcut creation fragment."
+      ]
     },
     {
       "version": "1.8.2",
@@ -723,7 +802,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Update the UI to display an error problem."]
+      "detail": [
+        "Update the UI to display an error problem."
+      ]
     },
     {
       "version": "1.8.1",
@@ -735,7 +816,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Fix the create tag problem."]
+      "detail": [
+        "Fix the create tag problem."
+      ]
     },
     {
       "version": "1.8.0",
@@ -753,7 +836,9 @@
         "app/renderer/html.worker.js",
         "app/renderer/json.worker.js"
       ],
-      "detail": ["Fill-Ins mode editing is supported."]
+      "detail": [
+        "Fill-Ins mode editing is supported."
+      ]
     },
     {
       "version": "1.6.0",
@@ -852,7 +937,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["- Quick creation of loaded bugs in the fix. 🌕"]
+      "detail": [
+        "- Quick creation of loaded bugs in the fix. 🌕"
+      ]
     },
     {
       "version": "1.5.1",
@@ -864,7 +951,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Fix filename valid and check env required. 🌕🌕🌕"]
+      "detail": [
+        "Fix filename valid and check env required. 🌕🌕🌕"
+      ]
     },
     {
       "version": "1.5.0",
@@ -881,7 +970,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Support npm library for javascript. 😊😁😁"]
+      "detail": [
+        "Support npm library for javascript. 😊😁😁"
+      ]
     },
     {
       "version": "1.4.2",
@@ -892,7 +983,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Fix the lack of files for initial use."]
+      "detail": [
+        "Fix the lack of files for initial use."
+      ]
     },
     {
       "version": "1.4.1",
@@ -948,7 +1041,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Update the quick search experience and fix some bugs."]
+      "detail": [
+        "Update the quick search experience and fix some bugs."
+      ]
     },
     {
       "version": "1.2.2",
@@ -959,7 +1054,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Optimize some functions and add Shared links."]
+      "detail": [
+        "Optimize some functions and add Shared links."
+      ]
     },
     {
       "version": "1.2.1",
@@ -1006,7 +1103,9 @@
         "app/upgrade.json",
         "upgrade.json"
       ],
-      "detail": ["Update more accurate functional description."]
+      "detail": [
+        "Update more accurate functional description."
+      ]
     },
     {
       "version": "1.1.8",
@@ -1022,12 +1121,18 @@
         "app/assets/iconfont.woff",
         "app/renderer/renderer.js"
       ],
-      "detail": ["Update editor font-family."]
+      "detail": [
+        "Update editor font-family."
+      ]
     },
     {
       "version": "1.1.6",
-      "file": ["app/renderer/renderer.js"],
-      "detail": ["Internationalization problem."]
+      "file": [
+        "app/renderer/renderer.js"
+      ],
+      "detail": [
+        "Internationalization problem."
+      ]
     },
     {
       "version": "1.1.5",
@@ -1043,12 +1148,18 @@
         "app/renderer/renderer.js",
         "app/renderer/style.css"
       ],
-      "detail": ["Add category management."]
+      "detail": [
+        "Add category management."
+      ]
     },
     {
       "version": "1.1.2",
-      "file": ["app/main.js"],
-      "detail": ["Test online hot upgrade"]
+      "file": [
+        "app/main.js"
+      ],
+      "detail": [
+        "Test online hot upgrade"
+      ]
     }
   ]
 }

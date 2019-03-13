@@ -1,8 +1,8 @@
 {
-  "name": "oncework-gui",
-  "version": "2.5.1",
+  "name": "codeexpander-gui",
+  "version": "2.6.0",
   "description": "a smart snippet tool for person.",
-  "productName": "OnceWork",
+  "productName": "CodeExpander",
   "main": "./main.js",
   "scripts": {},
   "keywords": [],
