@@ -1,7 +1,29 @@
 {
   "name": "oncework",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "manifest": [
+    {
+      "version": "2.6.0",
+      "file": [
+        "app/assets/tray-white.png",
+        "app/assets/tray-white@2x.png",
+        "app/assets/tray.Template.png",
+        "app/assets/tray.Template@2x.png",
+        "app/assets/trayicon.png",
+        "app/assets/trayicon_win.png",
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json",
+        "app/renderer/e2d2f9d2677c0027cc329b11fc01898b.png",
+        "app/renderer/e60d3f015bd8f3f537ab971630c44093.png"
+      ],
+      "detail": [
+        "Renamed the software as CodeExpander."
+      ]
+    },
     {
       "version": "2.5.1",
       "file": [
