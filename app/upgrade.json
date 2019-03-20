@@ -1,7 +1,22 @@
 {
   "name": "oncework",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "manifest": [
+    {
+      "version": "2.7.0",
+      "file": [
+        "app/main.js",
+        "app/package-lock.json",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "⚠️⚠️The old version is invalid, please download the latest version on the official website.⚠️⚠️"
+      ]
+    },
     {
       "version": "2.6.0",
       "file": [

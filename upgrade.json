@@ -1,7 +1,20 @@
 {
   "name": "oncework",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "manifest": [
+    {
+      "version": "2.7.1",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Support updating snippets within 30 days."
+      ]
+    },
     {
       "version": "2.7.0",
       "file": [
