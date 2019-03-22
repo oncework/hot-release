@@ -1,7 +1,28 @@
 {
   "name": "oncework",
-  "version": "2.7.2",
+  "version": "2.7.3",
   "manifest": [
+    {
+      "version": "2.7.3",
+      "file": [
+        "app/assets/iconfont.css",
+        "app/assets/iconfont.eot",
+        "app/assets/iconfont.js",
+        "app/assets/iconfont.svg",
+        "app/assets/iconfont.ttf",
+        "app/assets/iconfont.woff",
+        "app/assets/iconfont.woff2",
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Support use proxy:[http/https/socks5/socks4] to fetch snippets from the Gist."
+      ]
+    },
     {
       "version": "2.7.2",
       "file": [
