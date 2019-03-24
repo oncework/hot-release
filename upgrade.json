@@ -1,7 +1,20 @@
 {
   "name": "oncework",
-  "version": "2.7.3",
+  "version": "2.7.4",
   "manifest": [
+    {
+      "version": "2.7.4",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Update the logout account prompt, more user-friendly function instructions, fix bugs."
+      ]
+    },
     {
       "version": "2.7.3",
       "file": [
