@@ -1,7 +1,23 @@
 {
   "name": "oncework",
-  "version": "2.7.4",
+  "version": "2.7.5",
   "manifest": [
+    {
+      "version": "2.7.5",
+      "file": [
+        "app/assets/trayicon_win.png",
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/index.html",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Fix python using clipboard results in double quotes and others."
+      ]
+    },
     {
       "version": "2.7.4",
       "file": [
