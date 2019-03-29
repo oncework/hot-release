@@ -1,7 +1,20 @@
 {
   "name": "oncework",
-  "version": "2.7.6",
+  "version": "2.7.7",
   "manifest": [
+    {
+      "version": "2.7.7",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Fix grouping consistency, sync lag whiteboard interface, modify create snippet mask click events..."
+      ]
+    },
     {
       "version": "2.7.6",
       "file": [

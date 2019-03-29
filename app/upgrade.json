@@ -1,7 +1,20 @@
 {
   "name": "oncework",
-  "version": "2.7.5",
+  "version": "2.7.6",
   "manifest": [
+    {
+      "version": "2.7.6",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Block some actions on accounts that are not logged in and modify the location of the prompt message."
+      ]
+    },
     {
       "version": "2.7.5",
       "file": [
