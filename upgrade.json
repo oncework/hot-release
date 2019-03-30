@@ -1,7 +1,19 @@
 {
   "name": "oncework",
-  "version": "2.7.8",
+  "version": "2.7.9",
   "manifest": [
+    {
+      "version": "2.7.9",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Solve the problem of Chinese coding in script python2 environment."
+      ]
+    },
     {
       "version": "2.7.8",
       "file": [
