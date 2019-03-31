@@ -1,7 +1,19 @@
 {
   "name": "oncework",
-  "version": "2.7.10",
+  "version": "2.7.11",
   "manifest": [
+    {
+      "version": "2.7.11",
+      "file": [
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Fix some bugs."
+      ]
+    },
     {
       "version": "2.7.10",
       "file": [

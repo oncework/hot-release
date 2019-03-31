@@ -1,7 +1,21 @@
 {
   "name": "oncework",
-  "version": "2.7.9",
+  "version": "2.7.10",
   "manifest": [
+    {
+      "version": "2.7.10",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Support for full-text search."
+      ]
+    },
     {
       "version": "2.7.9",
       "file": [
