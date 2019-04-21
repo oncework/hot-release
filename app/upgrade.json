@@ -1,7 +1,19 @@
 {
   "name": "oncework",
-  "version": "2.7.13",
+  "version": "2.7.14",
   "manifest": [
+    {
+      "version": "2.7.14",
+      "file": [
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Clean up user status after logging out"
+      ]
+    },
     {
       "version": "2.7.13",
       "file": [
