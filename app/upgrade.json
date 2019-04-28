@@ -1,7 +1,30 @@
 {
   "name": "oncework",
-  "version": "2.8.0",
+  "version": "2.9.0",
   "manifest": [
+    {
+      "version": "2.9.0",
+      "file": [
+        "app/assets/iconfont.css",
+        "app/assets/iconfont.eot",
+        "app/assets/iconfont.js",
+        "app/assets/iconfont.svg",
+        "app/assets/iconfont.ttf",
+        "app/assets/iconfont.woff",
+        "app/assets/iconfont.woff2",
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/2.js",
+        "app/renderer/3.js",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Support for Markdown snippet."
+      ]
+    },
     {
       "version": "2.8.0",
       "file": [
