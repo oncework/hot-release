@@ -1,7 +1,28 @@
 {
   "name": "oncework",
-  "version": "2.9.3",
+  "version": "2.9.4",
   "manifest": [
+    {
+      "version": "2.9.4",
+      "file": [
+        "app/assets/iconfont.css",
+        "app/assets/iconfont.eot",
+        "app/assets/iconfont.js",
+        "app/assets/iconfont.svg",
+        "app/assets/iconfont.ttf",
+        "app/assets/iconfont.woff",
+        "app/assets/iconfont.woff2",
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Support Add Group to Favorites."
+      ]
+    },
     {
       "version": "2.9.3",
       "file": [
