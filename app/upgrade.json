@@ -1,7 +1,20 @@
 {
   "name": "oncework",
-  "version": "2.9.4",
+  "version": "2.9.5",
   "manifest": [
+    {
+      "version": "2.9.5",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "To optimize the user interface (UI).."
+      ]
+    },
     {
       "version": "2.9.4",
       "file": [
