@@ -1,7 +1,19 @@
 {
   "name": "oncework",
-  "version": "2.9.5",
+  "version": "2.9.6",
   "manifest": [
+    {
+      "version": "2.9.6",
+      "file": [
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Support snippet icon theme.."
+      ]
+    },
     {
       "version": "2.9.5",
       "file": [
