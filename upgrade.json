@@ -1,7 +1,19 @@
 {
   "name": "oncework",
-  "version": "2.9.11",
+  "version": "2.9.12",
   "manifest": [
+    {
+      "version": "2.9.12",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Performance optimization 😆."
+      ]
+    },
     {
       "version": "2.9.11",
       "file": [
