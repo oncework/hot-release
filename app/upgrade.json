@@ -1,7 +1,27 @@
 {
   "name": "oncework",
-  "version": "2.9.9",
+  "version": "2.9.10",
   "manifest": [
+    {
+      "version": "2.9.10",
+      "file": [
+        "app/assets/iconfont.css",
+        "app/assets/iconfont.eot",
+        "app/assets/iconfont.js",
+        "app/assets/iconfont.svg",
+        "app/assets/iconfont.ttf",
+        "app/assets/iconfont.woff",
+        "app/assets/iconfont.woff2",
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Support Change the public/private properties of the snippet but this will re-update the bound URL and delete all related properties except the content, please consider carefully..."
+      ]
+    },
     {
       "version": "2.9.9",
       "file": [
