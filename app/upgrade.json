@@ -1,7 +1,19 @@
 {
   "name": "oncework",
-  "version": "2.9.12",
+  "version": "2.9.13",
   "manifest": [
+    {
+      "version": "2.9.13",
+      "file": [
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Support fill-in component Chinese display... 😆."
+      ]
+    },
     {
       "version": "2.9.12",
       "file": [
