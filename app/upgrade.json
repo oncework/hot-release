@@ -1,7 +1,21 @@
 {
   "name": "oncework",
-  "version": "2.9.14",
+  "version": "2.9.15",
   "manifest": [
+    {
+      "version": "2.9.15",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/renderer/style.css",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Hot fix fetch snippet with desc... 😆."
+      ]
+    },
     {
       "version": "2.9.14",
       "file": [
