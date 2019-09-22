@@ -1,7 +1,20 @@
 {
   "name": "oncework",
-  "version": "2.9.16",
+  "version": "2.9.17",
   "manifest": [
+    {
+      "version": "2.9.17",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Fix ellipsis and enhance fill-in functionality."
+      ]
+    },
     {
       "version": "2.9.16",
       "file": [

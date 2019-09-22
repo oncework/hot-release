@@ -1,7 +1,20 @@
 {
   "name": "oncework",
-  "version": "2.9.17",
+  "version": "2.9.18",
   "manifest": [
+    {
+      "version": "2.9.18",
+      "file": [
+        "app/main.js",
+        "app/package.json",
+        "app/renderer/renderer.js",
+        "app/upgrade.json",
+        "upgrade.json"
+      ],
+      "detail": [
+        "Add comment fill-in functionality."
+      ]
+    },
     {
       "version": "2.9.17",
       "file": [
